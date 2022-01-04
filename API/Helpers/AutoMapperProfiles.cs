@@ -13,6 +13,7 @@ namespace API.Helpers
         public AutoMapperProfiles()
         {
             CreateMap<Guest, GuestDto>();
+            CreateMap<GameLobby, GameLobbyDto>();
         }
     }
 }

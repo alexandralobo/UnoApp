@@ -19,6 +19,8 @@ namespace API.Data
 
         public IGuestRepository GuestRepository => new GuestRepository(_context, _mapper);
 
+        public IGameLobbyRepository GameLobbyRepository => new GameLobbyRepository(_context, _mapper);
+
         public async Task<bool> Complete()
         {
             return await _context.SaveChangesAsync() > 0;

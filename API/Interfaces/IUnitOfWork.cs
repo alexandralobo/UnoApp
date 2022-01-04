@@ -8,6 +8,7 @@ namespace API.Interfaces
     public interface IUnitOfWork
     {
         IGuestRepository GuestRepository { get; }
+        IGameLobbyRepository GameLobbyRepository { get; }
         Task<bool> Complete();
     }
 }

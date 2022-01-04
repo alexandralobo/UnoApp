@@ -10,10 +10,11 @@ namespace API.Entities
     {
         // identityUser already has a property username so I do not have to implement it here
         public string Id { get; set; }
+        public string Token { get; set; }
         public string UserName { get; set; }
         //public DateTime Created { get; set; } = DateTime.Now;
-        // public ICollection<Message> MessagesSent { get; set; }
-        // public ICollection<Message> MessagesReceived { get; set; }
-        // public ICollection<AppUsserRole> UserRoless { get; set; }
+        //public ICollection<Message> MessagesSent { get; set; }
+        //public ICollection<Message> MessagesReceived { get; set; }
+        //public ICollection<AppUsserRole> UserRoless { get; set; }
     }
 }
