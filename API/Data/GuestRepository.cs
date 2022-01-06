@@ -19,6 +19,12 @@ namespace API.Data
             _context = context;
         }
 
+        public async Task<bool> CreateGuest(Guest guest)
+        {
+            _context.Guests.Add(guest);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
         public async Task<Guest> GetUserByIdAsync(int id)
         {
             return await _context.Guests.FindAsync(id);
@@ -33,6 +39,11 @@ namespace API.Data
         public async Task<IEnumerable<Guest>> GetUsersAsync()
         {
             return await _context.Guests.ToListAsync();
+        }
+
+        public async Task<bool> UserExists(string username)
+        {
+            return await _context.Guests.AnyAsync(user => user.UserName == username.ToLower());
         }
     }
 }

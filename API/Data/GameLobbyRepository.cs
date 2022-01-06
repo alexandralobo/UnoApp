@@ -19,7 +19,7 @@ namespace API.Data
             _context = context;
         }
 
-        public async Task<IEnumerable<GameLobby>> GetGameLobbiesAsync()
+        public Task<IEnumerable<GameLobby>> GetGameLobbiesAsync()
         {
             throw new NotImplementedException();
         }

@@ -17,8 +17,10 @@ namespace API.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public GuestsController(IUnitOfWork unitOfWork, IMapper mapper)
+        public readonly ITokenService _tokenService;
+        public GuestsController(IUnitOfWork unitOfWork, IMapper mapper, ITokenService tokenService)
         {
+            _tokenService = tokenService;
             _mapper = mapper;
             _unitOfWork = unitOfWork;
         }
@@ -30,10 +32,24 @@ namespace API.Controllers
             return Ok(guests);
         }
 
-        /*[HttpDelete("delete/")]
-        public Task<ActionResult> DeleteGuest()
+        // TESTED - Working
+        [HttpPost("creation")]
+        public async Task<ActionResult<GuestDto>> UserCreation(GuestDto guestDto)
         {
-            return Ok();
-        }*/
+            bool UsersExists = await _unitOfWork.GuestRepository.UserExists(guestDto.Username);
+
+            if (UsersExists) return BadRequest("Username is taken!");
+
+            var guest = _mapper.Map<Guest>(guestDto);
+            guest.UserName = guestDto.Username.ToLower();
+
+            await _unitOfWork.GuestRepository.CreateGuest(guest);
+
+            return new GuestDto
+            {
+                Username = guest.UserName,
+                Token = await _tokenService.CreateToken(guest)
+            };
+        }
     }
 }

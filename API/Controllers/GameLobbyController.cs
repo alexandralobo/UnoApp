@@ -27,7 +27,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<GameLobbyDto>> CreateLobby()
+        public Task<ActionResult<GameLobbyDto>> CreateLobby()
         {
             throw new NotImplementedException();
         }
