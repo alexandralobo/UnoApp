@@ -10,5 +10,12 @@ namespace API.Interfaces
     {
         Task<IEnumerable<GameLobby>> GetGameLobbiesAsync();
 
+        // Task<GameLobby> CreateGameLobby(GameLobby lobby);
+
+        Task<GameLobby> AddGuestToLobby(Connection connection);
+
+        Task<bool> SessionExists(string username);
+
+
     }
 }

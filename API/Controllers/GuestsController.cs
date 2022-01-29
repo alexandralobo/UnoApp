@@ -25,6 +25,7 @@ namespace API.Controllers
             _unitOfWork = unitOfWork;
         }
 
+        // TESTED - working
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GuestDto>>> GetGuests()
         {

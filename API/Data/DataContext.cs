@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using API.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Data
 {
-    public class DataContext : DbContext
+    public class DataContext : IdentityDbContext<Guest, AppRole, int, IdentityUserClaim<int>, GuestRole, IdentityUserLogin<int>, IdentityRoleClaim<int>, IdentityUserToken<int>>
     {
         public DataContext(DbContextOptions options) : base(options)
         {
@@ -20,17 +22,24 @@ namespace API.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.Entity<GameLobby>()
+                .HasMany<Card>(t => t.CardPot)
+                .WithMany(t => t.GameLobbies)
+                .UsingEntity<CardGameLobbyInPot>();
+            builder.Entity<GameLobby>()
+                .HasMany<Card>(t => t.DrawableCards)
+                .WithMany(t => t.GameLobbies)
+                .UsingEntity<CardGameLobbyDrawable>();
 
             builder.Entity<Connection>().HasKey(k => k.ConnectionId);
+            builder.Entity<Connection>()
+                .HasMany<Card>(t => t.Cards)
+                .WithMany(t => t.Connections);
 
-            //builder.Entity<Connection>().HasOne(u => u.Username).WithMany(c => );
-
-            builder.Entity<GameLobby>().HasKey(k => k.GameLobbyId);
-
-            builder.Entity<GameLobby>().HasMany<Card>(t => t.CardPot).WithMany(t => t.GameLobbies).UsingEntity<CardGameLobbyInPot>();
-            builder.Entity<GameLobby>().HasMany<Card>(t => t.DrawableCards).WithMany(t => t.GameLobbies).UsingEntity<CardGameLobbyDrawable>();
-
-            builder.Entity<Connection>().HasMany<Card>(t => t.Cards).WithMany(t => t.Connections);
+            /*builder.Entity<Connection>()
+                .HasOne<GameLobby>(c => c.ConnectedGameLobby)
+                .WithMany(g => g.Connections)
+                .HasForeignKey(c => c.GameLobbyId);*/
 
             base.OnModelCreating(builder);
         }

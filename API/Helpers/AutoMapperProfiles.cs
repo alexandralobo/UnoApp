@@ -15,6 +15,7 @@ namespace API.Helpers
             CreateMap<Guest, GuestDto>();
             CreateMap<GuestDto, Guest>();
             CreateMap<GameLobby, GameLobbyDto>();
+            CreateMap<GameLobbyDto, GameLobby>();
         }
     }
 }

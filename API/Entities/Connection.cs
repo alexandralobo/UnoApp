@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using API.EphemeralData;
 
 namespace API.Entities
 {
@@ -12,14 +11,15 @@ namespace API.Entities
         {
         }
 
-        public Connection(string connectionId, string username)
+        public Connection(string username)
         {
-            ConnectionId = connectionId;
             Username = username;
         }
 
-        public string ConnectionId { get; set; }
+        public int ConnectionId { get; set; }
         public string Username { get; set; }
         public ICollection<Card> Cards { get; set; }
+        public int GameLobbyId { get; set; }
+        public GameLobby ConnectedGameLobby { get; set; }
     }
 }

@@ -9,6 +9,7 @@ namespace API.Interfaces
     {
         IGuestRepository GuestRepository { get; }
         IGameLobbyRepository GameLobbyRepository { get; }
+        IConnectionRepository ConnectionRepository { get; }
         Task<bool> Complete();
     }
 }
