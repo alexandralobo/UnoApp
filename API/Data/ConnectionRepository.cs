@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using API.Entities;
 using API.Interfaces;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Data
 {
@@ -19,9 +20,14 @@ namespace API.Data
             _context = context;
         }
 
-        public async Task CreateConnection(Connection connection)
+        public async Task<bool> CreateConnection(Connection connection)
         {
-            _context.Connections.Add(connection);
+            return _context.Connections.Add(connection) != null;
+        }
+
+        public async Task<bool> SessionExists(string username)
+        {
+            return await _context.Connections.AnyAsync(c => c.Username == username);
         }
     }
 }

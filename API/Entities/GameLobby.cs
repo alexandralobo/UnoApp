@@ -14,7 +14,7 @@ namespace API.Entities
         public int GameLobbyId { get; set; }
         // public ICollection<Connection> Connections { get; set; }
         public ICollection<Card> DrawableCards { get; set; }
-        public ICollection<Card> CardPot { get; set; }
+        public ICollection<Card> CardPot { get; set; } = new List<Card>();
         public int CurrentPlayerId { get; set; }
         public string GameStatus { get; set; } = "ongoing";
         public int NumberOfElements { get; set; } = 0;

@@ -10,6 +10,7 @@ namespace API.Interfaces
         IGuestRepository GuestRepository { get; }
         IGameLobbyRepository GameLobbyRepository { get; }
         IConnectionRepository ConnectionRepository { get; }
+        ICardRepository CardRepository { get; }
         Task<bool> Complete();
     }
 }

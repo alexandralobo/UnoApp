@@ -1,0 +1,541 @@
+[
+    { 
+        "Colour": "red",
+        "Value": 0,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "red",
+        "Value": 1,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "red",
+        "Value": 2,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "red",
+        "Value": 3,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "red",
+        "Value": 4,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "red",
+        "Value": 5,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "red",
+        "Value": 6,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "red",
+        "Value": 7,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "red",
+        "Value": 8,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "red",
+        "Value": 9,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "red",
+        "Value": 1,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "red",
+        "Value": 2,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "red",
+        "Value": 3,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "red",
+        "Value": 4,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "red",
+        "Value": 5,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "red",
+        "Value": 6,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "red",
+        "Value": 7,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "red",
+        "Value": 8,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "red",
+        "Value": 9,
+        "Type": "Number"        
+    }, 
+    { 
+        "Colour": "blue",
+        "Value": 0,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "blue",
+        "Value": 1,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "blue",
+        "Value": 2,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "blue",
+        "Value": 3,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "blue",
+        "Value": 4,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "blue",
+        "Value": 5,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "blue",
+        "Value": 6,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "blue",
+        "Value": 7,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "blue",
+        "Value": 8,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "blue",
+        "Value": 9,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "blue",
+        "Value": 1,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "blue",
+        "Value": 2,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "blue",
+        "Value": 3,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "blue",
+        "Value": 4,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "blue",
+        "Value": 5,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "blue",
+        "Value": 6,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "blue",
+        "Value": 7,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "blue",
+        "Value": 8,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "blue",
+        "Value": 9,
+        "Type": "Number"        
+    },{ 
+        "Colour": "yellow",
+        "Value": 0,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "yellow",
+        "Value": 1,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "yellow",
+        "Value": 2,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "yellow",
+        "Value": 3,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "yellow",
+        "Value": 4,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "yellow",
+        "Value": 5,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "yellow",
+        "Value": 6,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "yellow",
+        "Value": 7,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "yellow",
+        "Value": 8,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "yellow",
+        "Value": 9,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "yellow",
+        "Value": 1,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "yellow",
+        "Value": 2,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "yellow",
+        "Value": 3,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "yellow",
+        "Value": 4,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "yellow",
+        "Value": 5,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "yellow",
+        "Value": 6,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "yellow",
+        "Value": 7,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "yellow",
+        "Value": 8,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "yellow",
+        "Value": 9,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "green",
+        "Value": 0,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "green",
+        "Value": 1,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "green",
+        "Value": 2,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "green",
+        "Value": 3,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "green",
+        "Value": 4,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "green",
+        "Value": 5,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "green",
+        "Value": 6,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "green",
+        "Value": 7,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "green",
+        "Value": 8,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "green",
+        "Value": 9,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "green",
+        "Value": 1,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "green",
+        "Value": 2,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "green",
+        "Value": 3,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "green",
+        "Value": 4,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "green",
+        "Value": 5,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "green",
+        "Value": 6,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "green",
+        "Value": 7,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "green",
+        "Value": 8,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "green",
+        "Value": 9,
+        "Type": "Number"        
+    },
+    { 
+        "Colour": "red",
+        "Value": -1,
+        "Type": "Skip"        
+    },
+    { 
+        "Colour": "red",
+        "Value": -1,
+        "Type": "Skip"        
+    },
+    { 
+        "Colour": "blue",
+        "Value": -1,
+        "Type": "Skip"        
+    },
+    { 
+        "Colour": "blue",
+        "Value": -1,
+        "Type": "Skip"        
+    },
+    { 
+        "Colour": "yellow",
+        "Value": -1,
+        "Type": "Skip"        
+    },
+    { 
+        "Colour": "yellow",
+        "Value": -1,
+        "Type": "Skip"        
+    },
+    { 
+        "Colour": "green",
+        "Value": -1,
+        "Type": "Skip"        
+    },
+    { 
+        "Colour": "green",
+        "Value": -1,
+        "Type": "Skip"        
+    },
+    { 
+        "Colour": "red",
+        "Value": -1,
+        "Type": "Reverse"        
+    },
+    { 
+        "Colour": "red",
+        "Value": -1,
+        "Type": "Reverse"        
+    },
+    { 
+        "Colour": "blue",
+        "Value": -1,
+        "Type": "Reverse"        
+    },
+    { 
+        "Colour": "blue",
+        "Value": -1,
+        "Type": "Reverse"        
+    },
+    { 
+        "Colour": "yellow",
+        "Value": -1,
+        "Type": "Reverse"        
+    },
+    { 
+        "Colour": "yellow",
+        "Value": -1,
+        "Type": "Reverse"        
+    },
+    { 
+        "Colour": "green",
+        "Value": -1,
+        "Type": "Reverse"        
+    },
+    { 
+        "Colour": "green",
+        "Value": -1,
+        "Type": "Reverse"        
+    },
+    { 
+        "Colour": "red",
+        "Value": -1,
+        "Type": "Draw"        
+    },
+    { 
+        "Colour": "red",
+        "Value": -1,
+        "Type": "Draw"        
+    },
+    { 
+        "Colour": "blue",
+        "Value": -1,
+        "Type": "Draw"        
+    },
+    { 
+        "Colour": "blue",
+        "Value": -1,
+        "Type": "Draw"        
+    },
+    { 
+        "Colour": "yellow",
+        "Value": -1,
+        "Type": "Draw"        
+    },
+    { 
+        "Colour": "yellow",
+        "Value": -1,
+        "Type": "Draw"        
+    },
+    { 
+        "Colour": "green",
+        "Value": -1,
+        "Type": "Draw"        
+    },
+    { 
+        "Colour": "green",
+        "Value": -1,
+        "Type": "Draw"        
+    },
+    { 
+        "Colour": "black",
+        "Value": -1,
+        "Type": "4-Colour"        
+    },
+    { 
+        "Colour": "black",
+        "Value": -1,
+        "Type": "4-Colour"        
+    },
+    { 
+        "Colour": "black",
+        "Value": -1,
+        "Type": "4-Colour"        
+    },
+    { 
+        "Colour": "black",
+        "Value": -1,
+        "Type": "4-Colour"        
+    },
+    { 
+        "Colour": "black",
+        "Value": -1,
+        "Type": "4-More"        
+    },
+    { 
+        "Colour": "yellow",
+        "Value": -1,
+        "Type": "4-More"        
+    },
+    { 
+        "Colour": "green",
+        "Value": -1,
+        "Type": "4-More"        
+    },
+    { 
+        "Colour": "green",
+        "Value": -1,
+        "Type": "4-More"        
+    }
+]

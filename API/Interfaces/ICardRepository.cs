@@ -6,10 +6,8 @@ using API.Entities;
 
 namespace API.Interfaces
 {
-    public interface IConnectionRepository
+    public interface ICardRepository
     {
-        Task<bool> CreateConnection(Connection connection);
-
-        Task<bool> SessionExists(string username);
+        Task<bool> AddCard(Card card);
     }
 }

@@ -11,9 +11,8 @@ namespace API.Entities
         {
         }
 
-        public Card(int cardId, string colour, int value, int type)
+        public Card(string colour, int value, string type)
         {
-            CardId = cardId;
             Colour = colour;
             Value = value;
             Type = type;
@@ -23,7 +22,7 @@ namespace API.Entities
         public int CardId { get; set; }
         public string Colour { get; set; }
         public int Value { get; set; }
-        public int Type { get; set; }
+        public string Type { get; set; }
         public ICollection<Connection> Connections { get; set; }
         public ICollection<GameLobby> GameLobbies { get; set; }
     }

@@ -27,22 +27,25 @@ namespace API.Controllers
             return Ok(lobbies);
         }
 
+        // TESTED - Working
         [HttpPost("addGuest")]
         public async Task<ActionResult<GameLobbyDto>> AddGuest(GuestDto guestDto)
         {
-            bool SessionExists = await _unitOfWork.GameLobbyRepository.SessionExists(guestDto.Username);
+            bool SessionExists = await _unitOfWork.ConnectionRepository.SessionExists(guestDto.Username);
 
             if (SessionExists) return BadRequest("You are already in a session!");
 
+            var gameLobby = await _unitOfWork.GameLobbyRepository.AddGuestToLobby();
+
             var connection = new Connection
             {
-                Username = guestDto.Username
+                Username = guestDto.Username,
+                GameLobbyId = gameLobby.GameLobbyId,
+                ConnectedGameLobby = gameLobby
             };
 
-            var gameLobby = await _unitOfWork.GameLobbyRepository.AddGuestToLobby(connection);
-
-            connection.GameLobbyId = gameLobby.GameLobbyId;
-            connection.ConnectedGameLobby = gameLobby;
+            //connection.GameLobbyId = gameLobby.GameLobbyId;
+            //connection.ConnectedGameLobby = gameLobby;
 
             await _unitOfWork.ConnectionRepository.CreateConnection(connection);
 
@@ -52,5 +55,19 @@ namespace API.Controllers
 
             return BadRequest("Failed to create a lobby!");
         }
+
+        [HttpPost("createGame")]
+        public async Task<ActionResult<GameLobbyDto>> CreateGame(string gameLobbyId)
+        {
+            var gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyAsync(gameLobbyId);
+
+            if (gameLobby == null) return BadRequest("That game lobby does not exist!");
+
+            if (gameLobby.NumberOfElements < 4) return BadRequest("Waiting for more players");
+
+            return Ok(gameLobby);
+        }
+
+
     }
 }

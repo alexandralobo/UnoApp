@@ -41,6 +41,8 @@ namespace API.Data
                 .WithMany(g => g.Connections)
                 .HasForeignKey(c => c.GameLobbyId);*/
 
+            builder.Entity<Card>().HasKey(k => k.CardId);
+
             base.OnModelCreating(builder);
         }
     }

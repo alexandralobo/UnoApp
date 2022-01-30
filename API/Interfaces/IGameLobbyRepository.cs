@@ -9,13 +9,9 @@ namespace API.Interfaces
     public interface IGameLobbyRepository
     {
         Task<IEnumerable<GameLobby>> GetGameLobbiesAsync();
-
-        // Task<GameLobby> CreateGameLobby(GameLobby lobby);
-
-        Task<GameLobby> AddGuestToLobby(Connection connection);
-
-        Task<bool> SessionExists(string username);
-
+        Task<GameLobby> GetGameLobbyAsync(string gameLobbyId);
+        Task<bool> CreateGame(GameLobby lobby);
+        Task<GameLobby> AddGuestToLobby();
 
     }
 }

@@ -21,7 +21,7 @@ namespace API.Data
             _context = context;
         }
 
-        public async Task<GameLobby> AddGuestToLobby(Connection connection)
+        public async Task<GameLobby> AddGuestToLobby()
         {
             // Verify if guest is already in a lobby
             /*var gameLobby = await _context.GameLobbies
@@ -36,9 +36,9 @@ namespace API.Data
 
             if (gameLobby == null)
             {
-                ICollection<Connection> connections = new List<Connection>();
+                // ICollection<Connection> connections = new List<Connection>();
 
-                connections.Add(connection);
+                // connections.Add(connection);
 
                 gameLobby = new GameLobby
                 {
@@ -57,13 +57,6 @@ namespace API.Data
             return gameLobby;
         }
 
-        public async Task<bool> SessionExists(string username)
-        {
-            return await _context.Connections.AnyAsync(c => c.Username == username);
-
-            //_context.GameLobbies.AnyAsync(g => g.Connections.All(c => c.Username == username));
-        }
-
         public async Task<bool> UserExists(string username)
         {
             return await _context.Guests.AnyAsync(user => user.UserName == username.ToLower());
@@ -73,5 +66,29 @@ namespace API.Data
         {
             return await _context.GameLobbies.ToListAsync();
         }
+
+        public async Task<GameLobby> GetGameLobbyAsync(string gameLobbyId)
+        {
+            return await _context.GameLobbies.FindAsync(Int32.Parse(gameLobbyId));
+        }
+
+        public async Task<bool> CreateGame(GameLobby lobby)
+        {
+            var group = await _context.Connections
+                .Where(connection => connection.GameLobbyId == lobby.GameLobbyId)
+                .OrderBy(c => c.ConnectionId)
+                .ToListAsync();
+
+
+
+
+            foreach (var player in group)
+            {
+
+            }
+
+            throw new NotImplementedException();
+        }
+
     }
 }
