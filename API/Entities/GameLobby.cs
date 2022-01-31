@@ -15,8 +15,8 @@ namespace API.Entities
         // public ICollection<Connection> Connections { get; set; }
         public ICollection<Card> DrawableCards { get; set; }
         public ICollection<Card> CardPot { get; set; } = new List<Card>();
-        public int CurrentPlayerId { get; set; }
-        public string GameStatus { get; set; } = "ongoing";
+        public string CurrentPlayer { get; set; }
+        public string GameStatus { get; set; } = "waiting";
         public int NumberOfElements { get; set; } = 0;
     }
 }

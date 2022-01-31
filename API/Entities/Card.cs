@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace API.Entities
 {
@@ -23,7 +25,9 @@ namespace API.Entities
         public string Colour { get; set; }
         public int Value { get; set; }
         public string Type { get; set; }
-        public ICollection<Connection> Connections { get; set; }
-        public ICollection<GameLobby> GameLobbies { get; set; }
+        [JsonIgnore]
+        public ICollection<Connection> Connections { get; set; } = new List<Connection>();
+        [JsonIgnore]
+        public ICollection<GameLobby> GameLobbies { get; set; } = new List<GameLobby>();
     }
 }

@@ -9,6 +9,5 @@ namespace API.DTOs
     public class GuestDto
     {
         [Required] public string Username { get; set; }
-        public string Token { get; set; }
     }
 }

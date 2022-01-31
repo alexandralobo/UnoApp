@@ -49,7 +49,7 @@ namespace API.Controllers
             return new GuestDto
             {
                 Username = guest.UserName,
-                Token = await _tokenService.CreateToken(guest)
+                // Token = await _tokenService.CreateToken(guest)
             };
         }
     }

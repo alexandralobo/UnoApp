@@ -44,9 +44,6 @@ namespace API.Controllers
                 ConnectedGameLobby = gameLobby
             };
 
-            //connection.GameLobbyId = gameLobby.GameLobbyId;
-            //connection.ConnectedGameLobby = gameLobby;
-
             await _unitOfWork.ConnectionRepository.CreateConnection(connection);
 
             // if (!created) return BadRequest("Could not create connection. Try again!");
@@ -56,6 +53,7 @@ namespace API.Controllers
             return BadRequest("Failed to create a lobby!");
         }
 
+        // TESTED - Working
         [HttpPost("createGame")]
         public async Task<ActionResult<GameLobbyDto>> CreateGame(string gameLobbyId)
         {
@@ -65,8 +63,14 @@ namespace API.Controllers
 
             if (gameLobby.NumberOfElements < 4) return BadRequest("Waiting for more players");
 
-            return Ok(gameLobby);
+            if (gameLobby.GameStatus == "ongoing") return BadRequest("The game has started.");
+
+            gameLobby = await _unitOfWork.GameLobbyRepository.CreateGame(gameLobby);
+
+            if (await _unitOfWork.Complete()) return Ok(gameLobby);
+            return BadRequest("Failed to initialize the game!");
         }
+
 
 
     }

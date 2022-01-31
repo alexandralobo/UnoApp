@@ -22,7 +22,7 @@ namespace API.Data
 
         public async Task<bool> CreateConnection(Connection connection)
         {
-            return _context.Connections.Add(connection) != null;
+            return await _context.Connections.AddAsync(connection) != null;
         }
 
         public async Task<bool> SessionExists(string username)

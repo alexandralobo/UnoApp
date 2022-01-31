@@ -21,7 +21,7 @@ namespace API.Data
         public async Task<bool> AddCard(Card card)
         {
             _context.Cards.Add(card);
-            return await _context.SaveChangesAsync() > 0;
+            return true;
         }
     }
 }

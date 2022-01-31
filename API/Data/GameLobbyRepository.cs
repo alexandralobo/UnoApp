@@ -8,6 +8,7 @@ using API.Entities;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API.Data
 {
@@ -23,12 +24,6 @@ namespace API.Data
 
         public async Task<GameLobby> AddGuestToLobby()
         {
-            // Verify if guest is already in a lobby
-            /*var gameLobby = await _context.GameLobbies
-                .Where(g => g.Connections.All(c => c.ConnectionId == connection.ConnectionId))
-                .FirstOrDefaultAsync();*/
-
-
             // check if there is any lobby with less than 4 people
             var gameLobby = await _context.GameLobbies
                 .Where(g => g.NumberOfElements < 4)
@@ -36,13 +31,8 @@ namespace API.Data
 
             if (gameLobby == null)
             {
-                // ICollection<Connection> connections = new List<Connection>();
-
-                // connections.Add(connection);
-
                 gameLobby = new GameLobby
                 {
-                    // Connections = connections,
                     NumberOfElements = 1
                 };
 
@@ -50,10 +40,8 @@ namespace API.Data
             }
             else
             {
-                // gameLobby.Connections.Add(connection);
                 gameLobby.NumberOfElements += 1;
             }
-
             return gameLobby;
         }
 
@@ -72,23 +60,43 @@ namespace API.Data
             return await _context.GameLobbies.FindAsync(Int32.Parse(gameLobbyId));
         }
 
-        public async Task<bool> CreateGame(GameLobby lobby)
+        public async Task<GameLobby> CreateGame(GameLobby lobby)
         {
-            var group = await _context.Connections
-                .Where(connection => connection.GameLobbyId == lobby.GameLobbyId)
-                .OrderBy(c => c.ConnectionId)
-                .ToListAsync();
+            // not null
+            var group = GetPlayersOfALobby(lobby.GameLobbyId);
 
+            // initial data of a game lobby         
+            lobby.DrawableCards = await _context.Cards.ToListAsync();
+            lobby.CurrentPlayer = group.Result.First().Username;
+            lobby.GameStatus = "ongoing";
 
-
-
-            foreach (var player in group)
+            Random r = new Random();
+            foreach (var connection in group.Result)
             {
+                for (int i = 1; i <= 7; i++)
+                {
+                    // randomly choose a card from the desk
+                    int cardIndex = r.Next(lobby.DrawableCards.Count());
+                    Card card = lobby.DrawableCards.ElementAt(cardIndex);
 
+                    // remove card from the desk
+                    lobby.DrawableCards.Remove(card);
+
+                    // add card to the player's card
+                    connection.Cards.Add(card);
+                }
             }
-
-            throw new NotImplementedException();
+            return lobby;
         }
 
+        public async Task<ICollection<Connection>> GetPlayersOfALobby(int gameLobbyId)
+        {
+            var lobbyMembers = await _context.Connections
+                .Where(connection => connection.GameLobbyId == gameLobbyId)
+                .OrderBy(c => c.ConnectionId)
+                .ToListAsync();
+                    
+            return lobbyMembers;
+        }
     }
 }

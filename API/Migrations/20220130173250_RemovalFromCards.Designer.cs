@@ -3,6 +3,7 @@ using System;
 using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20220130173250_RemovalFromCards")]
+    partial class RemovalFromCards
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.1");
@@ -53,6 +55,15 @@ namespace API.Migrations
                     b.Property<string>("Colour")
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("ConnectionId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("GameLobbyId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("GameLobbyId1")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Type")
                         .HasColumnType("TEXT");
 
@@ -61,37 +72,13 @@ namespace API.Migrations
 
                     b.HasKey("CardId");
 
+                    b.HasIndex("ConnectionId");
+
+                    b.HasIndex("GameLobbyId");
+
+                    b.HasIndex("GameLobbyId1");
+
                     b.ToTable("Cards");
-                });
-
-            modelBuilder.Entity("API.Entities.CardGameLobbyDrawable", b =>
-                {
-                    b.Property<int>("CardId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("GameLobbyId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("CardId", "GameLobbyId");
-
-                    b.HasIndex("GameLobbyId");
-
-                    b.ToTable("CardGameLobbyDrawable");
-                });
-
-            modelBuilder.Entity("API.Entities.CardGameLobbyInPot", b =>
-                {
-                    b.Property<int>("CardId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("GameLobbyId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("CardId", "GameLobbyId");
-
-                    b.HasIndex("GameLobbyId");
-
-                    b.ToTable("CardGameLobbyInPot");
                 });
 
             modelBuilder.Entity("API.Entities.Connection", b =>
@@ -223,21 +210,6 @@ namespace API.Migrations
                     b.ToTable("AspNetUserRoles", (string)null);
                 });
 
-            modelBuilder.Entity("CardConnection", b =>
-                {
-                    b.Property<int>("CardsCardId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("ConnectionsConnectionId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("CardsCardId", "ConnectionsConnectionId");
-
-                    b.HasIndex("ConnectionsConnectionId");
-
-                    b.ToTable("CardConnection");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
                     b.Property<int>("Id")
@@ -322,34 +294,19 @@ namespace API.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("API.Entities.CardGameLobbyDrawable", b =>
+            modelBuilder.Entity("API.Entities.Card", b =>
                 {
-                    b.HasOne("API.Entities.Card", null)
-                        .WithMany()
-                        .HasForeignKey("CardId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("API.Entities.Connection", null)
+                        .WithMany("Cards")
+                        .HasForeignKey("ConnectionId");
 
                     b.HasOne("API.Entities.GameLobby", null)
-                        .WithMany()
-                        .HasForeignKey("GameLobbyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("API.Entities.CardGameLobbyInPot", b =>
-                {
-                    b.HasOne("API.Entities.Card", null)
-                        .WithMany()
-                        .HasForeignKey("CardId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany("CardPot")
+                        .HasForeignKey("GameLobbyId");
 
                     b.HasOne("API.Entities.GameLobby", null)
-                        .WithMany()
-                        .HasForeignKey("GameLobbyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany("DrawableCards")
+                        .HasForeignKey("GameLobbyId1");
                 });
 
             modelBuilder.Entity("API.Entities.Connection", b =>
@@ -388,21 +345,6 @@ namespace API.Migrations
                     b.Navigation("Guest");
 
                     b.Navigation("Role");
-                });
-
-            modelBuilder.Entity("CardConnection", b =>
-                {
-                    b.HasOne("API.Entities.Card", null)
-                        .WithMany()
-                        .HasForeignKey("CardsCardId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("API.Entities.Connection", null)
-                        .WithMany()
-                        .HasForeignKey("ConnectionsConnectionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -444,6 +386,18 @@ namespace API.Migrations
             modelBuilder.Entity("API.Entities.AppRole", b =>
                 {
                     b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("API.Entities.Connection", b =>
+                {
+                    b.Navigation("Cards");
+                });
+
+            modelBuilder.Entity("API.Entities.GameLobby", b =>
+                {
+                    b.Navigation("CardPot");
+
+                    b.Navigation("DrawableCards");
                 });
 #pragma warning restore 612, 618
         }

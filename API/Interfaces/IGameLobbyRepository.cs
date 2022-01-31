@@ -10,7 +10,7 @@ namespace API.Interfaces
     {
         Task<IEnumerable<GameLobby>> GetGameLobbiesAsync();
         Task<GameLobby> GetGameLobbyAsync(string gameLobbyId);
-        Task<bool> CreateGame(GameLobby lobby);
+        Task<GameLobby> CreateGame(GameLobby lobby);
         Task<GameLobby> AddGuestToLobby();
 
     }
