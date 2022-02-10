@@ -20,12 +20,24 @@ namespace API.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<GameLobbyDto>>> GetLobbies()
+        // not found
+        [HttpGet("{gameLobbyId}")]
+        public async Task<ActionResult<GameLobby>> GetLobby(int gameLobbyId)
         {
-            var lobbies = await _unitOfWork.GameLobbyRepository.GetGameLobbiesAsync();
-            return Ok(lobbies);
+            var lobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyAsync(gameLobbyId);
+            return Ok(lobby);
         }
+
+       // working
+        [HttpGet("members/{gameLobbyId}")]
+        public async Task<ActionResult<ICollection<Connection>>> GetPlayers(int gameLobbyId)
+        {
+            var players = await _unitOfWork.GameLobbyRepository.GetPlayersOfALobby(gameLobbyId);
+
+            if (players == null) return BadRequest("No players for that lobby!");
+            return Ok(players);
+        }
+
 
         // TESTED - Working
         [HttpPost("addGuest")]
@@ -54,8 +66,8 @@ namespace API.Controllers
         }
 
         // TESTED - Working
-        [HttpPost("createGame")]
-        public async Task<ActionResult<GameLobbyDto>> CreateGame(string gameLobbyId)
+        [HttpPost("createGame/{gameLobbyId}")]
+        public async Task<ActionResult<GameLobbyDto>> CreateGame(int gameLobbyId)
         {
             var gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyAsync(gameLobbyId);
 
@@ -71,7 +83,16 @@ namespace API.Controllers
             return BadRequest("Failed to initialize the game!");
         }
 
+        /*[HttpPost("start/{gameLobbyId}")]
+        public async Task<ActionResult<GameLobby>> StartGame(int gameLobbyId)
+        {
+            GameLobby gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyAsync(gameLobbyId);
 
+            await _unitOfWork.GameLobbyRepository.StartGame(gameLobby);
+
+            if (await _unitOfWork.Complete()) return Ok(gameLobby);
+            return BadRequest("Could not start the game!");
+        }*/
 
     }
 }

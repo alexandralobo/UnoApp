@@ -56,10 +56,11 @@ namespace API
 
             app.UseRouting();
 
-            app.UseCors(policy => policy.AllowAnyHeader()
+            app.UseCors(policy => policy
+                .AllowAnyHeader()
                 .AllowAnyMethod()
-                .AllowCredentials()
-                .WithOrigins("https://localhost:4200"));
+                .AllowCredentials()    
+                .WithOrigins("http://localhost:4200"));
 
             //app.UseAuthentication();
 

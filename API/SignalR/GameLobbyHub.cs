@@ -29,6 +29,13 @@ namespace API.SignalR
         public override async Task OnConnectedAsync()
         {
             var httpContext = Context.GetHttpContext();
+
+            var username = httpContext.Request.Query["username"].ToString();
+            var gameLobbyId = int.Parse(httpContext.Request.Query["lobbyId"]);            
+
+            var group = await _unitOfWork.GameLobbyRepository.GetPlayersOfALobby(gameLobbyId);
+           
+
         }
     }
 }

@@ -30,7 +30,17 @@ namespace API.Controllers
         public async Task<ActionResult<IEnumerable<GuestDto>>> GetGuests()
         {
             var guests = await _unitOfWork.GuestRepository.GetUsersAsync();
-            return Ok(guests);
+
+            var guestsDto = new List<GuestDto>();
+            foreach (var user in guests)
+            {
+                guestsDto.Add(new GuestDto
+                {
+                    Username = user.UserName
+                });
+            }
+
+            return Ok(guestsDto);
         }
 
         // TESTED - Working
