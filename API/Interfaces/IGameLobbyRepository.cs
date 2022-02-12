@@ -15,7 +15,7 @@ namespace API.Interfaces
         Task<ICollection<Connection>> GetPlayersOfALobby(int gameLobbyId);
         bool VerifyCardsPlayed(List<Card> cards, Connection connection, GameLobby gameLobby);
         bool NextTurn(GameLobby gameLobby, ICollection<Connection> group, string username);
-        Task StartGame(GameLobby lobby);
+        
 
     }
 }

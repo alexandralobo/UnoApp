@@ -28,6 +28,8 @@ namespace API.Entities
         [JsonIgnore]
         public ICollection<Connection> Connections { get; set; } = new List<Connection>();
         [JsonIgnore]
-        public ICollection<GameLobby> GameLobbies { get; set; } = new List<GameLobby>();
+        public ICollection<GameLobby> GameLobbyPots { get; set; } = new List<GameLobby>();
+        [JsonIgnore]
+        public ICollection<GameLobby> GameLobbyDrawables { get; set; } = new List<GameLobby>();
     }
 }

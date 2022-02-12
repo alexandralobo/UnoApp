@@ -3,6 +3,7 @@ using System;
 using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20220212185745_CheckForMigrations")]
+    partial class CheckForMigrations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.1");
@@ -62,6 +64,36 @@ namespace API.Migrations
                     b.HasKey("CardId");
 
                     b.ToTable("Cards");
+                });
+
+            modelBuilder.Entity("API.Entities.CardGameLobbyDrawable", b =>
+                {
+                    b.Property<int>("CardId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("GameLobbyId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("CardId", "GameLobbyId");
+
+                    b.HasIndex("GameLobbyId");
+
+                    b.ToTable("CardGameLobbyDrawable");
+                });
+
+            modelBuilder.Entity("API.Entities.CardGameLobbyInPot", b =>
+                {
+                    b.Property<int>("CardId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("GameLobbyId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("CardId", "GameLobbyId");
+
+                    b.HasIndex("GameLobbyId");
+
+                    b.ToTable("CardGameLobbyInPot");
                 });
 
             modelBuilder.Entity("API.Entities.Connection", b =>
@@ -208,36 +240,6 @@ namespace API.Migrations
                     b.ToTable("CardConnection");
                 });
 
-            modelBuilder.Entity("CardGameLobby", b =>
-                {
-                    b.Property<int>("CardPotCardId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("GameLobbyPotsGameLobbyId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("CardPotCardId", "GameLobbyPotsGameLobbyId");
-
-                    b.HasIndex("GameLobbyPotsGameLobbyId");
-
-                    b.ToTable("CardGameLobby");
-                });
-
-            modelBuilder.Entity("CardGameLobby1", b =>
-                {
-                    b.Property<int>("DrawableCardsCardId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("GameLobbyDrawablesGameLobbyId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("DrawableCardsCardId", "GameLobbyDrawablesGameLobbyId");
-
-                    b.HasIndex("GameLobbyDrawablesGameLobbyId");
-
-                    b.ToTable("CardGameLobby1");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
                     b.Property<int>("Id")
@@ -322,6 +324,36 @@ namespace API.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("API.Entities.CardGameLobbyDrawable", b =>
+                {
+                    b.HasOne("API.Entities.Card", null)
+                        .WithMany()
+                        .HasForeignKey("CardId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("API.Entities.GameLobby", null)
+                        .WithMany()
+                        .HasForeignKey("GameLobbyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("API.Entities.CardGameLobbyInPot", b =>
+                {
+                    b.HasOne("API.Entities.Card", null)
+                        .WithMany()
+                        .HasForeignKey("CardId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("API.Entities.GameLobby", null)
+                        .WithMany()
+                        .HasForeignKey("GameLobbyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("API.Entities.Connection", b =>
                 {
                     b.HasOne("API.Entities.GameLobby", "ConnectedGameLobby")
@@ -371,36 +403,6 @@ namespace API.Migrations
                     b.HasOne("API.Entities.Connection", null)
                         .WithMany()
                         .HasForeignKey("ConnectionsConnectionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("CardGameLobby", b =>
-                {
-                    b.HasOne("API.Entities.Card", null)
-                        .WithMany()
-                        .HasForeignKey("CardPotCardId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("API.Entities.GameLobby", null)
-                        .WithMany()
-                        .HasForeignKey("GameLobbyPotsGameLobbyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("CardGameLobby1", b =>
-                {
-                    b.HasOne("API.Entities.Card", null)
-                        .WithMany()
-                        .HasForeignKey("DrawableCardsCardId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("API.Entities.GameLobby", null)
-                        .WithMany()
-                        .HasForeignKey("GameLobbyDrawablesGameLobbyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

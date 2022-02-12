@@ -14,7 +14,7 @@ export class AppComponent implements OnInit{
   players: Player[] = [];
   cards : Card[] = [];
   currentCards: string[] = [];
-  gameLobbyId = 2;
+  gameLobbyId = 1;
   gameLobby = {} as GameLobby;
   currentPlayer: string;
   currentCard: Card;
@@ -24,7 +24,7 @@ export class AppComponent implements OnInit{
   ngOnInit() {
     this.getPlayers(this.gameLobbyId);
     this.getLobby(this.gameLobbyId);
-    this.setCurrentPlayer();
+    this.setCurrentPlayer(); 
   }
 
   getPlayers(gameLobbyId) {
@@ -36,22 +36,21 @@ export class AppComponent implements OnInit{
 
   getLobby(gameLobbyId) {
     this.http.get<GameLobby>('https://localhost:5001/api/gameLobby/' + gameLobbyId).subscribe({
-      next: response => this.gameLobby = response,
+      next: response => {
+        this.gameLobby = response, 
+        this.currentCard = response.cardPot.pop(), 
+        this.gameLobby.cardPot.push(this.currentCard)},
       error: (e) => console.error(e)
     })
   }
 
   initialiseGame(gameLobbyId) {
     this.http.post<GameLobby>('https://localhost:5001/api/gameLobby/start', gameLobbyId).subscribe({
-      next: response => this.gameLobby = response,
+      next: response => { this.gameLobby = response /*this.currentCard = response.cardPot.pop()*/}, 
       error: (e) => console.error(e)
     })
   }
 
-  setCurrentCard() {
-    this.currentCard = this.gameLobby.cardPot.pop();
-    this.gameLobby.cardPot.push(this.currentCard);
-  }
   setCurrentPlayer() {
     this.currentPlayer = this.gameLobby.currentPlayer;
   }

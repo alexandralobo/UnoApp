@@ -57,7 +57,13 @@ namespace API.Data
 
         public async Task<GameLobby> GetGameLobbyAsync(int gameLobbyId)
         {
-            return await _context.GameLobbies.FindAsync(gameLobbyId);
+            GameLobby lobby = _context.GameLobbies
+                .Where(g => g.GameLobbyId == gameLobbyId)
+                .Include(g => g.CardPot)
+                .Include(g => g.DrawableCards)
+                .FirstOrDefault();
+
+            return lobby;
         }
 
         public async Task<GameLobby> CreateGame(GameLobby lobby)
@@ -91,22 +97,21 @@ namespace API.Data
             }
 
             // initialise game by putting a card in the pot
-            //cardIndex = r.Next(lobby.DrawableCards.Count());
-            //card = lobby.DrawableCards.ElementAt(cardIndex);
-
-            //lobby.DrawableCards.Remove(card);
-            //lobby.CardPot.Add(card);
+            lobby = StartGame(lobby);
 
             return lobby;
         }
 
-        public async Task StartGame(GameLobby lobby)
+        private GameLobby StartGame(GameLobby lobby)
         {
             Random r = new Random();
             int cardIndex = r.Next(lobby.DrawableCards.Count());
             Card card = lobby.DrawableCards.ElementAt(cardIndex);
 
+            lobby.DrawableCards.Remove(card);
             lobby.CardPot.Add(card);
+
+            return lobby;
         }
         public async Task<ICollection<Connection>> GetPlayersOfALobby(int gameLobbyId)
         {

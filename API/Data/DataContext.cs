@@ -14,22 +14,28 @@ namespace API.Data
         public DataContext(DbContextOptions options) : base(options)
         {
         }
+        protected override void OnConfiguring(DbContextOptionsBuilder builder)
+        {
+            builder.EnableDetailedErrors()
+                   .EnableSensitiveDataLogging();
+        }
 
         public DbSet<Guest> Guests { get; set; }
         public DbSet<GameLobby> GameLobbies { get; set; }
         public DbSet<Connection> Connections { get; set; }
         public DbSet<Card> Cards { get; set; }
+        //private DbSet<CardGameLobbyInPot> CardsInPot { get; set; }
+        //private DbSet<CardGameLobbyDrawable> CardsDrawable { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<GameLobby>()
                 .HasMany<Card>(t => t.CardPot)
-                .WithMany(t => t.GameLobbies)
-                .UsingEntity<CardGameLobbyInPot>();
+                .WithMany(t => t.GameLobbyPots);
             builder.Entity<GameLobby>()
                 .HasMany<Card>(t => t.DrawableCards)
-                .WithMany(t => t.GameLobbies)
-                .UsingEntity<CardGameLobbyDrawable>();
+                .WithMany(t => t.GameLobbyDrawables);
 
             builder.Entity<Connection>().HasKey(k => k.ConnectionId);
             builder.Entity<Connection>()
