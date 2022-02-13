@@ -17,14 +17,16 @@ export class AppComponent implements OnInit{
   gameLobbyId = 1;
   gameLobby = {} as GameLobby;
   currentPlayer: string;
-  currentCard: Card;
+  //currentCard: Card;
+  messageCard: string;
+  potCard = {} as Card;
 
   constructor(private http: HttpClient) {} 
 
-  ngOnInit() {
+  async ngOnInit(): Promise<void> {
     this.getPlayers(this.gameLobbyId);
-    this.getLobby(this.gameLobbyId);
-    this.setCurrentPlayer(); 
+    await this.getLobby(this.gameLobbyId);
+    this.setCurrentPlayer();    
   }
 
   getPlayers(gameLobbyId) {
@@ -34,21 +36,35 @@ export class AppComponent implements OnInit{
     })
   }
 
-  getLobby(gameLobbyId) {
+  async getLobby(gameLobbyId) {
     this.http.get<GameLobby>('https://localhost:5001/api/gameLobby/' + gameLobbyId).subscribe({
       next: response => {
-        this.gameLobby = response, 
-        this.currentCard = response.cardPot.pop(), 
-        this.gameLobby.cardPot.push(this.currentCard)},
+        this.gameLobby = response,
+        this.getCard(response.lastCard)
+        },
       error: (e) => console.error(e)
     })
   }
 
   initialiseGame(gameLobbyId) {
     this.http.post<GameLobby>('https://localhost:5001/api/gameLobby/start', gameLobbyId).subscribe({
-      next: response => { this.gameLobby = response /*this.currentCard = response.cardPot.pop()*/}, 
+      next: response => { this.gameLobby = response }, 
       error: (e) => console.error(e)
     })
+  }
+
+  async getCard(id) {
+    this.http.get<Card>('https://localhost:5001/api/card/'+ id).subscribe({
+      next: response => {
+        this.potCard = response,
+        this.setLastCardDisplay()
+      }, 
+      error: (e) => console.error(e)
+    })
+  }
+
+  setLastCardDisplay() {
+    this.messageCard = `ID: ${this.potCard.cardId}, colour: ${this.potCard.colour}, type: ${this.potCard.type}, value: ${this.potCard.value}`;
   }
 
   setCurrentPlayer() {
@@ -62,7 +78,7 @@ export class AppComponent implements OnInit{
 
     for (let index = 0; index < this.cards.length; index++) {
       const card = this.cards[index];
-      this.currentCards.push(`${index+1}) colour: ${card.colour}, type: ${card.type}, value: ${card.value}`);      
+      this.currentCards.push(`${index+1}) ID: ${card.cardId}, colour: ${card.colour}, type: ${card.type}, value: ${card.value}`);      
     }
   } 
 

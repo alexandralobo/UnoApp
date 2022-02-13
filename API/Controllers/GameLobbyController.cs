@@ -28,7 +28,7 @@ namespace API.Controllers
             return Ok(lobby);
         }
 
-       // working
+       // TESTED - working
         [HttpGet("members/{gameLobbyId}")]
         public async Task<ActionResult<ICollection<Connection>>> GetPlayers(int gameLobbyId)
         {
@@ -83,16 +83,17 @@ namespace API.Controllers
             return BadRequest("Failed to initialize the game!");
         }
 
-        /*[HttpPost("start/{gameLobbyId}")]
-        public async Task<ActionResult<GameLobby>> StartGame(int gameLobbyId)
+        [HttpPost("play/{gameLobbyId}")]
+        public async Task<ActionResult<GameLobby>> Play(string username, int gameLobbyId, List<Card> cards)
         {
             GameLobby gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyAsync(gameLobbyId);
 
-            await _unitOfWork.GameLobbyRepository.StartGame(gameLobby);
+            string message = await _unitOfWork.GameLobbyRepository.Play(username, gameLobby, cards);
+            if (message != "Next") return BadRequest(message);
 
             if (await _unitOfWork.Complete()) return Ok(gameLobby);
-            return BadRequest("Could not start the game!");
-        }*/
+            return BadRequest("Couldnt play!");
+        }
 
     }
 }

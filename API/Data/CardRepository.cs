@@ -23,5 +23,11 @@ namespace API.Data
             _context.Cards.Add(card);
             return true;
         }
+
+        public async Task<Card> GetCard(int cardId)
+        {
+            Card card = await _context.Cards.FindAsync(cardId);
+            return card;
+        }
     }
 }

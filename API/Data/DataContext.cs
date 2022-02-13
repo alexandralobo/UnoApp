@@ -35,12 +35,13 @@ namespace API.Data
                 .WithMany(t => t.GameLobbyPots);
             builder.Entity<GameLobby>()
                 .HasMany<Card>(t => t.DrawableCards)
-                .WithMany(t => t.GameLobbyDrawables);
+                .WithMany(t => t.GameLobbyDrawables);   
+            
 
             builder.Entity<Connection>().HasKey(k => k.ConnectionId);
             builder.Entity<Connection>()
                 .HasMany<Card>(t => t.Cards)
-                .WithMany(t => t.Connections);
+                .WithMany(t => t.Connections);            
 
             /*builder.Entity<Connection>()
                 .HasOne<GameLobby>(c => c.ConnectedGameLobby)

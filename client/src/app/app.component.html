@@ -1,7 +1,6 @@
 <h2>Game Lobby number: {{gameLobbyId}}</h2>
 <p> Current Player: {{gameLobby.currentPlayer}} </p>
-<p> Last cards played: [] by  </p>
-<p *ngIf="currentCard != null"> Current Card: {{currentCard.cardId }}</p>
+<p *ngIf="potCard"> Current Card: {{messageCard}}</p>
 
 <table class="table">
   <thead>

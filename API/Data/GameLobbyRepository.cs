@@ -9,6 +9,7 @@ using API.Interfaces;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace API.Data
 {
@@ -56,7 +57,7 @@ namespace API.Data
         }
 
         public async Task<GameLobby> GetGameLobbyAsync(int gameLobbyId)
-        {
+        {      
             GameLobby lobby = _context.GameLobbies
                 .Where(g => g.GameLobbyId == gameLobbyId)
                 .Include(g => g.CardPot)
@@ -66,6 +67,7 @@ namespace API.Data
             return lobby;
         }
 
+        // working
         public async Task<GameLobby> CreateGame(GameLobby lobby)
         {
             // not null
@@ -76,7 +78,7 @@ namespace API.Data
             lobby.CurrentPlayer = group.Result.First().Username;
             lobby.GameStatus = "ongoing";
 
-            Random r = new Random();            
+            Random r = new Random();
             int cardIndex = 0;
             Card card = new Card();
 
@@ -102,21 +104,23 @@ namespace API.Data
             return lobby;
         }
 
+        // Working
         private GameLobby StartGame(GameLobby lobby)
         {
             Random r = new Random();
             int cardIndex = r.Next(lobby.DrawableCards.Count());
-            Card card = lobby.DrawableCards.ElementAt(cardIndex);
-
+            Card card = lobby.DrawableCards.ElementAt(cardIndex);                        
+                        
             lobby.DrawableCards.Remove(card);
             lobby.CardPot.Add(card);
+            lobby.LastCard = card.CardId;
 
             return lobby;
         }
         public async Task<ICollection<Connection>> GetPlayersOfALobby(int gameLobbyId)
         {
             var lobbyMembers = await _context.Connections
-                .Where(connection => connection.GameLobbyId == gameLobbyId)   
+                .Where(connection => connection.GameLobbyId == gameLobbyId)
                 .Include(connection => connection.Cards)
                 .OrderBy(c => c.ConnectionId)
                 .ToListAsync();
@@ -124,79 +128,46 @@ namespace API.Data
             return lobbyMembers;
         }
 
-        public async Task<string> Play(string username, int lobbyId, List<Card> cards)
-        {
-            GameLobby gameLobby = await _context.GameLobbies.FindAsync(lobbyId);
-            var group = await GetPlayersOfALobby(lobbyId);
-
+        public async Task<string> Play(string username, GameLobby gameLobby, List<Card> cards)
+        {          
             if (gameLobby.CurrentPlayer != username) return ("It is " + gameLobby.CurrentPlayer + "'s turn, it is not your turn!");
 
             Connection connection = _context.Connections
                 .Where(c => c.Username == username)
+                .Include(c => c.Cards)
                 .FirstOrDefault();
 
             var pot = gameLobby.CardPot;
 
-            if (pot == null)
-            {
-                // Only one card is played
-                if (cards.Count == 1)
-                {
-                    connection.Cards.Remove(cards.Last());
-                    gameLobby.CardPot.Add(cards.Last());
-                }
-                else
-                {
-                    // verify if the cards players are allowed
-                    var verification = VerifyCardsPlayed(cards, connection, gameLobby);
-                    if (!verification) return "This play is not allowed";                  
-
-                }
-                // get the next turn
-                var turn = NextTurn(gameLobby, group, username);
-                if (!turn) return "I cannot get to the next turn!";
-
-                return "Next";
+            // same colour, same value, same type - allowed
+            if (pot.Last().Value == cards.First().Value && pot.Last().Value != -1 || pot.Last().Type == cards.First().Type || pot.Last().Colour == cards.First().Colour)
+            {                
+                // verify if the cards played are allowed
+                var verification = VerifyCardsPlayed(cards, connection, gameLobby);
+                if (!verification) return "This play is not allowed";                
             }
             else
             {
-                // same colour, same value, same type - allowed
-                // prevent situation: playing more than one card
-                if (pot.Last().Value == cards.First().Value || pot.Last().Type == cards.First().Type || pot.Last().Colour == cards.First().Colour)
-                {
-                    // Only one card is played
-                    if (cards.Count == 1)
-                    {
-                        connection.Cards.Remove(cards.Last());
-                        gameLobby.CardPot.Add(cards.Last());
-                    }
-                    else
-                    {
-                        // verify if the cards players are allowed
-                        var verification = VerifyCardsPlayed(cards, connection, gameLobby);
-                        if (!verification) return "This play is not allowed";                        
-                    }
-                }
-                else
-                {
-                    return "This play is not allowed!";
-                }
-                // get the next turn
-                var turn = NextTurn(gameLobby, group, username);
-                if (!turn) return "I cannot get to the next turn!";
-
-                return "Next";
+                return "This play is not allowed!";
             }
+
+            var group = await GetPlayersOfALobby(gameLobby.GameLobbyId);
+            // get the next turn
+            var turn = NextTurn(gameLobby, group, username);
+            if (!turn) return "I cannot get to the next turn!";
+
+            return "Next";
+
         }
 
-        public bool VerifyCardsPlayed(List<Card> cards, Connection connection, GameLobby gameLobby)
+        private bool VerifyCardsPlayed(List<Card> cards, Connection connection, GameLobby gameLobby)
         {
             // check if all cards players have the same value/type
             foreach (Card card in cards)
             {
                 foreach (Card cardNext in cards)
                 {
-                    if (card.Value != cardNext.Value | card.Type != cardNext.Type)
+                    if (card.Value != cardNext.Value && card.Type != cardNext.Type) // && or ||
                     {
                         return false;
                     }
@@ -205,23 +176,32 @@ namespace API.Data
 
             foreach (Card card in cards)
             {
-                connection.Cards.Remove(card);
-                gameLobby.CardPot.Add(card);
+                Card cardInConnection = connection.Cards
+                        .Where(c => c.CardId == card.CardId)
+                        .FirstOrDefault();
+
+                if (cardInConnection == null) return false;
+
+                connection.Cards.Remove(cardInConnection);
+                gameLobby.CardPot.Add(cardInConnection);
+                gameLobby.LastCard = cardInConnection.CardId;
             }
             return true;
         }
 
-        public bool NextTurn(GameLobby gameLobby, ICollection<Connection> group, string username)
+        // TESTED - Working
+        private bool NextTurn(GameLobby gameLobby, ICollection<Connection> group, string username)
         {
             int currIndex = -1;
+            int i = 0;
             foreach (var member in group)
-            {
-                int i = 1;
+            {                
                 if (member.Username == username)
                 {
                     currIndex = i;
                     break;
                 }
+                i++;
             }
 
             if (currIndex == group.Count() - 1)
@@ -230,7 +210,7 @@ namespace API.Data
             }
             else
             {
-                gameLobby.CurrentPlayer = group.ElementAt(currIndex + 1).Username;
+                gameLobby.CurrentPlayer = group.ElementAt(currIndex+1).Username;
             }
             return true;
         }

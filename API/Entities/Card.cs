@@ -31,5 +31,6 @@ namespace API.Entities
         public ICollection<GameLobby> GameLobbyPots { get; set; } = new List<GameLobby>();
         [JsonIgnore]
         public ICollection<GameLobby> GameLobbyDrawables { get; set; } = new List<GameLobby>();
+
     }
 }

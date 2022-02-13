@@ -9,5 +9,6 @@ namespace API.Interfaces
     public interface ICardRepository
     {
         Task<bool> AddCard(Card card);
+        Task<Card> GetCard(int id);
     }
 }
