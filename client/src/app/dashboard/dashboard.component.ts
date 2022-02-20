@@ -39,19 +39,23 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  joinExistingGame(gameId) {   
+  joinExistingGame(gameId) {
+    this.loading = true;   
     this.http.post('https://localhost:5001/api/gameLobby/joinExistingLobby', {username: this.guest.username, gamelobbyId: gameId}).subscribe({ 
       next: () => {
         this.loading = false
+        this.router.navigateByUrl("/game");
       },
       error: (e) => console.error(e)
     });
   }
 
   joinNewGame() {
+    this.loading = true; 
     this.http.post('https://localhost:5001/api/gameLobby/joinNewLobby/' + this.guest.username, {}).subscribe({ 
       next: () => {
-        this.loading = false
+        this.loading = false,
+        this.router.navigateByUrl("/game");
       },
       error: (e) => console.error(e)
     });
