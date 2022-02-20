@@ -8,14 +8,20 @@ namespace API.Interfaces
 {
     public interface IGameLobbyRepository
     {
-        Task<IEnumerable<GameLobby>> GetGameLobbiesAsync();
+        Task<ICollection<GameLobby>> GetGameLobbiesAsync();
         Task<GameLobby> GetGameLobbyAsync(int gameLobbyId);
         Task<GameLobby> CreateGame(GameLobby lobby);
-        Task<GameLobby> AddGuestToLobby();
+        Task<GameLobby> JoinExistingLobby(int gameLobbyId);
+        GameLobby JoinNewLobby();
         Task<ICollection<Connection>> GetPlayersOfALobby(int gameLobbyId);
         //bool VerifyCardsPlayed(List<Card> cards, Connection connection, GameLobby gameLobby);
-        //bool NextTurn(GameLobby gameLobby, ICollection<Connection> group, string username);
-        Task<string> Play(string username, GameLobby gameLobby, List<Card> cards);
-
+        Task<bool> NextTurn(GameLobby gameLobby, ICollection<Connection> group);
+        Task<string> Play(Connection connection, GameLobby gameLobby, ICollection<Card> cards);
+        Task<string> PlayWithChosenColour(Connection connection, GameLobby gameLobby, ICollection<Card> cards, string colour);
+        Task<string> GetConsequence(GameLobby gameLobby, ICollection<Connection> group, Connection connection, ICollection<Card> cards);
+        Task<bool> PickColour(string colour);
+        Task<Card> Draw(int quantity, GameLobby gameLobby, Connection connection);
+        Task<bool> GetNewDeck(GameLobby gameLobby);
+        Task<bool> Playable(GameLobby gameLobby, Card pot, ICollection<Card> cards);
     }
 }

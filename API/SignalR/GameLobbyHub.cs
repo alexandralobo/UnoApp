@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using API.Entities;
 using API.Interfaces;
 using API.SignalIR;
 using AutoMapper;
@@ -30,12 +31,14 @@ namespace API.SignalR
         {
             var httpContext = Context.GetHttpContext();
 
-            var username = httpContext.Request.Query["username"].ToString();
-            var gameLobbyId = int.Parse(httpContext.Request.Query["lobbyId"]);            
+            var gameLobbies = GetLobbies();
+            await Clients.Caller.SendAsync("GetGameLobbies", gameLobbies);          
 
-            var group = await _unitOfWork.GameLobbyRepository.GetPlayersOfALobby(gameLobbyId);
-           
+        }
 
+        public async Task<ICollection<GameLobby>> GetLobbies()
+        {
+            return await _unitOfWork.GameLobbyRepository.GetGameLobbiesAsync();          
         }
     }
 }

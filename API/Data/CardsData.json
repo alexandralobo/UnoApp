@@ -461,81 +461,81 @@
     { 
         "Colour": "red",
         "Value": -1,
-        "Type": "Draw"        
+        "Type": "Draw 2"        
     },
     { 
         "Colour": "red",
         "Value": -1,
-        "Type": "Draw"        
+        "Type": "Draw 2"        
     },
     { 
         "Colour": "blue",
         "Value": -1,
-        "Type": "Draw"        
+        "Type": "Draw 2"        
     },
     { 
         "Colour": "blue",
         "Value": -1,
-        "Type": "Draw"        
+        "Type": "Draw 2"        
     },
     { 
         "Colour": "yellow",
         "Value": -1,
-        "Type": "Draw"        
+        "Type": "Draw 2"        
     },
     { 
         "Colour": "yellow",
         "Value": -1,
-        "Type": "Draw"        
+        "Type": "Draw 2"        
     },
     { 
         "Colour": "green",
         "Value": -1,
-        "Type": "Draw"        
+        "Type": "Draw 2"        
     },
     { 
         "Colour": "green",
         "Value": -1,
-        "Type": "Draw"        
+        "Type": "Draw 2"        
     },
     { 
         "Colour": "black",
         "Value": -1,
-        "Type": "4-Colour"        
+        "Type": "Wild Draw 4"        
     },
     { 
         "Colour": "black",
         "Value": -1,
-        "Type": "4-Colour"        
+        "Type": "Wild Draw 4"        
     },
     { 
         "Colour": "black",
         "Value": -1,
-        "Type": "4-Colour"        
+        "Type": "Wild Draw 4"        
     },
     { 
         "Colour": "black",
         "Value": -1,
-        "Type": "4-Colour"        
+        "Type": "Wild Draw 4"        
     },
     { 
         "Colour": "black",
         "Value": -1,
-        "Type": "4-More"        
+        "Type": "Wild"        
     },
     { 
-        "Colour": "yellow",
+        "Colour": "black",
         "Value": -1,
-        "Type": "4-More"        
+        "Type": "Wild"        
     },
     { 
-        "Colour": "green",
+        "Colour": "black",
         "Value": -1,
-        "Type": "4-More"        
+        "Type": "Wild"        
     },
     { 
-        "Colour": "green",
+        "Colour": "black",
         "Value": -1,
-        "Type": "4-More"        
+        "Type": "Wild"        
     }
 ]

@@ -1,21 +1,11 @@
-<h2>Game Lobby number: {{gameLobbyId}}</h2>
-<p> Current Player: {{gameLobby.currentPlayer}} </p>
-<p *ngIf="potCard"> Current Card: {{messageCard}}</p>
+<app-nav> </app-nav>
 
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col">Player</th>
-      <th scope="col">Card</th>
-    </tr>
-  </thead>
-  <tbody *ngFor="let player of players">
-      {{getCardsForPlayer(player.connectionId)}}
-      <tr *ngFor="let attributes of currentCards">
-          <td> {{player.username}}</td>
-          <td>{{attributes}}</td>
-        </tr>
-  </tbody>
-</table>
+<div class="bg-image"></div>
+
+<div class="container" >
+    <router-outlet></router-outlet>
+</div>
+
+
 
 

@@ -18,6 +18,7 @@ namespace API.Entities
         public int LastCard { get; set; }
         public string CurrentPlayer { get; set; }
         public string GameStatus { get; set; } = "waiting";
-        public int NumberOfElements { get; set; } = 0;        
+        public int NumberOfElements { get; set; } = 0;
+        public string order { get; set; } = "normal";
     }
 }

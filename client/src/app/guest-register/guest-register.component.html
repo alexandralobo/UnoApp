@@ -1,0 +1,17 @@
+
+    <form class="frm" [formGroup]='registerForm' (ngSubmit)="register()" autocomplete="off">
+        <h2 class="text-center mt-3 mb-3 ">Play as our Guest!</h2>
+        
+        <div class="container mb-2">
+            <label class="mb-1" style="color: white;">Username <span class="reqField">*</span></label>
+            <app-text-input [formControl]='registerForm.controls["username"]'
+            [label]='"Username"'></app-text-input>
+        </div>      
+        
+    
+        <div class="form-group text-center">
+            <button class="btn btn-danger mr-3 mb-2" type= "submit">Start</button>            
+        </div>
+        
+    </form>    
+

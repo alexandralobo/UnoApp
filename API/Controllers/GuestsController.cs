@@ -11,8 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
-{
-    //[Authorize]
+{    
     public class GuestsController : BaseApiController
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -26,6 +25,7 @@ namespace API.Controllers
         }
 
         // TESTED - working
+        //a[Authorize]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GuestDto>>> GetGuests()
         {
@@ -54,12 +54,13 @@ namespace API.Controllers
             var guest = _mapper.Map<Guest>(guestDto);
             guest.UserName = guestDto.Username.ToLower();
 
-            await _unitOfWork.GuestRepository.CreateGuest(guest);
+            var saved = await _unitOfWork.GuestRepository.CreateGuest(guest);
+            if (!saved) return BadRequest("A problem occurred");
 
             return new GuestDto
             {
                 Username = guest.UserName,
-                // Token = await _tokenService.CreateToken(guest)
+                Token = await _tokenService.CreateToken(guest)
             };
         }
     }

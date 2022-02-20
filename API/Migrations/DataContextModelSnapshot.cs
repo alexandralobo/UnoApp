@@ -15,7 +15,7 @@ namespace API.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "6.0.1");
+            modelBuilder.HasAnnotation("ProductVersion", "6.0.2");
 
             modelBuilder.Entity("API.Entities.AppRole", b =>
                 {
@@ -100,6 +100,9 @@ namespace API.Migrations
 
                     b.Property<int>("NumberOfElements")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("order")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("GameLobbyId");
 

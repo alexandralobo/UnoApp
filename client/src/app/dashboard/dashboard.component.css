@@ -1,0 +1,54 @@
+* {
+  box-sizing: border-box;
+}
+
+/* Create three equal columns that floats next to each other */
+.column {
+  float: left;
+  width: 33.33%;
+  padding: 10px;
+  height: 700px; /* Should be removed. Only for demonstration */
+  opacity: 0.9;
+}
+
+.c2 {
+  height: 600px;
+  align-items: center;
+  opacity: 0.9;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 600px) {
+  .column {
+    width: 100%;
+  }
+}
+
+h1 {
+  text-align: center;
+  color: white;
+  text-shadow: 3px 3px 3px black;
+}
+
+button {
+  color: white;
+  border-color: white;
+  background-color: darkgreen;
+}
+
+/*.c2 h4 {
+  margin: 0;
+  background: yellow;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+}*/

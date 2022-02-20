@@ -29,5 +29,13 @@ namespace API.Data
         {
             return await _context.Connections.AnyAsync(c => c.Username == username);
         }
+
+        public async Task<Connection> GetConnection(string username)
+        {
+            return _context.Connections
+                .Where(c => c.Username == username)
+                .Include(c => c.Cards)
+                .FirstOrDefault();
+        }
     }
 }
