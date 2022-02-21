@@ -48,13 +48,16 @@ namespace API.Controllers
 
 
         // TESTED - Working
-        [HttpPost("joinExistingLobby")]
-        public async Task<ActionResult<GameLobbyDto>> JoinExisting(string username, int gameLobbyId)
+        [HttpPost("joinExistingLobby/{username}")]
+        public async Task<ActionResult<GameLobbyDto>> JoinExisting(string username, [FromBody] JsonElement body)
         {
             bool SessionExists = await _unitOfWork.ConnectionRepository.SessionExists(username);
             if (SessionExists) return BadRequest("You are already in a game!");
 
-            var gameLobby = await _unitOfWork.GameLobbyRepository.JoinExistingLobby(gameLobbyId);
+            var game = JsonSerializer.Deserialize<ExistingGameDto>(body,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            var gameLobby = await _unitOfWork.GameLobbyRepository.JoinExistingLobby(game.gameLobbyId);
             if (gameLobby == null) return BadRequest("The lobby is full!");
 
             var connection = new Connection

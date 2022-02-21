@@ -17,6 +17,7 @@ import { GameService } from '../_services/game.service';
 })
 export class DashboardComponent implements OnInit { 
   createForm: FormGroup;
+  joinExistingForm: FormGroup;
   gameLobbies: GameLobby[] = [];
   loading = false;
   guest: Guest;
@@ -51,8 +52,12 @@ export class DashboardComponent implements OnInit {
   }
 
   joinExistingGame(gameId) {
-    this.loading = true;     
-    this.http.post('https://localhost:5001/api/gameLobby/joinExistingLobby', {username: this.guest.username, gamelobbyId: gameId}).subscribe({ 
+    this.loading = true;   
+    
+    this.joinExistingForm = this.fb.group({
+      gameLobbyId: [gameId]
+    })
+    this.http.post('https://localhost:5001/api/gameLobby/joinExistingLobby/' + this.guest.username, this.joinExistingForm.value).subscribe({ 
       next: () => {
         this.loading = false
         this.router.navigateByUrl("/game");
