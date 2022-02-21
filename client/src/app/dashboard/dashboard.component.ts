@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { BehaviorSubject, take } from 'rxjs';
@@ -7,6 +8,7 @@ import { environment } from 'src/environments/environment';
 import { GameLobby } from '../_models/game';
 import { Guest } from '../_models/guest';
 import { AccountService } from '../_services/account.service';
+import { GameService } from '../_services/game.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -14,18 +16,27 @@ import { AccountService } from '../_services/account.service';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit { 
+  createForm: FormGroup;
   gameLobbies: GameLobby[] = [];
   loading = false;
   guest: Guest;
+  create = false;
 
-  constructor(private http: HttpClient, private accountService: AccountService, private router: Router) {
+  constructor(private http: HttpClient, private accountService: AccountService, private gameService: GameService, private router: Router, private fb: FormBuilder) {
     this.accountService.currentUser$.pipe(take(1)).subscribe(guest => this.guest = guest);
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
    }
 
   ngOnInit(): void {
     this.getLobbies();
-  }  
+    this.initialiseForm();
+  } 
+  
+  initialiseForm() {
+    this.createForm = this.fb.group({
+      lobbyName:['', Validators.required]
+    })
+  }
 
   getLobbies() {
     this.loading = true;
@@ -40,7 +51,7 @@ export class DashboardComponent implements OnInit {
   }
 
   joinExistingGame(gameId) {
-    this.loading = true;   
+    this.loading = true;     
     this.http.post('https://localhost:5001/api/gameLobby/joinExistingLobby', {username: this.guest.username, gamelobbyId: gameId}).subscribe({ 
       next: () => {
         this.loading = false
@@ -52,12 +63,16 @@ export class DashboardComponent implements OnInit {
 
   joinNewGame() {
     this.loading = true; 
-    this.http.post('https://localhost:5001/api/gameLobby/joinNewLobby/' + this.guest.username, {}).subscribe({ 
+    this.gameService.joinNewGame(this.createForm.value).subscribe({ 
       next: () => {
-        this.loading = false,
+        this.loading = false
         this.router.navigateByUrl("/game");
       },
       error: (e) => console.error(e)
-    });
+    })
+  }
+
+  startCreatingNewGame() {
+    this.create = true;
   }
 }

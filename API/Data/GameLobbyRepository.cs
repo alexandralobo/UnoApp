@@ -35,10 +35,11 @@ namespace API.Data
             return gameLobby;
         }
 
-        public GameLobby JoinNewLobby()
+        public GameLobby JoinNewLobby(string name)
         {
             var gameLobby = new GameLobby
             {
+                GameLobbyName = name,
                 NumberOfElements = 1
             };
 

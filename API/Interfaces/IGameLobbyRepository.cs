@@ -12,7 +12,7 @@ namespace API.Interfaces
         Task<GameLobby> GetGameLobbyAsync(int gameLobbyId);
         Task<GameLobby> CreateGame(GameLobby lobby);
         Task<GameLobby> JoinExistingLobby(int gameLobbyId);
-        GameLobby JoinNewLobby();
+        GameLobby JoinNewLobby(string name);
         Task<ICollection<Connection>> GetPlayersOfALobby(int gameLobbyId);
         //bool VerifyCardsPlayed(List<Card> cards, Connection connection, GameLobby gameLobby);
         Task<bool> NextTurn(GameLobby gameLobby, ICollection<Connection> group);

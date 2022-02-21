@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using API.DTOs;
 using API.Entities;
@@ -72,14 +73,17 @@ namespace API.Controllers
             return BadRequest("Failed to create a lobby!");
         }
 
+        // TESTED - Working
         [HttpPost("joinNewLobby/{username}")]
-        public async Task<ActionResult<GameLobbyDto>> JoinNew(string username)
+        public async Task<ActionResult<GameLobbyDto>> JoinNew(string username, [FromBody] JsonElement body)
         {
-            bool SessionExists = await _unitOfWork.ConnectionRepository.SessionExists(username);
-
+            bool SessionExists = await _unitOfWork.ConnectionRepository.SessionExists(username); 
             if (SessionExists) return BadRequest("You are already in a game!");
 
-            var gameLobby = _unitOfWork.GameLobbyRepository.JoinNewLobby();
+            var game = JsonSerializer.Deserialize<GameLobbyDto>(body,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            var gameLobby = _unitOfWork.GameLobbyRepository.JoinNewLobby(game.lobbyName);
 
             var connection = new Connection
             {

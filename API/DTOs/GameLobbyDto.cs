@@ -9,6 +9,7 @@ namespace API.DTOs
     public class GameLobbyDto
     {
         // public ICollection<Connection> Connections { get; set; }
+        public string lobbyName { get; set; }
         public int NumberOfElements { get; set; }
     }
 }
