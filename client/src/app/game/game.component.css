@@ -1,0 +1,18 @@
+.circle {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  background: rgb(99, 26, 26);
+  border-radius: 50%;
+  border-color: black;
+  opacity: 1;
+  width: 950px;
+  height: 550px;
+  transform: translate(0%, 25%);
+}
+
+@media screen and (max-width: 600px) {
+  .circle {
+    width: 100%;
+  }
+}

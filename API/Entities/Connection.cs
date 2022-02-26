@@ -7,11 +7,15 @@ namespace API.Entities
 {
     public class Connection
     {
-        public Connection()
-        {
-        }
+        //public Connection(string connectionId, string username)
+        //{
+        //    ConnectionId = connectionId;
+        //    Username = username;
+        //    //GameLobbyId = connectedGameLobby.GameLobbyId;
+        //    //ConnectedGameLobby = connectedGameLobby;
+        //}
 
-        public int ConnectionId { get; set; }
+        public string ConnectionId { get; set; }
         public string Username { get; set; }
         public ICollection<Card> Cards { get; set; } = new List<Card>();
         public int GameLobbyId { get; set; }

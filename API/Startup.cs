@@ -38,7 +38,9 @@ namespace API
             services.AddApplicationServices(_config);
             services.AddControllers();//.AddJsonOptions(o => o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve           
             services.AddIdentityServices(_config);
-            services.AddSignalR(configure => configure.EnableDetailedErrors = true);
+            services.AddSignalR(e => {
+                e.MaximumReceiveMessageSize = 102400000;
+            });
             services.AddCors();
 
             services.AddSwaggerGen(c =>

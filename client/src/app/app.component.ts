@@ -13,6 +13,7 @@ import { PresenceService } from './_services/presence.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit{  
+  currentId : number;
 
   constructor(private accountService: AccountService, private presence: PresenceService) {} 
 

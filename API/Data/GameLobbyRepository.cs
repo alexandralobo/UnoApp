@@ -23,6 +23,7 @@ namespace API.Data
             _context = context;
         }
 
+        // working
         public async Task<GameLobby> JoinExistingLobby(int gameLobbyId)
         {           
             var gameLobby = await _context.GameLobbies
@@ -35,15 +36,22 @@ namespace API.Data
             return gameLobby;
         }
 
-        public GameLobby JoinNewLobby(string name)
+        // working
+        public async Task<GameLobby> JoinNewLobby(string name)
         {
             var gameLobby = new GameLobby
             {
                 GameLobbyName = name,
                 NumberOfElements = 1
             };
+            await _context.GameLobbies.AddAsync(gameLobby);
 
-            _context.GameLobbies.Add(gameLobby);
+            var group = new Group
+            {
+                Name = name,                
+            };
+            await _context.Groups.AddAsync(group);
+
             return gameLobby;
         }
 
@@ -69,21 +77,21 @@ namespace API.Data
         }
 
         // working
-        public async Task<GameLobby> CreateGame(GameLobby lobby)
+        public async Task<GameLobby> StartGame(GameLobby lobby)
         {
-            // not null
-            var group = GetPlayersOfALobby(lobby.GameLobbyId);
+            
+            var group = await GetGroup(lobby.GameLobbyId.ToString());
 
             // initial data of a game lobby         
             lobby.DrawableCards = await _context.Cards.ToListAsync();
-            lobby.CurrentPlayer = group.Result.First().Username;
+            lobby.CurrentPlayer = group.Connections.First().Username;
             lobby.GameStatus = "ongoing";
 
             Random r = new Random();
             int cardIndex = 0;
             Card card = new Card();
 
-            foreach (var connection in group.Result)
+            foreach (var connection in group.Connections)
             {
                 for (int i = 1; i <= 7; i++)
                 {
@@ -100,12 +108,12 @@ namespace API.Data
             }
 
             // initialise game by putting a card in the pot
-            lobby = StartGame(lobby);
+            lobby = GetFirstCard(lobby);
             return lobby;
         }
 
         // Working
-        private GameLobby StartGame(GameLobby lobby)
+        private GameLobby GetFirstCard(GameLobby lobby)
         {
             Random r = new Random();
             int cardIndex = r.Next(lobby.DrawableCards.Count());
@@ -118,18 +126,34 @@ namespace API.Data
             return lobby;
         }
         // Working
-        public async Task<ICollection<Connection>> GetPlayersOfALobby(int gameLobbyId)
+        public async Task<Group> GetGroup(string groupName)
         {
-            var lobbyMembers = await _context.Connections
+            return await _context.Groups
+                .Include(x => x.Connections)
+                .FirstOrDefaultAsync(x => x.Name == groupName);           
+     
+
+            /*var lobbyMembers = await _context.Connections
                 .Where(connection => connection.GameLobbyId == gameLobbyId)
                 .Include(connection => connection.Cards)
                 .OrderBy(c => c.ConnectionId)
                 .ToListAsync();
 
-            return lobbyMembers;
+            return lobbyMembers;*/
         }
 
-        // Working but unfinished
+        public async Task<Group> GetLobbyForConnection(string connectionId)
+        {
+            return await _context.Groups
+                .Include(c => c.Connections)
+                .Where(c => c.Connections.Any(x => x.ConnectionId == connectionId))
+                .FirstOrDefaultAsync();
+        }
+        public async Task RemoveConnection(Connection connection)
+        {
+            _context.Connections.Remove(connection);
+        }
+
         public async Task<string> Play(Connection connection, GameLobby gameLobby, ICollection<Card> cards)
         {
             var pot = await _context.Cards.FindAsync(gameLobby.LastCard);
@@ -195,7 +219,7 @@ namespace API.Data
             return true;
         }
 
-        public async Task<string> GetConsequence(GameLobby gameLobby, ICollection<Connection> group, Connection connection, ICollection<Card> cards)
+        public async Task<string> GetConsequence(GameLobby gameLobby, Group group, Connection connection, ICollection<Card> cards)
         {
             var firstCard = cards.First();
             switch (firstCard.Type)
@@ -241,7 +265,7 @@ namespace API.Data
         }
 
         // TESTED - Working
-        public async Task<bool> NextTurn(GameLobby gameLobby, ICollection<Connection> group)
+        public async Task<bool> NextTurn(GameLobby gameLobby, Group group)
         {
             Connection nextPlaying = GetPlayer(gameLobby, group);
             gameLobby.CurrentPlayer = nextPlaying.Username;
@@ -288,19 +312,19 @@ namespace API.Data
                 int cardIndex = r.Next(lobby.DrawableCards.Count());
                 card = lobby.DrawableCards.ElementAt(cardIndex);
 
-                ICollection<Connection> group = await GetPlayersOfALobby(lobby.GameLobbyId);
+                Group group = await GetGroup(lobby.GameLobbyId.ToString());
                 Connection playerToDraw = GetPlayer(lobby, group);
 
                 playerToDraw.Cards.Add(card);
                 lobby.DrawableCards.Remove(card);
             }
         }
-        private Connection GetPlayer(GameLobby lobby, ICollection<Connection> group)
+        private Connection GetPlayer(GameLobby lobby, Group group)
         {
             // similar to next turn, create a new method for this
             int currIndex = -1;
             int i = 0;
-            foreach (var member in group)
+            foreach (var member in group.Connections)
             {
                 if (member.Username == lobby.CurrentPlayer)
                 {
@@ -314,7 +338,7 @@ namespace API.Data
             int nextIndex = 0;
             if (lobby.order == "normal")
             {
-                if (currIndex == group.Count() - 1)
+                if (currIndex == group.Connections.Count() - 1)
                 {
                     nextIndex = 0;
                 }
@@ -328,7 +352,7 @@ namespace API.Data
             {
                 if (currIndex == 0)
                 {
-                    nextIndex = group.Count() - 1;
+                    nextIndex = group.Connections.Count() - 1;
                 }
                 else
                 {
@@ -337,7 +361,7 @@ namespace API.Data
 
             }
 
-            return group.ElementAt(nextIndex);
+            return group.Connections.ElementAt(nextIndex);
         }
         public async Task<bool> GetNewDeck(GameLobby gameLobby)
         {

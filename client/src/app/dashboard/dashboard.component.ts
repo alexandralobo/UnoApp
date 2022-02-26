@@ -3,12 +3,14 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
+import { ToastrService } from 'ngx-toastr';
 import { BehaviorSubject, take } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { GameLobby } from '../_models/game';
 import { Guest } from '../_models/guest';
 import { AccountService } from '../_services/account.service';
 import { GameService } from '../_services/game.service';
+import { PresenceService } from '../_services/presence.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -22,8 +24,18 @@ export class DashboardComponent implements OnInit {
   loading = false;
   guest: Guest;
   create = false;
+  private routeData;
 
-  constructor(private http: HttpClient, private accountService: AccountService, private gameService: GameService, private router: Router, private fb: FormBuilder) {
+  constructor(
+    private http: HttpClient,
+    private accountService: AccountService,
+    private gameService: GameService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private fb: FormBuilder,
+    private toastr: ToastrService,
+    public presence: PresenceService) 
+    {
     this.accountService.currentUser$.pipe(take(1)).subscribe(guest => this.guest = guest);
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
    }
@@ -60,22 +72,24 @@ export class DashboardComponent implements OnInit {
     this.http.post('https://localhost:5001/api/gameLobby/joinExistingLobby/' + this.guest.username, this.joinExistingForm.value).subscribe({ 
       next: () => {
         this.loading = false
-        this.router.navigateByUrl("/game");
+        this.router.navigate(["/game"], {queryParams: {gameLobbyId: gameId}});
       },
       error: (e) => console.error(e)
     });
   }
 
   joinNewGame() {
+
     this.loading = true; 
-    this.gameService.joinNewGame(this.createForm.value).subscribe({ 
-      next: () => {
+    var gameId;
+    this.gameService.joinNewGame(this.createForm.value).subscribe(
+      { next: response => {
         this.loading = false
-        this.router.navigateByUrl("/game");
-      },
-      error: (e) => console.error(e)
-    })
-  }
+        gameId = response;
+        this.router.navigate(["/game"], {queryParams: {gameLobbyId: gameId}});
+      } 
+      });  
+  }    
 
   startCreatingNewGame() {
     this.create = true;

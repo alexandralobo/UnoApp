@@ -24,6 +24,7 @@ namespace API.Data
         public DbSet<GameLobby> GameLobbies { get; set; }
         public DbSet<Connection> Connections { get; set; }
         public DbSet<Card> Cards { get; set; }
+        public DbSet<Group> Groups { get; set; }
         //private DbSet<CardGameLobbyInPot> CardsInPot { get; set; }
         //private DbSet<CardGameLobbyDrawable> CardsDrawable { get; set; }
 

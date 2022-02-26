@@ -36,15 +36,16 @@ namespace API.Controllers
             return Ok(lobby);
         }
 
-        // TESTED - working
-        [HttpGet("members/{gameLobbyId}")]
-        public async Task<ActionResult<ICollection<Connection>>> GetPlayers(int gameLobbyId)
-        {
-            var players = await _unitOfWork.GameLobbyRepository.GetPlayersOfALobby(gameLobbyId);
+        //// TESTED - working
+        //[HttpGet("members/{gameLobbyId}")]
+        //public async Task<ActionResult<ICollection<Connection>>> GetPlayers(int gameLobbyId)
+        //{
+        //    var id = gameLobbyId.ToString();
+        //    var players = await _unitOfWork.GameLobbyRepository.GetGroup(id);
 
-            if (players == null) return BadRequest("No players for that lobby!");
-            return Ok(players);
-        }
+        //    if (players == null) return BadRequest("No players for that lobby!");
+        //    return Ok(players);
+        //}
 
 
         // TESTED - Working
@@ -60,14 +61,14 @@ namespace API.Controllers
             var gameLobby = await _unitOfWork.GameLobbyRepository.JoinExistingLobby(game.gameLobbyId);
             if (gameLobby == null) return BadRequest("The lobby is full!");
 
-            var connection = new Connection
+            /*var connection = new Connection
             {
                 Username = username,
                 GameLobbyId = gameLobby.GameLobbyId,
                 ConnectedGameLobby = gameLobby
             };
 
-            await _unitOfWork.ConnectionRepository.CreateConnection(connection);
+            await _unitOfWork.ConnectionRepository.CreateConnection(connection);*/
 
             // if (!created) return BadRequest("Could not create connection. Try again!");
 
@@ -78,28 +79,28 @@ namespace API.Controllers
 
         // TESTED - Working
         [HttpPost("joinNewLobby/{username}")]
-        public async Task<ActionResult<GameLobbyDto>> JoinNew(string username, [FromBody] JsonElement body)
+        public async Task<ActionResult<int>> JoinNew(string username, [FromBody] JsonElement body)
         {
-            bool SessionExists = await _unitOfWork.ConnectionRepository.SessionExists(username); 
-            if (SessionExists) return BadRequest("You are already in a game!");
+            //bool SessionExists = await _unitOfWork.ConnectionRepository.SessionExists(username); 
+            //if (SessionExists) return BadRequest("You are already in a game!");
 
             var game = JsonSerializer.Deserialize<GameLobbyDto>(body,
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
-            var gameLobby = _unitOfWork.GameLobbyRepository.JoinNewLobby(game.lobbyName);
+            var gameLobby = await _unitOfWork.GameLobbyRepository.JoinNewLobby(game.lobbyName);
 
-            var connection = new Connection
+            /*var connection = new Connection
             {
                 Username = username,
                 GameLobbyId = gameLobby.GameLobbyId,
                 ConnectedGameLobby = gameLobby
             };
 
-            await _unitOfWork.ConnectionRepository.CreateConnection(connection);
+            await _unitOfWork.ConnectionRepository.CreateConnection(connection);*/
 
             // if (!created) return BadRequest("Could not create connection. Try again!");
 
-            if (await _unitOfWork.Complete()) return Ok();
+            if (await _unitOfWork.Complete()) return Ok(gameLobby.GameLobbyId);
 
             return BadRequest("Failed to create a lobby!");
         }
@@ -107,7 +108,7 @@ namespace API.Controllers
 
         // TESTED - Working
         [HttpPost("createGame/{gameLobbyId}")]
-        public async Task<ActionResult<GameLobbyDto>> CreateGame(int gameLobbyId)
+        public async Task<ActionResult<GameLobbyDto>> StartGame(int gameLobbyId)
         {
             var gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyAsync(gameLobbyId);
 
@@ -117,46 +118,46 @@ namespace API.Controllers
 
             if (gameLobby.GameStatus == "ongoing") return BadRequest("The game has started.");
 
-            gameLobby = await _unitOfWork.GameLobbyRepository.CreateGame(gameLobby);
+            gameLobby = await _unitOfWork.GameLobbyRepository.StartGame(gameLobby);
 
             if (await _unitOfWork.Complete()) return Ok(gameLobby);
             return BadRequest("Failed to initialize the game!");
         }
 
-        // Everything working without the consequence
-        [HttpPost("play/{gameLobbyId}")]
-        public async Task<ActionResult<string>> Play(string username, int gameLobbyId, List<Card> cards)
-        {
-            GameLobby gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyAsync(gameLobbyId);
-            if (gameLobby.CurrentPlayer != username) return "It is " + gameLobby.CurrentPlayer + "'s turn, it is not your turn!";
-            // working until here
+        //// Everything working without the consequence
+        //[HttpPost("play/{gameLobbyId}")]
+        //public async Task<ActionResult<string>> Play(string username, int gameLobbyId, List<Card> cards)
+        //{
+        //    GameLobby gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyAsync(gameLobbyId);
+        //    if (gameLobby.CurrentPlayer != username) return "It is " + gameLobby.CurrentPlayer + "'s turn, it is not your turn!";
+        //    // working until here
 
-            var group = await _unitOfWork.GameLobbyRepository.GetPlayersOfALobby(gameLobby.GameLobbyId);
-            Connection connection = await _unitOfWork.ConnectionRepository.GetConnection(username);
+        //    var group = await _unitOfWork.GameLobbyRepository.GetPlayersOfALobby(gameLobby.GameLobbyId.ToString());
+        //    Connection connection = await _unitOfWork.ConnectionRepository.GetConnection(username);
 
-            string message = await _unitOfWork.GameLobbyRepository.Play(connection, gameLobby, cards);
-            if (message != "Next") return BadRequest(message);
+        //    string message = await _unitOfWork.GameLobbyRepository.Play(connection, gameLobby, cards);
+        //    if (message != "Next") return BadRequest(message);
 
-            if (cards.First().Value == -1)
-            {
-                int i = 0;
-                while(i < cards.Count()) {
-                    message = await _unitOfWork.GameLobbyRepository.GetConsequence(gameLobby, group, connection, cards);
-                    if (message == "Card type is incorrect!") return BadRequest(message);
-                    i++;
-                }     
-            }
+        //    if (cards.First().Value == -1)
+        //    {
+        //        int i = 0;
+        //        while(i < cards.Count()) {
+        //            message = await _unitOfWork.GameLobbyRepository.GetConsequence(gameLobby, group, connection, cards);
+        //            if (message == "Card type is incorrect!") return BadRequest(message);
+        //            i++;
+        //        }     
+        //    }
 
-            if (message != "Pick a colour")
-            {
-                // get the next turn
-                var turn = await _unitOfWork.GameLobbyRepository.NextTurn(gameLobby, group);
-                if (!turn) return BadRequest("I cannot get to the next turn!");
-            }
+        //    if (message != "Pick a colour")
+        //    {
+        //        // get the next turn
+        //        var turn = await _unitOfWork.GameLobbyRepository.NextTurn(gameLobby, group);
+        //        if (!turn) return BadRequest("I cannot get to the next turn!");
+        //    }
 
-            if (await _unitOfWork.Complete()) return Ok(message);
-            return BadRequest("Couldnt save your play!");
-        }
+        //    if (await _unitOfWork.Complete()) return Ok(message);
+        //    return BadRequest("Couldnt save your play!");
+        //}
 
         
         [HttpPost("pickColour")]
@@ -166,7 +167,7 @@ namespace API.Controllers
             if (!validate) return BadRequest("Colour is not valid!");
 
             GameLobby gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyAsync(gameLobbyId);
-            var group = await _unitOfWork.GameLobbyRepository.GetPlayersOfALobby(gameLobby.GameLobbyId);            
+            var group = await _unitOfWork.GameLobbyRepository.GetGroup(gameLobby.GameLobbyName);            
 
             bool turn = await _unitOfWork.GameLobbyRepository.NextTurn(gameLobby, group);
             if (!turn) return BadRequest("I cannot get to the next turn!");
@@ -181,7 +182,7 @@ namespace API.Controllers
             GameLobby gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyAsync(gameLobbyId);
             if (gameLobby.CurrentPlayer != username) return "It is " + gameLobby.CurrentPlayer + "'s turn, it is not your turn!";
             
-            var group = await _unitOfWork.GameLobbyRepository.GetPlayersOfALobby(gameLobby.GameLobbyId);
+            var group = await _unitOfWork.GameLobbyRepository.GetGroup(gameLobby.GameLobbyName);
             Connection connection = await _unitOfWork.ConnectionRepository.GetConnection(username);
 
             var message = await _unitOfWork.GameLobbyRepository.PlayWithChosenColour(connection, gameLobby, cards, colour);

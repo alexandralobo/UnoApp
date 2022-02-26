@@ -12,5 +12,6 @@ namespace API.Interfaces
         IConnectionRepository ConnectionRepository { get; }
         ICardRepository CardRepository { get; }
         Task<bool> Complete();
+        bool HasChanges();
     }
 }
