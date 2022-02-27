@@ -80,7 +80,7 @@ namespace API.Data
         public async Task<GameLobby> StartGame(GameLobby lobby)
         {
             
-            var group = await GetGroup(lobby.GameLobbyId.ToString());
+            var group = await GetGroup(lobby.GameLobbyName);
 
             // initial data of a game lobby         
             lobby.DrawableCards = await _context.Cards.ToListAsync();

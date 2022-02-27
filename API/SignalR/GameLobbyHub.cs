@@ -41,7 +41,7 @@ namespace API.SignalR
             //await Clients.Caller.SendAsync("GetGameLobbies", gameLobbies);
 
             var gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyAsync(gameLobbyId);
-            var groupName = gameLobby.GameLobbyName;     
+            var groupName = gameLobby.GameLobbyName;                 
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
 
             var group = await AddToLobby(groupName, gameLobby);
@@ -86,8 +86,9 @@ namespace API.SignalR
 
             await _unitOfWork.ConnectionRepository.CreateConnection(connection);            
 
-            var group = await _unitOfWork.GameLobbyRepository.GetGroup(groupName);
-            group.Connections.Append(connection);
+            var group = await _unitOfWork.GameLobbyRepository.GetGroup(groupName);            
+            group.Connections.Add(connection);
+            
 
             if (await _unitOfWork.Complete()) return group;
             throw new HubException("Failed to join group");
@@ -96,19 +97,20 @@ namespace API.SignalR
 
         private async Task<Group> RemoveFromLobby()
         {
-            //var group = await _unitOfWork.GameLobbyRepository.GetLobbyForConnection(Context.ConnectionId);
-            //var connection = group.Connections.FirstOrDefault(x => x.ConnectionId == Context.ConnectionId);
+            var group = await _unitOfWork.GameLobbyRepository.GetLobbyForConnection(Context.ConnectionId);
+            var connection = group.Connections.FirstOrDefault(x => x.ConnectionId == Context.ConnectionId);
 
-            //await _unitOfWork.GameLobbyRepository.RemoveConnection(connection);
-            //if (await _unitOfWork.Complete()) return group;
+            await _unitOfWork.GameLobbyRepository.RemoveConnection(connection);
+            if (await _unitOfWork.Complete()) return group;
             throw new HubException("Failed to remove from group");
 
         }
 
-        public async Task StartGame(GameLobby gameLobby)
-        {            
+        public async Task StartGame(int id)
+        {
+            var gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyAsync(id);
             if (gameLobby == null) throw new HubException("That game lobby does not exist!");
-
+            
             if (gameLobby.NumberOfElements < 2) throw new HubException("Waiting for more players");
 
             if (gameLobby.GameStatus == "ongoing") throw new HubException("The game has started.");

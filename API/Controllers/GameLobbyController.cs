@@ -106,23 +106,23 @@ namespace API.Controllers
         }
 
 
-        // TESTED - Working
-        [HttpPost("createGame/{gameLobbyId}")]
-        public async Task<ActionResult<GameLobbyDto>> StartGame(int gameLobbyId)
-        {
-            var gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyAsync(gameLobbyId);
+        //// TESTED - Working
+        //[HttpPost("createGame/{gameLobbyId}")]
+        //public async Task<ActionResult<GameLobbyDto>> StartGame(int gameLobbyId)
+        //{
+        //    var gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyAsync(gameLobbyId);
 
-            if (gameLobby == null) return BadRequest("That game lobby does not exist!");
+        //    if (gameLobby == null) return BadRequest("That game lobby does not exist!");
 
-            if (gameLobby.NumberOfElements < 4) return BadRequest("Waiting for more players");
+        //    if (gameLobby.NumberOfElements < 4) return BadRequest("Waiting for more players");
 
-            if (gameLobby.GameStatus == "ongoing") return BadRequest("The game has started.");
+        //    if (gameLobby.GameStatus == "ongoing") return BadRequest("The game has started.");
 
-            gameLobby = await _unitOfWork.GameLobbyRepository.StartGame(gameLobby);
+        //    gameLobby = await _unitOfWork.GameLobbyRepository.StartGame(gameLobby);
 
-            if (await _unitOfWork.Complete()) return Ok(gameLobby);
-            return BadRequest("Failed to initialize the game!");
-        }
+        //    if (await _unitOfWork.Complete()) return Ok(gameLobby);
+        //    return BadRequest("Failed to initialize the game!");
+        //}
 
         //// Everything working without the consequence
         //[HttpPost("play/{gameLobbyId}")]

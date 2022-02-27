@@ -461,62 +461,62 @@
     { 
         "Colour": "red",
         "Value": -1,
-        "Type": "Draw 2"        
+        "Type": "Draw2"        
     },
     { 
         "Colour": "red",
         "Value": -1,
-        "Type": "Draw 2"        
+        "Type": "Draw2"        
     },
     { 
         "Colour": "blue",
         "Value": -1,
-        "Type": "Draw 2"        
+        "Type": "Draw2"        
     },
     { 
         "Colour": "blue",
         "Value": -1,
-        "Type": "Draw 2"        
+        "Type": "Draw2"        
     },
     { 
         "Colour": "yellow",
         "Value": -1,
-        "Type": "Draw 2"        
+        "Type": "Draw2"        
     },
     { 
         "Colour": "yellow",
         "Value": -1,
-        "Type": "Draw 2"        
+        "Type": "Draw2"        
     },
     { 
         "Colour": "green",
         "Value": -1,
-        "Type": "Draw 2"        
+        "Type": "Draw2"        
     },
     { 
         "Colour": "green",
         "Value": -1,
-        "Type": "Draw 2"        
+        "Type": "Draw2"        
     },
     { 
         "Colour": "black",
         "Value": -1,
-        "Type": "Wild Draw 4"        
+        "Type": "WildDraw4"        
     },
     { 
         "Colour": "black",
         "Value": -1,
-        "Type": "Wild Draw 4"        
+        "Type": "WildDraw4"        
     },
     { 
         "Colour": "black",
         "Value": -1,
-        "Type": "Wild Draw 4"        
+        "Type": "WildDraw4"        
     },
     { 
         "Colour": "black",
         "Value": -1,
-        "Type": "Wild Draw 4"        
+        "Type": "WildDraw4"        
     },
     { 
         "Colour": "black",

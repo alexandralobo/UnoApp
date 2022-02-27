@@ -8,6 +8,7 @@ namespace API.Interfaces
 {
     public interface ICardRepository
     {
+        ICollection<Card> GetDeck();
         Task<bool> AddCard(Card card);
         Task<Card> GetCard(int id);
     }

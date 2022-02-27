@@ -19,10 +19,18 @@ namespace API.Controllers
             _unitOfWork = unitOfWork;
         }
 
+        [HttpGet]
+        public async Task<ActionResult<ICollection<Card>>> GetDeck()
+        {
+            return Ok(_unitOfWork.CardRepository.GetDeck());
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Card>> GetCard(int id)
         {
             return await _unitOfWork.CardRepository.GetCard(id);
         }
+
+
     }
 }

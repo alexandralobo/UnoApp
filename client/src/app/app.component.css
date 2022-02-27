@@ -21,3 +21,9 @@ body {
   width: 25cm;
   height: 25cm;
 }
+
+@media screen and (max-width: 600px) {
+  .bg-image {
+    width: 100%;
+  }
+}

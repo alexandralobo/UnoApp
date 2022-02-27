@@ -16,3 +16,9 @@
   width: 10%;
   height: 10%;
 }
+
+@media screen and (max-width: 600px) {
+  .nav-pills {
+    width: 100%;
+  }
+}

@@ -18,6 +18,11 @@ namespace API.Data
             _context = context;
         }
 
+        public ICollection<Card> GetDeck()
+        {
+            return _context.Cards.ToList();
+        }
+
         public async Task<bool> AddCard(Card card)
         {
             _context.Cards.Add(card);

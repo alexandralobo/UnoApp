@@ -7,21 +7,24 @@ import { GameLobby } from '../_models/game';
 import { Guest } from '../_models/guest';
 import { AccountService } from './account.service';
 import { Router } from '@angular/router';
-import { Group } from '../_models/Group';
+import { Group } from '../_models/group';
+import { Connection } from '../_models/connection';
+import { CardService } from './card.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GameService {
-  gameLobby: GameLobby;  
-  gameLobbies: GameLobby[] = []; 
+  gameLobby: GameLobby;
+  gameLobbies: GameLobby[] = [];
   baseUrl = environment.apiUrl;
   hubUrl = environment.hubUrl;
   private hubConnection: HubConnection;
+
   private gameLobbySource = new BehaviorSubject<GameLobby>({
     gameLobbyId: 0,
     gameLobbyName: null,
-    drawableCards: [],    
+    drawableCards: [],
     cardPot: [],
     lastCard: null,
     currentPlayer: null,
@@ -29,13 +32,21 @@ export class GameService {
     numberOfElements: 0,
   });
   gameLobby$ = this.gameLobbySource.asObservable();
-  guest: Guest;
-  gameLobbyId: number;  
-  players?: Group;
 
-  constructor(private http: HttpClient, private accountService: AccountService, private router: Router) {
+  private playersSource = new BehaviorSubject<Connection[]>([]);
+  players$ = this.playersSource.asObservable();;
+
+  guest: Guest;
+  gameLobbyId: number;
+  nrOfElements: number;
+
+  constructor(
+    private http: HttpClient,
+    private accountService: AccountService,
+    private cardService: CardService,
+    private router: Router) {
     this.accountService.currentUser$.pipe(take(1)).subscribe(guest => this.guest = guest);
-    this.router.routeReuseStrategy.shouldReuseRoute = () => false;    
+    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
   }
 
   createHubConnection(guest: Guest, gameLobbyId: number) {
@@ -45,44 +56,43 @@ export class GameService {
       })
       .withAutomaticReconnect()
       .build()
-    
+
     this.hubConnection.start().catch(error => console.log(error));
-      
-    this.hubConnection.on('GetGameLobby', gameLobby => {
+
+    this.hubConnection.on('GetGameLobby', (gameLobby: GameLobby) => {
       this.gameLobbySource.next(gameLobby);
+      this.nrOfElements = gameLobby.numberOfElements;
+      this.gameLobbyId = gameLobby.gameLobbyId;
     })
 
     this.hubConnection.on('UpdatedGroup', (group: Group) => {
-      if (group.connections.some(x => x.username === guest.username)) {
-        this.players = group;
-      }
+        this.playersSource.next(group.connections);
     })
+
+    // this.players$.subscribe({
+    //   next: ps => {
+    //     ps.forEach(p => {
+    //       this.players.push(p);
+    //     });
+    //   }
+    // });
+
+    //this.startGame(this.gameLobby$);
 
 
     // this.hubConnection.on('GetGameLobbies', (gameLobbies : GameLobby[]) => {
     //   this.gameLobbies = gameLobbies;
     // })
-
-    if (this.players?.connections.length == 4) {
-      this.startGame(this.gameLobby);
-    }
-    
+    // var connhections = this.players$?.subscribe(p => { this.players = p.connections});
   }
 
   joinNewGame(model: any) {
     return this.http.post<number>('https://localhost:5001/api/gameLobby/joinNewLobby/' + this.guest.username, model);
   }
 
-  getLobby(lobbyId) {
-    
-  } 
-
-  async startGame(lobby) {
-    return this.hubConnection.invoke('StartGame', {gameLobby: lobby})
+  async startGame(gameLobbyId) {
+    console.error(gameLobbyId);
+    return this.hubConnection.invoke('StartGame', gameLobbyId)
       .catch(error => console.log(error));
   }
-
-
-  
-
 }

@@ -1,4 +1,6 @@
 .circle {
+  --circle-width: 950px;
+  --circle-height: 550px;
   display: block;
   margin-left: auto;
   margin-right: auto;
@@ -6,13 +8,61 @@
   border-radius: 50%;
   border-color: black;
   opacity: 1;
-  width: 950px;
-  height: 550px;
+  width: var(--circle-width);
+  height: var(--circle-height);
   transform: translate(0%, 25%);
+  position: relative;
 }
 
 @media screen and (max-width: 600px) {
   .circle {
     width: 100%;
   }
+}
+
+.player-top {
+  position: absolute;
+  top: -200px;
+  left: calc((var(--circle-width) - 150px) / 2);
+}
+
+.player-right {
+  /* align-self: center; */
+  position: absolute;
+  top: calc(((var(--circle-height) - 225px) / 2));
+  right: -200px;
+}
+
+.player-left {
+  position: absolute;
+  top: calc(((var(--circle-height) - 225px) / 2));
+  left: -200px;
+}
+
+.player-bottom {
+  position: absolute;
+  bottom: -200px;
+  left: calc((var(--circle-width) - 150px) / 2);
+}
+
+img {
+  width: 150px;
+  height: 150px;
+}
+
+/*doesn't work*/
+.p {
+  text-align: center;
+}
+
+.start-game {
+  font-size: large;
+  color: black;
+  width: 200px;
+  position: absolute;
+  top: 200px;
+  left: 380px;
+  padding: 10px;
+  border: 5px solid black;
+  background: rgba(51, 13, 13, 0.808);
 }

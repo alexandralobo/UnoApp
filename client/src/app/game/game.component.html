@@ -1,15 +1,60 @@
 
-<h3 style="color: white;"> Id: {{gameLobbyId}}</h3>
-<div *ngIf="gameService.gameLobby$ | async; let _gameLobby"> 
+<!-- <h3 style="color: white;"> Id: {{gameLobbyId}}</h3>
+<div style="color: white;" *ngIf="gameService.gameLobby$ | async; let _gameLobby"> 
+    <p>{{guest.username}}</p>
     <p>{{_gameLobby.gameLobbyName}}</p>
     <p>{{_gameLobby | json}}</p>    
 </div>
 
-<div class="circle" style="align-self: center;"></div>
 
-<div *ngIf="players?.connections.length > 0">
-    <p *ngFor="let player of players.connections"> {{player}}</p>
+<div style="color: white;" *ngIf="gameService.players$ | async; let _players">
+    <p *ngFor="let player of _players"> Player: {{player | json}}</p>
+</div> -->
+
+<div *ngIf="gameService.gameLobby$ | async; let _gameLobby">
+    <h2 style="text-align: left;"> Lobby name: {{_gameLobby.gameLobbyName}} </h2>
+    <!-- <h3>{{_gameLobby | json}}</h3>
+    <h3>{{gameService.nrOfElements}}</h3> -->
+    
+    <div class="circle" style="align-self: center;">
+        <div style="color: white;" *ngIf="gameService.players$ | async; let _players">
+            <div  *ngFor="let player of _players; let i = index" [attr.data-index]="i">
+                
+                <div class="player-bottom" *ngIf="player.username == guest.username" >                    
+                    <img class="profile" src={{getRandomImage(0)}} alt="NOT FOUND">
+                    <p class="text-center">{{player.username}}</p>
+                    <!-- <h4> {{player | json}}</h4> -->
+                </div>
+            </div> 
+            
+            <div *ngFor="let player of players; let i = index" [attr.data-index]="i">
+                <div class="player-right" *ngIf="player.username != guest.username && i == 0" >
+                    <p class="text-center">{{player.username}}</p>
+                    <img class="profile" src={{getRandomImage(1)}} alt="NOT FOUND">
+                    <!-- <h4> {{player | json}}</h4> -->
+                </div>
+
+                <div class="player-top" *ngIf="player.username != guest.username && i == 1" >
+                    <p class="text-center">{{player.username}}</p>
+                    <img class="profile" src={{getRandomImage(2)}} alt="NOT FOUND">
+                    <!-- <h4> {{player | json}}</h4> -->
+                </div>
+
+                <div class="player-left" *ngIf="player.username != guest.username && i == 2" >
+                    <p class="text-center">{{player.username}}</p>
+                    <img class="profile" src={{getRandomImage(3)}} alt="NOT FOUND">
+                    <!-- <h4> {{player | json}}</h4> -->
+                </div>
+            </div>            
+        </div>
+
+        <div class="start-game text-center" *ngIf="_gameLobby.numberOfElements === 2">
+            <p>The game will start</p>        
+            <button class="btn btn-danger mr-3 mb-2" (click)="gameService.startGame(gameLobbyId).catch(error)">Ok</button>   
+        </div>
+    </div>  
 </div>
+
 
 
 
