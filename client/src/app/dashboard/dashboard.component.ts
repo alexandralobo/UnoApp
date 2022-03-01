@@ -53,10 +53,16 @@ export class DashboardComponent implements OnInit {
 
   getLobbies() {
     this.loading = true;
-
+    
     this.http.get<GameLobby[]>('https://localhost:5001/api/gameLobby/').subscribe({ 
       next: response => {
-        this.gameLobbies = response,
+        response.forEach(lobby => {    
+          if (lobby.gameStatus === "waiting") {
+            this.gameLobbies = [];
+            this.gameLobbies.push(lobby);
+          }
+        });
+        //this.gameLobbies = response,
         this.loading = false
       },
       error: (e) => console.error(e)

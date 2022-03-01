@@ -32,7 +32,7 @@ namespace API.Controllers
         [HttpGet("{gameLobbyId}")]
         public async Task<ActionResult<GameLobby>> GetLobby(int gameLobbyId)
         {
-            var lobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyAsync(gameLobbyId);
+            var lobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyById(gameLobbyId);
             return Ok(lobby);
         }
 
@@ -166,7 +166,7 @@ namespace API.Controllers
             bool validate = await _unitOfWork.GameLobbyRepository.PickColour(colour);
             if (!validate) return BadRequest("Colour is not valid!");
 
-            GameLobby gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyAsync(gameLobbyId);
+            GameLobby gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyById(gameLobbyId);
             var group = await _unitOfWork.GameLobbyRepository.GetGroup(gameLobby.GameLobbyName);            
 
             bool turn = await _unitOfWork.GameLobbyRepository.NextTurn(gameLobby, group);
@@ -179,7 +179,7 @@ namespace API.Controllers
         [HttpPost("playWithChosenColour")]
         public async Task<ActionResult<string>> PlayWithChosenColour(int gameLobbyId, string username, ICollection<Card> cards, string colour)
         {
-            GameLobby gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyAsync(gameLobbyId);
+            GameLobby gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyById(gameLobbyId);
             if (gameLobby.CurrentPlayer != username) return "It is " + gameLobby.CurrentPlayer + "'s turn, it is not your turn!";
             
             var group = await _unitOfWork.GameLobbyRepository.GetGroup(gameLobby.GameLobbyName);
@@ -215,7 +215,7 @@ namespace API.Controllers
         [HttpGet("newDeck")]
         public async Task<ActionResult<string>> NewDeck(int gameLobbyId)
         {
-            GameLobby gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyAsync(gameLobbyId);
+            GameLobby gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyById(gameLobbyId);
 
             bool deckObtained = await _unitOfWork.GameLobbyRepository.GetNewDeck(gameLobby);
             if (!deckObtained) return BadRequest("You still have cards available to draw!");
@@ -230,7 +230,7 @@ namespace API.Controllers
         [HttpGet("getCard")]
         public async Task<ActionResult<string>> GetCard(int gameLobbyId)
         {
-            GameLobby gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyAsync(gameLobbyId);
+            GameLobby gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyById(gameLobbyId);
             Connection connection = await _unitOfWork.ConnectionRepository.GetConnection(gameLobby.CurrentPlayer);
 
 

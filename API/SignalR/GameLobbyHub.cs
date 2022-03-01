@@ -40,7 +40,7 @@ namespace API.SignalR
             //var gameLobbies = GetLobbies();
             //await Clients.Caller.SendAsync("GetGameLobbies", gameLobbies);
 
-            var gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyAsync(gameLobbyId);
+            var gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyById(gameLobbyId);
             var groupName = gameLobby.GameLobbyName;                 
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
 
@@ -51,7 +51,7 @@ namespace API.SignalR
             if (_unitOfWork.HasChanges()) await _unitOfWork.Complete();
 
             // Clients of the lobby get game lobby
-            await Clients.Caller.SendAsync("GetGameLobby", gameLobby);
+            await Clients.Group(groupName).SendAsync("GetGameLobby", gameLobby);
 
         }
 
@@ -75,17 +75,31 @@ namespace API.SignalR
         private async Task<Group> AddToLobby(string groupName, GameLobby gameLobby)
         {
             //var connection = new Connection(Context.ConnectionId, Context.User.GetUsername()/*, game*/);
+            var connection = new Connection();
 
-            var connection = new Connection
+            // case where the user disconnects
+            if (gameLobby.GameStatus == "ongoing")
             {
-                ConnectionId = Context.ConnectionId,
-                Username = Context.User.GetUsername(),
-                GameLobbyId = gameLobby.GameLobbyId,
-                ConnectedGameLobby = gameLobby
-            };
+                connection = await _unitOfWork.ConnectionRepository.GetConnection(Context.User.GetUsername());
+                if (connection == null) throw new HubException("This game already started!");
+                connection.ConnectionId = Context.ConnectionId;
 
-            await _unitOfWork.ConnectionRepository.CreateConnection(connection);            
+            } 
+            else if (gameLobby.GameStatus == "waiting")
+            {
+                connection = new Connection
+                {
+                    ConnectionId = Context.ConnectionId,
+                    Username = Context.User.GetUsername(),
+                    GameLobbyId = gameLobby.GameLobbyId,
+                    ConnectedGameLobby = gameLobby
+                };
+                await _unitOfWork.ConnectionRepository.CreateConnection(connection);
 
+            } else
+            {
+                throw new HubException("Game finished");
+            }  
             var group = await _unitOfWork.GameLobbyRepository.GetGroup(groupName);            
             group.Connections.Add(connection);
             
@@ -97,18 +111,20 @@ namespace API.SignalR
 
         private async Task<Group> RemoveFromLobby()
         {
-            var group = await _unitOfWork.GameLobbyRepository.GetLobbyForConnection(Context.ConnectionId);
+            var group = await _unitOfWork.GameLobbyRepository.GetGroupForConnection(Context.ConnectionId);
             var connection = group.Connections.FirstOrDefault(x => x.ConnectionId == Context.ConnectionId);
+            var gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyByName(group.Name);
 
-            await _unitOfWork.GameLobbyRepository.RemoveConnection(connection);
+            await _unitOfWork.GameLobbyRepository.RemoveConnection(gameLobby, group, connection);
             if (await _unitOfWork.Complete()) return group;
             throw new HubException("Failed to remove from group");
 
         }
 
-        public async Task StartGame(int id)
+        // Currently working on this
+        public async Task<GameLobby> StartGame(int id)
         {
-            var gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyAsync(id);
+            var gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyById(id);
             if (gameLobby == null) throw new HubException("That game lobby does not exist!");
             
             if (gameLobby.NumberOfElements < 2) throw new HubException("Waiting for more players");
@@ -117,13 +133,19 @@ namespace API.SignalR
 
             gameLobby = await _unitOfWork.GameLobbyRepository.StartGame(gameLobby);
 
-            if (await _unitOfWork.Complete()) return;
+            var group = await _unitOfWork.GameLobbyRepository.GetGroup(gameLobby.GameLobbyName);
+
+            if (await _unitOfWork.Complete())
+            {
+                await Clients.Group(group.Name).SendAsync("GetGameLobby", gameLobby);
+                await Clients.Group(group.Name).SendAsync("UpdatedGroup", group);
+            };
             throw new HubException("Failed to initialize the game!");
         }
 
         public async Task<string> Play(string username, int gameLobbyId, List<Card> cards)
         {
-            GameLobby gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyAsync(gameLobbyId);
+            GameLobby gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyById(gameLobbyId);
             if (gameLobby.CurrentPlayer != username) throw new HubException("It is " + gameLobby.CurrentPlayer + "'s turn, it is not your turn!");
            
             var group = await _unitOfWork.GameLobbyRepository.GetGroup(gameLobby.GameLobbyName);

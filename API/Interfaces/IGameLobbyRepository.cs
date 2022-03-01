@@ -9,13 +9,14 @@ namespace API.Interfaces
     public interface IGameLobbyRepository
     {
         Task<ICollection<GameLobby>> GetGameLobbiesAsync();
-        Task<GameLobby> GetGameLobbyAsync(int gameLobbyId);
+        Task<GameLobby> GetGameLobbyByName(string name);
+        Task<GameLobby> GetGameLobbyById(int id);
         Task<GameLobby> StartGame(GameLobby lobby);
         Task<GameLobby> JoinExistingLobby(int gameLobbyId);
         Task<GameLobby> JoinNewLobby(string name);
         Task<Group> GetGroup(string groupName);
-        Task<Group> GetLobbyForConnection(string connectionId);
-        Task RemoveConnection(Connection connection);
+        Task<Group> GetGroupForConnection(string connectionId);
+        Task RemoveConnection(GameLobby gameLobby, Group group, Connection connection);
         Task<bool> NextTurn(GameLobby gameLobby, Group group);
         Task<string> Play(Connection connection, GameLobby gameLobby, ICollection<Card> cards);
         Task<string> PlayWithChosenColour(Connection connection, GameLobby gameLobby, ICollection<Card> cards, string colour);

@@ -65,10 +65,21 @@ namespace API.Data
             return await _context.GameLobbies.ToListAsync();
         }
 
-        public async Task<GameLobby> GetGameLobbyAsync(int gameLobbyId)
+        public async Task<GameLobby> GetGameLobbyByName(string groupName)
         {
             GameLobby lobby = _context.GameLobbies
-                .Where(g => g.GameLobbyId == gameLobbyId)
+                .Where(g => g.GameLobbyName == groupName)
+                .Include(g => g.CardPot)
+                .Include(g => g.DrawableCards)
+                .FirstOrDefault();
+
+            return lobby;
+        }
+
+        public async Task<GameLobby> GetGameLobbyById(int id)
+        {
+            GameLobby lobby = _context.GameLobbies
+                .Where(g => g.GameLobbyId == id)
                 .Include(g => g.CardPot)
                 .Include(g => g.DrawableCards)
                 .FirstOrDefault();
@@ -142,16 +153,30 @@ namespace API.Data
             return lobbyMembers;*/
         }
 
-        public async Task<Group> GetLobbyForConnection(string connectionId)
+        public async Task<Group> GetGroupForConnection(string connectionId)
         {
             return await _context.Groups
                 .Include(c => c.Connections)
                 .Where(c => c.Connections.Any(x => x.ConnectionId == connectionId))
                 .FirstOrDefaultAsync();
         }
-        public async Task RemoveConnection(Connection connection)
+        public async Task RemoveConnection(GameLobby gameLobby, Group group, Connection connection)
         {
-            _context.Connections.Remove(connection);
+            //if (gameLobby.GameStatus == "ongoing")
+            //{
+            //    // not sure if it won't give an problem
+            //    //connection.ConnectionId = null;
+            //} else
+            if (gameLobby.GameStatus == "waiting")
+            {
+                _context.Connections.Remove(connection);
+                //group.Connections.Remove(connection);
+
+            } else if (group.Connections.Count() == 0 || gameLobby.GameStatus == "finished")
+            {
+                _context.Connections.Remove(connection);
+                _context.Groups.Remove(group);
+            }
         }
 
         public async Task<string> Play(Connection connection, GameLobby gameLobby, ICollection<Card> cards)

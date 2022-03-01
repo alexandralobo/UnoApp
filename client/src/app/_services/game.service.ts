@@ -20,17 +20,19 @@ export class GameService {
   baseUrl = environment.apiUrl;
   hubUrl = environment.hubUrl;
   private hubConnection: HubConnection;
+  started: boolean = false;
 
-  private gameLobbySource = new BehaviorSubject<GameLobby>({
-    gameLobbyId: 0,
-    gameLobbyName: null,
-    drawableCards: [],
-    cardPot: [],
-    lastCard: null,
-    currentPlayer: null,
-    gameStatus: null,
-    numberOfElements: 0,
-  });
+  // private gameLobbySource = new BehaviorSubject<GameLobby>({
+  //   gameLobbyId: 0,
+  //   gameLobbyName: null,
+  //   drawableCards: [],
+  //   cardPot: [],
+  //   lastCard: null,
+  //   currentPlayer: null,
+  //   gameStatus: null,
+  //   numberOfElements: 0,
+  // });
+  private gameLobbySource = new BehaviorSubject<GameLobby[]>([]);
   gameLobby$ = this.gameLobbySource.asObservable();
 
   private playersSource = new BehaviorSubject<Connection[]>([]);
@@ -59,8 +61,8 @@ export class GameService {
 
     this.hubConnection.start().catch(error => console.log(error));
 
-    this.hubConnection.on('GetGameLobby', (gameLobby: GameLobby) => {
-      this.gameLobbySource.next(gameLobby);
+    this.hubConnection.on('GetGameLobby', (gameLobby: GameLobby) => {      
+      this.gameLobbySource.next([gameLobby]);
       this.nrOfElements = gameLobby.numberOfElements;
       this.gameLobbyId = gameLobby.gameLobbyId;
     })
@@ -68,22 +70,6 @@ export class GameService {
     this.hubConnection.on('UpdatedGroup', (group: Group) => {
         this.playersSource.next(group.connections);
     })
-
-    // this.players$.subscribe({
-    //   next: ps => {
-    //     ps.forEach(p => {
-    //       this.players.push(p);
-    //     });
-    //   }
-    // });
-
-    //this.startGame(this.gameLobby$);
-
-
-    // this.hubConnection.on('GetGameLobbies', (gameLobbies : GameLobby[]) => {
-    //   this.gameLobbies = gameLobbies;
-    // })
-    // var connhections = this.players$?.subscribe(p => { this.players = p.connections});
   }
 
   joinNewGame(model: any) {
@@ -91,8 +77,12 @@ export class GameService {
   }
 
   async startGame(gameLobbyId) {
-    console.error(gameLobbyId);
     return this.hubConnection.invoke('StartGame', gameLobbyId)
+      .then(_ => {this.started = true})
       .catch(error => console.log(error));
+  }
+
+  getLobby() {
+    return this.http.get<GameLobby>('https://localhost:5001/api/gameLobby/' + this.gameLobbyId); 
   }
 }

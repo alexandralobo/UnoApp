@@ -22,7 +22,7 @@
 
 .player-top {
   position: absolute;
-  top: -200px;
+  top: -170px;
   left: calc((var(--circle-width) - 150px) / 2);
 }
 
@@ -30,29 +30,24 @@
   /* align-self: center; */
   position: absolute;
   top: calc(((var(--circle-height) - 225px) / 2));
-  right: -200px;
+  right: -170px;
 }
 
 .player-left {
   position: absolute;
   top: calc(((var(--circle-height) - 225px) / 2));
-  left: -200px;
+  left: -170px;
 }
 
 .player-bottom {
   position: absolute;
-  bottom: -200px;
-  left: calc((var(--circle-width) - 150px) / 2);
+  bottom: -170px;
+  left: calc(((var(--circle-width) - 150px) / 2)- 150px);
 }
 
-img {
-  width: 150px;
-  height: 150px;
-}
-
-/*doesn't work*/
-.p {
-  text-align: center;
+.profile {
+  width: 130px;
+  height: 130px;
 }
 
 .start-game {
@@ -65,4 +60,25 @@ img {
   padding: 10px;
   border: 5px solid black;
   background: rgba(51, 13, 13, 0.808);
+}
+
+.start-prompt {
+  display: "none";
+}
+
+.card {
+  width: 100px;
+  height: 130px;
+}
+
+.cards-bottom {
+  position: absolute;
+  bottom: -50px;
+  align-items: center;
+}
+
+.cards-top {
+  position: absolute;
+  top: 70px;
+  align-items: center;
 }
