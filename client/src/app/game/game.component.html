@@ -1,49 +1,23 @@
-<!-- <h3 style="color: white;"> Id: {{gameLobbyId}}</h3>
-<div style="color: white;" *ngIf="gameService.gameLobby$ | async; let _gameLobby">
-    <p>{{guest.username}}</p>
-    <p>{{_gameLobby.gameLobbyName}}</p>
-    <p>{{_gameLobby.gameStatus}}</p>
-</div>
-
-
-<div style="color: white;" *ngIf="gameService.players$ | async; let _players">
-    <p *ngFor="let player of _players"> Player: {{player | json}}</p>
-</div> -->
-
 <div *ngIf="gameService.gameLobby$ | async;">
     <div *ngFor="let _gameLobby of (gameService.gameLobby$ | async)">
         <h2 style="text-align: left;"> Lobby name: {{_gameLobby.gameLobbyName}} </h2>
         <h3>{{_gameLobby.gameStatus}} </h3>
-        <!-- <h3>{{gameService.nrOfElements}}</h3> -->
+        <h3>{{_gameLobby.lastCard}} </h3>
 
         <div class="circle" style="align-self: center;">
-            <div style="color: white;" *ngIf="gameService.players$ | async; let _players">
-                <div  *ngFor="let player of _players; let i = index" [attr.data-index]="i">
-                    <div class="player-top" *ngIf="player.username == guest.username" >
+            
+            <div *ngIf="gameService.players$ | async; let _players">
+                <div *ngFor="let player of _players;"> 
+                    <div class="player-bottom" *ngIf="player.username == guest.username">
                         <img class="profile" src={{getRandomImage(0)}}>
-                        <p class="text-center">{{player.username}}</p>                        
-                        <!-- <h4> {{player | json}}</h4> -->
-                        <!-- cards for bottom
-                        <div class="cards" 
-                        *ngFor="let card of player.cards; let i = index;" [attr.card-index]="i">
-                        <div id="card-bottom{{i}}" class="cards-bottom">
-                            {{setCardPosition(i,"card-bottom"+i)}}
-                            <img  class="card" src="/assets/images/Cards/back.jpg">
-                        </div> -->
+                        <p class="text-center">{{player.username}}</p>
 
-                        <div class="cards" 
-                        *ngFor="let card of player.cards; let i = index;" [attr.card-index]="i">
-                        <div *ngIf="i < 9" id="card-top{{i}}" class="cards-top">
-                            {{setCardPosition(i,"card-top"+i, "top")}}
-                            <img class="card" src="/assets/images/Cards/back.jpg">
+                        <div class="cards" *ngFor="let card of player.cards; let i = index;" [attr.card-index]="i"> 
+                            <div id="card-bottom{{i}}" class="cards-bottom">
+                                {{setCardPosition(i,"card-bottom"+i, "bottom")}}
+                                <img class="card" src="{{getCardSource(card)}}" alt="{{card.id}}">
+                            </div>
                         </div>
-
-                        <!-- style="left: calc(((950px - 150px) / 2) + 1*50px);" -->
-                        <!-- <div id="card-bottom" class="cards-bottom">
-                            {{setCardPosition(1,"card-bottom")}}
-                            <img src="/assets/images/Cards/back.jpg">
-                        </div> -->
-                        
                     </div>
                 </div>
 
@@ -52,26 +26,21 @@
                         <p class="text-center">{{player.username}}</p>
                         <img class="profile" src={{getRandomImage(1)}} alt="NOT FOUND">
 
-                        <div class="cards" 
-                            *ngFor="let card of player.cards; let i = index;" [attr.card-index]="i">
-                            <div *ngIf="i < 9" id="card-right{{i}}" class="cards-right">
-                                {{setCardPosition(i,"card-right"+i, "right")}}
+                        <div class="cards" *ngFor="let card of player.cards; let c = index;" [attr.card-index]="c">
+                            <div *ngIf="c < 9" id="card-right{{c}}" class="cards-right">
+                                {{setCardPosition(c,"card-right"+c, "right")}}
                                 <img class="card" src="/assets/images/Cards/back.jpg">
                             </div>
                         </div>
-
-                        <!-- <h4> {{player | json}}</h4> -->
-
                     </div>
 
                     <div class="player-top" *ngIf="player.username != guest.username && i == 1" >
                         <p class="text-center">{{player.username}}</p>
                         <img class="profile" src={{getRandomImage(2)}} alt="NOT FOUND">
-                        
-                        <div class="cards" 
-                            *ngFor="let card of player.cards; let i = index;" [attr.card-index]="i">
-                            <div *ngIf="i < 9" id="card-top{{i}}" class="cards-top">
-                                {{setCardPosition(i,"card-top"+i, "top")}}
+
+                        <div class="cards" *ngFor="let card of player.cards; let c = index;" [attr.card-index]="c">
+                            <div *ngIf="c < 9" id="card-top{{c}}" class="cards-top">
+                                {{setCardPosition(c,"card-top"+c, "top")}}
                                 <img class="card" src="/assets/images/Cards/back.jpg">
                             </div>
                         </div>
@@ -79,12 +48,11 @@
 
                     <div class="player-left" *ngIf="player.username != guest.username && i == 2" >
                         <p class="text-center">{{player.username}}</p>
-                        <img class="profile" src={{getRandomImage(3)}} alt="NOT FOUND">
+                        <img class="profile" src={{getRandomImage(2)}} alt="NOT FOUND">
 
-                        <div class="cards" 
-                        *ngFor="let card of player.cards; let i = index;" [attr.card-index]="i">
-                            <div *ngIf="i < 9" id="card-left{{i}}" class="cards-left">
-                                {{setCardPosition(i,"card-left"+i, "left")}}
+                        <div class="cards" *ngFor="let card of player.cards; let c = index;" [attr.card-index]="c">
+                            <div *ngIf="c < 9" id="card-left{{c}}" class="cards-left">
+                                {{setCardPosition(c,"card-left"+c, "left")}}
                                 <img class="card" src="/assets/images/Cards/back.jpg">
                             </div>
                         </div>
@@ -97,10 +65,21 @@
                     && _gameLobby.gameStatus === 'waiting')">
                 <p>The game will start</p>
                 <button class="btn btn-danger mr-3 mb-2 " (click)="startGame()">Ok</button>
-            </div>
+            </div>  
+
+            <div class="pot-card" *ngIf="_gameLobby.gameStatus === 'ongoing'">
+                <img class="card" src={{getCardSourceById(_gameLobby.lastCard)}} alt="">
+            </div> 
+            
+            <div class="drawable-cards" *ngIf="_gameLobby.gameStatus === 'ongoing'">
+                <img class="card" src="/assets/images/Cards/back.jpg" alt="">
+            </div>   
+
         </div>
     </div>
 </div>
+
+        
 
 
 

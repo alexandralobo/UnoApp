@@ -29,19 +29,19 @@
 .player-right {
   /* align-self: center; */
   position: absolute;
-  top: calc(((var(--circle-height) - 225px) / 2));
-  right: -170px;
+  top: calc(((var(--circle-height) - 225px) / 2) - 160px);
+  right: -110px;
 }
 
 .player-left {
   position: absolute;
-  top: calc(((var(--circle-height) - 225px) / 2));
-  left: -170px;
+  top: calc(((var(--circle-height) - 225px) / 2) - 160px);
+  left: -110px;
 }
 
 .player-bottom {
   position: absolute;
-  bottom: -170px;
+  bottom: -100px;
   left: calc(((var(--circle-width) - 150px) / 2)- 150px);
 }
 
@@ -77,8 +77,32 @@
   align-items: center;
 }
 
+.cards-right {
+  position: absolute;
+  top: 200px;
+  align-items: center;
+}
+
 .cards-top {
   position: absolute;
   top: 70px;
   align-items: center;
+}
+
+.cards-left {
+  position: absolute;
+  top: 200px;
+  align-items: center;
+}
+
+.pot-card {
+  position: absolute;
+  top: calc((var(--circle-height) / 2) - 65px);
+  left: calc((var(--circle-width) / 2) + 30px);
+}
+
+.drawable-cards {
+  position: absolute;
+  top: calc((var(--circle-height) / 2) - 65px);
+  left: calc((var(--circle-width) / 2) - 110px);
 }

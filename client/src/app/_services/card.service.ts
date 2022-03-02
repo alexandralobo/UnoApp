@@ -39,12 +39,20 @@ export class CardService {
     }  
     return cardsNames;  
   }
+
+  // working
+  getCardById(id) {
+    return this.http.get<Card>('https://localhost:5001/api/card/'+ id);
+  }
   
+  // Working
   setCardName(card: Card) {
     if (card.value === -1) {
-      this.cardName == card.colour.charAt(0) + "" +card.type + ".jpg";
+      return card.colour.charAt(0) + "" +card.type + ".jpg";
     } else {
-      this.cardName == card.colour.charAt(0) + "" + card.value + ".jpg";
+      return card.colour.charAt(0) + "" + card.value + ".jpg";
     }
   }
+
+
 }

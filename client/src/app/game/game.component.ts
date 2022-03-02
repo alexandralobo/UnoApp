@@ -7,6 +7,8 @@ import { Group } from '../_models/group';
 import { Guest } from '../_models/guest';
 import { AccountService } from '../_services/account.service';
 import { GameService } from '../_services/game.service';
+import { CardService } from '../_services/card.service';
+import { Card } from '../_models/card';
 
 @Component({
   selector: 'app-game',
@@ -20,11 +22,13 @@ export class GameComponent implements OnInit {
   images : any[] = [];
   imagesSelected : any[] = [];
   gameLobby: GameLobby[];
+  card: Card;
 
   constructor(
     private http: HttpClient,
     private accountService: AccountService,
     public gameService:  GameService,
+    private cardService: CardService,
     private router: Router,
     private route: ActivatedRoute) { 
     this.accountService.currentUser$.pipe(take(1)).subscribe(guest => this.guest = guest);
@@ -60,6 +64,7 @@ export class GameComponent implements OnInit {
     return "/assets/images/" + this.images[position];
   }
 
+  // Game methods
   async startGame() {
     await this.gameService.startGame(this.gameLobbyId)
       .catch(Error);
@@ -67,8 +72,6 @@ export class GameComponent implements OnInit {
     this.gameService.getLobby().subscribe({
       next: game => this.gameLobby = [game]
     });
-    // //this.toggleDiv();
-    // this.loadGameLobby();
   }
 
   toggleDiv() {
@@ -82,22 +85,35 @@ export class GameComponent implements OnInit {
     }
   }
 
+  // Cards methods
+
+  // working fine
   setCardPosition(index, element, position) {
-    console.log(element);
     var myDiv = document.getElementById(element);
     var displaySetting = myDiv.style.left;
-    //console.error(1 + ") " + myDiv.style.left);
+
     if (position === 'bottom') { 
       myDiv.style.left = 'calc(300px + '+ index +' * 50px)';
     } else if (position === 'right') {
-      
-    } else if (position === 'top') { // working fine
+      myDiv.style.right = 'calc(-50px + '+ index +' * 20px)';
+    } else if (position === 'top') { 
       myDiv.style.left = 'calc(150px + '+ "(" + index +' * 20px))';
     } else if (position ==='left') {
-
+      myDiv.style.left = 'calc(-50px + '+ index +' * 20px)';;
     }
-    
-    //console.error(2 + ") " + myDiv.style.left);
+  }
+
+  // working
+  getCardSource(card : Card) {
+    var cardName = this.cardService.setCardName(card);
+    return "/assets/images/Cards/" + cardName;
+  }
+
+  // working
+  getCardSourceById(id) {
+    this.cardService.getCardById(id).subscribe(c => { this.card = c });
+    var cardName = this.cardService.setCardName(this.card);
+    return "/assets/images/Cards/" + cardName;
   }
 
 }

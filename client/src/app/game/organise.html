@@ -1,0 +1,84 @@
+<!-- <h3 style="color: white;"> Id: {{gameLobbyId}}</h3>
+<div style="color: white;" *ngIf="gameService.gameLobby$ | async; let _gameLobby">
+    <p>{{guest.username}}</p>
+    <p>{{_gameLobby.gameLobbyName}}</p>
+    <p>{{_gameLobby.gameStatus}}</p>
+</div>
+
+
+<div style="color: white;" *ngIf="gameService.players$ | async; let _players">
+    <p *ngFor="let player of _players"> Player: {{player | json}}</p>
+</div> -->
+
+<!-- <h3>{{gameService.nrOfElements}}</h3> -->
+
+<div class="circle" style="align-self: center;">
+    <div style="color: white;" *ngIf="gameService.players$ | async; let _players">
+        <div *ngFor="let player of _players; let i = index" [attr.data-index]="i">
+            <div class="player-bottom" *ngIf="player.username == guest.username" >
+                <img class="profile" src={{getRandomImage(0)}}>
+                <p class="text-center">{{player.username}}</p>    
+                <div class="cards" 
+                *ngFor="let card of player.cards; let i = index;" [attr.card-index]="i">
+                <div id="card-bottom{{i}}" class="cards-bottom">
+                    {{setCardPosition(i,"card-bottom"+i)}}
+                    <img class="card" src="/assets/images/Cards/back.jpg">
+                </div>
+
+               
+
+            </div>
+        </div>
+
+        <div *ngFor="let player of players; let i = index" [attr.data-index]="i">
+            <div class="player-right" *ngIf="player.username != guest.username && i == 0" >
+                <p class="text-center">{{player.username}}</p>
+                <img class="profile" src={{getRandomImage(1)}} alt="NOT FOUND">
+
+                <div class="cards" 
+                    *ngFor="let card of player.cards; let i = index;" [attr.card-index]="i">
+                    <div *ngIf="i < 9" id="card-right{{i}}" class="cards-right">
+                        {{setCardPosition(i,"card-right"+i, "right")}}
+                        <img class="card" src="/assets/images/Cards/back.jpg">
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="player-top" *ngIf="player.username != guest.username && i == 1" >
+                <p class="text-center">{{player.username}}</p>
+                <img class="profile" src={{getRandomImage(2)}} alt="NOT FOUND">
+                
+                <div class="cards" 
+                    *ngFor="let card of player.cards; let i = index;" [attr.card-index]="i">
+                    <div *ngIf="i < 9" id="card-top{{i}}" class="cards-top">
+                        {{setCardPosition(i,"card-top"+i, "top")}}
+                        <img class="card" src="/assets/images/Cards/back.jpg">
+                    </div>
+                </div>
+            </div>
+
+            <div class="player-left" *ngIf="player.username != guest.username && i == 2" >
+                <p class="text-center">{{player.username}}</p>
+                <img class="profile" src={{getRandomImage(3)}} alt="NOT FOUND">
+
+                <div class="cards" 
+                *ngFor="let card of player.cards; let i = index;" [attr.card-index]="i">
+                    <div *ngIf="i < 9" id="card-left{{i}}" class="cards-left">
+                        {{setCardPosition(i,"card-left"+i, "left")}}
+                        <img class="card" src="/assets/images/Cards/back.jpg">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="start-prompt" class="start-game text-center"
+        *ngIf="(_gameLobby.numberOfElements >= 2
+            && _gameLobby.gameStatus === 'waiting')">
+        <p>The game will start</p>
+        <button class="btn btn-danger mr-3 mb-2 " (click)="startGame()">Ok</button>
+    </div>
+</div>
+</div>
+</div>
