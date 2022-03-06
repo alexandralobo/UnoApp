@@ -3,4 +3,5 @@ export interface Card {
     colour: string;
     value: number;
     type: string;
+    fileName: string;
 }

@@ -19,6 +19,13 @@ namespace API.Data
 
             foreach (var card in cards)
             {
+                if (card.Value == -1)
+                {
+                    card.FileName = card.Colour.ElementAt(0) + "" + card.Type + ".jpg";
+                } else
+                {
+                    card.FileName = card.Colour.ElementAt(0) + "" + card.Value + ".jpg";
+                }
                 await context.Cards.AddAsync(card);
             }
 

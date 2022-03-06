@@ -1,30 +1,35 @@
-<div *ngIf="gameService.gameLobby$ | async;">
-    <div *ngFor="let _gameLobby of (gameService.gameLobby$ | async)">
+<div *ngIf="gameLobby">
+    <div *ngFor="let _gameLobby of gameLobby">
         <h2 style="text-align: left;"> Lobby name: {{_gameLobby.gameLobbyName}} </h2>
         <h3>{{_gameLobby.gameStatus}} </h3>
         <h3>{{_gameLobby.lastCard}} </h3>
 
         <div class="circle" style="align-self: center;">
-            
-            <div *ngIf="gameService.players$ | async; let _players">
-                <div *ngFor="let player of _players;"> 
+
+            <div *ngIf="players">
+                <div *ngFor="let player of players">
                     <div class="player-bottom" *ngIf="player.username == guest.username">
-                        <img class="profile" src={{getRandomImage(0)}}>
+                        <img class="profile" src="{{profilePics[0]}}">
                         <p class="text-center">{{player.username}}</p>
 
-                        <div class="cards" *ngFor="let card of player.cards; let i = index;" [attr.card-index]="i"> 
+                        <div class="cards" *ngFor="let card of player?.cards; let i = index;" [attr.card-index]="i">
                             <div id="card-bottom{{i}}" class="cards-bottom">
                                 {{setCardPosition(i,"card-bottom"+i, "bottom")}}
-                                <img class="card" src="{{getCardSource(card)}}" alt="{{card.id}}">
+                                <img class="card" id="card{{card.cardId}}" src="/assets/images/Cards/{{card.fileName}}"
+                                    (click)='cardsToPlay(card, id)'>
                             </div>
                         </div>
+
+                        <button class="btn btn-danger mr-3 mb-2" *ngIf="cards.length > 0"
+                            (click)="submitPlay()">Play!</button>
+                        <p style="color: white;" *ngFor="let card of cards">{{card.cardId}}</p>
                     </div>
                 </div>
 
-                <div *ngFor="let player of players; let i = index" [attr.data-index]="i">
-                    <div class="player-right" *ngIf="player.username != guest.username && i == 0" >
+                <div *ngFor="let player of otherPlayers; let i = index" [attr.data-index]="i">
+                    <div class="player-right" *ngIf="player.username != guest.username && i == 0">
                         <p class="text-center">{{player.username}}</p>
-                        <img class="profile" src={{getRandomImage(1)}} alt="NOT FOUND">
+                        <img class="profile" src="{{profilePics[1]}}" alt="NOT FOUND">
 
                         <div class="cards" *ngFor="let card of player.cards; let c = index;" [attr.card-index]="c">
                             <div *ngIf="c < 9" id="card-right{{c}}" class="cards-right">
@@ -34,9 +39,9 @@
                         </div>
                     </div>
 
-                    <div class="player-top" *ngIf="player.username != guest.username && i == 1" >
+                    <div class="player-top" *ngIf="player.username != guest.username && i == 1">
                         <p class="text-center">{{player.username}}</p>
-                        <img class="profile" src={{getRandomImage(2)}} alt="NOT FOUND">
+                        <img class="profile" src="{{profilePics[2]}}" alt="NOT FOUND">
 
                         <div class="cards" *ngFor="let card of player.cards; let c = index;" [attr.card-index]="c">
                             <div *ngIf="c < 9" id="card-top{{c}}" class="cards-top">
@@ -46,9 +51,9 @@
                         </div>
                     </div>
 
-                    <div class="player-left" *ngIf="player.username != guest.username && i == 2" >
+                    <div class="player-left" *ngIf="player.username != guest.username && i == 2">
                         <p class="text-center">{{player.username}}</p>
-                        <img class="profile" src={{getRandomImage(2)}} alt="NOT FOUND">
+                        <img class="profile" src="{{profilePics[3]}}" alt="NOT FOUND">
 
                         <div class="cards" *ngFor="let card of player.cards; let c = index;" [attr.card-index]="c">
                             <div *ngIf="c < 9" id="card-left{{c}}" class="cards-left">
@@ -60,28 +65,35 @@
                 </div>
             </div>
 
-            <div id="start-prompt" class="start-game text-center"
-                *ngIf="(_gameLobby.numberOfElements >= 2
+            <div id="start-prompt" class="start-game text-center" *ngIf="(_gameLobby.numberOfElements >= 2
                     && _gameLobby.gameStatus === 'waiting')">
                 <p>The game will start</p>
                 <button class="btn btn-danger mr-3 mb-2 " (click)="startGame()">Ok</button>
-            </div>  
+            </div>
 
             <div class="pot-card" *ngIf="_gameLobby.gameStatus === 'ongoing'">
-                <img class="card" src={{getCardSourceById(_gameLobby.lastCard)}} alt="">
-            </div> 
-            
+                <img class="card" src="/assets/images/Cards/{{_gameLobby.fileName}}">
+            </div>
+
             <div class="drawable-cards" *ngIf="_gameLobby.gameStatus === 'ongoing'">
-                <img class="card" src="/assets/images/Cards/back.jpg" alt="">
-            </div>   
+                <img class="card" src="/assets/images/Cards/back.jpg" (click)="getCard()">
+            </div>
+
+            <ul class="circle1" *ngIf="_gameLobby.fileName === 'bWild.jpg' || _gameLobby.fileName === 'bWildDraw4.jpg'">
+                <li>
+                    <div class="text">1</div>
+                </li>
+                <li>
+                    <div class="text">2</div>
+                </li>
+                <li>
+                    <div class="text">3</div>
+                </li>
+                <li>
+                    <div class="text">4</div>
+                </li>
+            </ul>
 
         </div>
     </div>
 </div>
-
-        
-
-
-
-
-

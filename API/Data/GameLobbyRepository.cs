@@ -133,17 +133,25 @@ namespace API.Data
             lobby.DrawableCards.Remove(card);
             lobby.CardPot.Add(card);
             lobby.LastCard = card.CardId;
+            lobby.FileName = card.FileName;
 
             return lobby;
         }
         // Working
         public async Task<Group> GetGroup(string groupName)
         {
-            return await _context.Groups
+            Group group = await _context.Groups
                 .Include(x => x.Connections)
-                .FirstOrDefaultAsync(x => x.Name == groupName);           
-     
+                .ThenInclude(x => x.Cards)
+                .FirstOrDefaultAsync(x => x.Name == groupName);
 
+            //List<Card> cards = await _context.Groups
+            //    .Where(x => x.Name == groupName)
+            //    .Include(x => x.Connections.Select(x => x.Cards))
+            //    .FirstOrDefaultAsync();
+
+            return group;  
+     
             /*var lobbyMembers = await _context.Connections
                 .Where(connection => connection.GameLobbyId == gameLobbyId)
                 .Include(connection => connection.Cards)
@@ -169,13 +177,14 @@ namespace API.Data
             //} else
             if (gameLobby.GameStatus == "waiting")
             {
-                _context.Connections.Remove(connection);
-                //group.Connections.Remove(connection);
+                _context.Connections.Remove(connection);     
+                group.Connections.Remove(connection);
 
             } else if (group.Connections.Count() == 0 || gameLobby.GameStatus == "finished")
             {
                 _context.Connections.Remove(connection);
                 _context.Groups.Remove(group);
+                _context.GameLobbies.Remove(gameLobby);
             }
         }
 
@@ -240,6 +249,7 @@ namespace API.Data
                 connection.Cards.Remove(cardInConnection);
                 gameLobby.CardPot.Add(cardInConnection);
                 gameLobby.LastCard = cardInConnection.CardId;
+                gameLobby.FileName = cardInConnection.FileName;
             }
             return true;
         }
@@ -266,12 +276,12 @@ namespace API.Data
                 
                  // Draw 2 working
                  // Several Draws Working
-                case "Draw 2":
+                case "Draw2":
                     await NextPlayerDraw(gameLobby, 2);
                     return "Next";
                 // Wild Draw 4 working
                 // Several Wild Draw 4 Working
-                case "Wild Draw 4":
+                case "WildDraw4":
                     await NextPlayerDraw(gameLobby, 4);
                     return "Pick a colour";
 
@@ -324,6 +334,8 @@ namespace API.Data
 
         private async Task NextPlayerDraw(GameLobby lobby, int quantity)
         {
+            Group group = await GetGroup(lobby.GameLobbyName);
+            Connection playerToDraw = GetPlayer(lobby, group);
 
             Card card = new Card();
             for (int i = 0; i < quantity; i++)
@@ -335,10 +347,7 @@ namespace API.Data
 
                 Random r = new Random();
                 int cardIndex = r.Next(lobby.DrawableCards.Count());
-                card = lobby.DrawableCards.ElementAt(cardIndex);
-
-                Group group = await GetGroup(lobby.GameLobbyId.ToString());
-                Connection playerToDraw = GetPlayer(lobby, group);
+                card = lobby.DrawableCards.ElementAt(cardIndex);             
 
                 playerToDraw.Cards.Add(card);
                 lobby.DrawableCards.Remove(card);

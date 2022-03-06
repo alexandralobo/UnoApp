@@ -226,7 +226,6 @@ namespace API.Controllers
         }
 
         // get card from deck
-        // options: get 1 card and the frontend calls it each time, or i try to find a match
         [HttpGet("getCard")]
         public async Task<ActionResult<string>> GetCard(int gameLobbyId)
         {

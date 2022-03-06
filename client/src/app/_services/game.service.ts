@@ -60,8 +60,9 @@ export class GameService {
       .build()
 
     this.hubConnection.start().catch(error => console.log(error));
+    this.hubConnection.serverTimeoutInMilliseconds = 100000; // 100 second
 
-    this.hubConnection.on('GetGameLobby', (gameLobby: GameLobby) => {      
+    this.hubConnection.on('GetGameLobby', (gameLobby: GameLobby) => {  
       this.gameLobbySource.next([gameLobby]);
       this.nrOfElements = gameLobby.numberOfElements;
       this.gameLobbyId = gameLobby.gameLobbyId;
@@ -78,7 +79,16 @@ export class GameService {
 
   async startGame(gameLobbyId) {
     return this.hubConnection.invoke('StartGame', gameLobbyId)
-      .then(_ => {this.started = true})
+      .catch(error => console.log(error));
+  }
+
+  async play(cards) {
+    return this.hubConnection.invoke('Play', cards)
+      .catch(error => console.log(error));
+  }
+
+  async getCard() {
+    return this.hubConnection.invoke("GetCard")
       .catch(error => console.log(error));
   }
 

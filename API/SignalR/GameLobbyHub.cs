@@ -31,7 +31,6 @@ namespace API.SignalR
         public override async Task OnConnectedAsync()
         {
             var httpContext = Context.GetHttpContext();
-
             var strgameLobbyId = httpContext.Request.Query["lobbyId"].ToString();
             var gameLobbyId = Int32.Parse(strgameLobbyId);
             var guest = Context.User;
@@ -44,22 +43,21 @@ namespace API.SignalR
             var groupName = gameLobby.GameLobbyName;                 
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
 
-            var group = await AddToLobby(groupName, gameLobby);
-            await Clients.Group(groupName).SendAsync("UpdatedGroup", group);
+            var group = await AddToLobby(groupName, gameLobby);           
             
 
             if (_unitOfWork.HasChanges()) await _unitOfWork.Complete();
 
-            // Clients of the lobby get game lobby
+            await Clients.Group(groupName).SendAsync("UpdatedGroup", group);
             await Clients.Group(groupName).SendAsync("GetGameLobby", gameLobby);
 
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            var group = await RemoveFromLobby();
-            await Clients.Group(group.Name).SendAsync("UpdatedGroup", group);
-            await base.OnDisconnectedAsync(exception);
+            //var group = await RemoveFromLobby();
+            //await Clients.Group(group.Name).SendAsync("UpdatedGroup", group);
+            //await base.OnDisconnectedAsync(exception);
         }        
 
         private async Task<ICollection<GameLobby>> GetLobbies()
@@ -139,12 +137,20 @@ namespace API.SignalR
             {
                 await Clients.Group(group.Name).SendAsync("GetGameLobby", gameLobby);
                 await Clients.Group(group.Name).SendAsync("UpdatedGroup", group);
-            };
-            throw new HubException("Failed to initialize the game!");
+                return gameLobby;
+            } else
+            {
+                throw new HubException("Failed to initialize the game!");
+            }           
         }
 
-        public async Task<string> Play(string username, int gameLobbyId, List<Card> cards)
+        public async Task<string> Play(/*string username, int gameLobbyId,*/ List<Card> cards)
         {
+            var httpContext = Context.GetHttpContext();
+            var gameLobbyId = Int32.Parse(httpContext.Request.Query["lobbyId"].ToString());
+            //var gameLobbyId = Int32.Parse(strgameLobbyId);
+            var username = Context.User.GetUsername();
+
             GameLobby gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyById(gameLobbyId);
             if (gameLobby.CurrentPlayer != username) throw new HubException("It is " + gameLobby.CurrentPlayer + "'s turn, it is not your turn!");
            
@@ -172,9 +178,65 @@ namespace API.SignalR
                 if (!turn) throw new HubException("I cannot get to the next turn!");
             }
 
-            if (await _unitOfWork.Complete()) return message;
-            throw new HubException("Couldnt save your play!");
+            if (await _unitOfWork.Complete())
+            {
+                await Clients.Group(group.Name).SendAsync("GetGameLobby", gameLobby);
+                await Clients.Group(group.Name).SendAsync("UpdatedGroup", group);
+                return "Played!";
+            } else
+            {
+                throw new HubException("Couldnt save your play!");
+            }
         }
 
+        public async Task<string> GetCard()
+        {
+            var httpContext = Context.GetHttpContext();
+            var gameLobbyId = Int32.Parse(httpContext.Request.Query["lobbyId"].ToString());
+
+            GameLobby gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyById(gameLobbyId);
+            var group = await _unitOfWork.GameLobbyRepository.GetGroup(gameLobby.GameLobbyName);
+            Connection connection = await _unitOfWork.ConnectionRepository.GetConnection(gameLobby.CurrentPlayer);
+
+            //if (connection.Cards.Count() == 0 /*&& gameLobby.GameStatus != "finished"*/)
+            //{
+            //    await _unitOfWork.GameLobbyRepository.Draw(4, gameLobby, connection);
+            //    return "Next";
+            //}
+
+            Card pot = await _unitOfWork.CardRepository.GetCard(gameLobby.LastCard);
+            ICollection<Card> cards = connection.Cards;
+
+            if (connection.Cards.Count == 0)
+            {
+                cards = new List<Card>();
+            }
+
+            // verify if the current player have a valid card to play
+            bool playable = await _unitOfWork.GameLobbyRepository.Playable(gameLobby, pot, cards);
+            if (playable) return "You have cards that you can play!";
+
+            // get a card from deck until we can play
+            Card cardFromDeck = new Card();
+            // working - test with more cases
+            do
+            {
+                cardFromDeck = await _unitOfWork.GameLobbyRepository.Draw(1, gameLobby, connection);
+            } while (!(pot.Value == cardFromDeck.Value && pot.Value != -1
+                || pot.Type == cardFromDeck.Type && cardFromDeck.Type != "Number"
+                || pot.Colour == cardFromDeck.Colour
+                || cardFromDeck.Type == "Wild"
+                || cardFromDeck.Type == "Wild Draw 4"));
+
+            if (await _unitOfWork.Complete()) {
+
+                await Clients.Group(group.Name).SendAsync("GetGameLobby", gameLobby);
+                await Clients.Group(group.Name).SendAsync("UpdatedGroup", group);
+                return "You obtained the cards required!";
+            } else
+            {
+                throw new HubException("Could not get the cards!");
+            }
+        }
     }
 }
