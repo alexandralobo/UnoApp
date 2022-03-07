@@ -6,6 +6,7 @@ export interface GameLobby {
     drawableCards: Card[];    
     cardPot: Card[];
     lastCard: number;
+    pickedColour: string;
     currentPlayer: string;
     gameStatus: string;
     numberOfElements: number;

@@ -16,8 +16,13 @@
                             <div id="card-bottom{{i}}" class="cards-bottom">
                                 {{setCardPosition(i,"card-bottom"+i, "bottom")}}
                                 <img class="card" id="card{{card.cardId}}" src="/assets/images/Cards/{{card.fileName}}"
-                                    (click)='cardsToPlay(card, id)'>
+                                    (click)='cardsToPlay(card, "card-bottom"+i)'>
                             </div>
+
+                            <!-- <div class="uno" *ngIf="player?.cards.length === 1">
+                                <button class="btn btn-danger mr-3 mb-2" *ngIf="cards.length > 0"
+                                    (click)="UNO()">UNO!</button>
+                            </div> -->
                         </div>
 
                         <button class="btn btn-danger mr-3 mb-2" *ngIf="cards.length > 0"
@@ -79,18 +84,18 @@
                 <img class="card" src="/assets/images/Cards/back.jpg" (click)="getCard()">
             </div>
 
-            <ul class="circle1" *ngIf="_gameLobby.fileName === 'bWild.jpg' || _gameLobby.fileName === 'bWildDraw4.jpg'">
-                <li>
-                    <div class="text">1</div>
+            <ul id="pick-colour" class="circle1" style="display: none">
+                <li (click)="pickColour('red')">
+                    <div class="text"></div>
                 </li>
-                <li>
-                    <div class="text">2</div>
+                <li (click)="pickColour('green')">
+                    <div class="text"></div>
                 </li>
-                <li>
-                    <div class="text">3</div>
+                <li (click)="pickColour('blue')">
+                    <div class="text"></div>
                 </li>
-                <li>
-                    <div class="text">4</div>
+                <li (click)="pickColour('yellow')">
+                    <div class="text"></div>
                 </li>
             </ul>
 

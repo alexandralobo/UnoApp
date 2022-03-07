@@ -167,6 +167,8 @@ namespace API.Controllers
             if (!validate) return BadRequest("Colour is not valid!");
 
             GameLobby gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyById(gameLobbyId);
+            gameLobby.PickedColour = colour;
+
             var group = await _unitOfWork.GameLobbyRepository.GetGroup(gameLobby.GameLobbyName);            
 
             bool turn = await _unitOfWork.GameLobbyRepository.NextTurn(gameLobby, group);
@@ -176,40 +178,40 @@ namespace API.Controllers
             return BadRequest("Couldnt save your play!");
         }
         
-        [HttpPost("playWithChosenColour")]
-        public async Task<ActionResult<string>> PlayWithChosenColour(int gameLobbyId, string username, ICollection<Card> cards, string colour)
-        {
-            GameLobby gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyById(gameLobbyId);
-            if (gameLobby.CurrentPlayer != username) return "It is " + gameLobby.CurrentPlayer + "'s turn, it is not your turn!";
+        //[HttpPost("playWithChosenColour")]
+        //public async Task<ActionResult<string>> PlayWithChosenColour(int gameLobbyId, string username, ICollection<Card> cards, string colour)
+        //{
+        //    GameLobby gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyById(gameLobbyId);
+        //    if (gameLobby.CurrentPlayer != username) return "It is " + gameLobby.CurrentPlayer + "'s turn, it is not your turn!";
             
-            var group = await _unitOfWork.GameLobbyRepository.GetGroup(gameLobby.GameLobbyName);
-            Connection connection = await _unitOfWork.ConnectionRepository.GetConnection(username);
+        //    var group = await _unitOfWork.GameLobbyRepository.GetGroup(gameLobby.GameLobbyName);
+        //    Connection connection = await _unitOfWork.ConnectionRepository.GetConnection(username);
 
-            var message = await _unitOfWork.GameLobbyRepository.PlayWithChosenColour(connection, gameLobby, cards, colour);
-            if (message != "Next") return BadRequest(message);
+        //    var message = await _unitOfWork.GameLobbyRepository.PlayWithChosenColour(connection, gameLobby, cards, colour);
+        //    if (message != "Next") return BadRequest(message);
 
-            if (cards.First().Value == -1)
-            {
-                int i = 0;
-                while (i < cards.Count())
-                {
-                    message = await _unitOfWork.GameLobbyRepository.GetConsequence(gameLobby, group, connection, cards);
-                    if (message == "Card type is incorrect!") return BadRequest(message);
-                    i++;
-                }
-            }
+        //    if (cards.First().Value == -1)
+        //    {
+        //        int i = 0;
+        //        while (i < cards.Count())
+        //        {
+        //            message = await _unitOfWork.GameLobbyRepository.GetConsequence(gameLobby, group, connection, cards);
+        //            if (message == "Card type is incorrect!") return BadRequest(message);
+        //            i++;
+        //        }
+        //    }
 
-            if (message != "Pick a colour")
-            {
-                // get the next turn
-                var turn = await _unitOfWork.GameLobbyRepository.NextTurn(gameLobby, group);
-                if (!turn) return BadRequest("I cannot get to the next turn!");
-            }
+        //    if (message != "Pick a colour")
+        //    {
+        //        // get the next turn
+        //        var turn = await _unitOfWork.GameLobbyRepository.NextTurn(gameLobby, group);
+        //        if (!turn) return BadRequest("I cannot get to the next turn!");
+        //    }
 
-            if (await _unitOfWork.Complete()) return Ok(message);
-            return BadRequest("Couldnt save your play!");
+        //    if (await _unitOfWork.Complete()) return Ok(message);
+        //    return BadRequest("Couldnt save your play!");
 
-        }
+        //}
 
         // empty deck
         [HttpGet("newDeck")]
@@ -225,48 +227,48 @@ namespace API.Controllers
 
         }
 
-        // get card from deck
-        [HttpGet("getCard")]
-        public async Task<ActionResult<string>> GetCard(int gameLobbyId)
-        {
-            GameLobby gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyById(gameLobbyId);
-            Connection connection = await _unitOfWork.ConnectionRepository.GetConnection(gameLobby.CurrentPlayer);
+        //// get card from deck
+        //[HttpGet("getCard")]
+        //public async Task<ActionResult<string>> GetCard(int gameLobbyId)
+        //{
+        //    GameLobby gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyById(gameLobbyId);
+        //    Connection connection = await _unitOfWork.ConnectionRepository.GetConnection(gameLobby.CurrentPlayer);
 
 
-            //if (connection.Cards.Count() == 0 /*&& gameLobby.GameStatus != "finished"*/)
-            //{
-            //    await _unitOfWork.GameLobbyRepository.Draw(4, gameLobby, connection);
-            //    return "Next";
-            //}
+        //    //if (connection.Cards.Count() == 0 /*&& gameLobby.GameStatus != "finished"*/)
+        //    //{
+        //    //    await _unitOfWork.GameLobbyRepository.Draw(4, gameLobby, connection);
+        //    //    return "Next";
+        //    //}
 
-            Card pot = await _unitOfWork.CardRepository.GetCard(gameLobby.LastCard);
-            ICollection<Card> cards = connection.Cards;
+        //    Card pot = await _unitOfWork.CardRepository.GetCard(gameLobby.LastCard);
+        //    ICollection<Card> cards = connection.Cards;
 
-            if (connection.Cards.Count == 0)
-            {
-                cards = new List<Card>();
-            }
+        //    if (connection.Cards.Count == 0)
+        //    {
+        //        cards = new List<Card>();
+        //    }
 
-            // verify if the current player have a valid card to play
-            bool playable = await _unitOfWork.GameLobbyRepository.Playable(gameLobby, pot, cards);
-            if (playable) return "You have cards that you can play!";
+        //    // verify if the current player have a valid card to play
+        //    bool playable = await _unitOfWork.GameLobbyRepository.Playable(gameLobby, pot, cards);
+        //    if (playable) return "You have cards that you can play!";
             
-            // get a card from deck until we can play
-            Card cardFromDeck = new Card();  
+        //    // get a card from deck until we can play
+        //    Card cardFromDeck = new Card();  
 
-            // working - test with more cases
-            do
-            {
-                cardFromDeck = await _unitOfWork.GameLobbyRepository.Draw(1, gameLobby, connection);
-            } while (!(pot.Value == cardFromDeck.Value && pot.Value != -1
-                || pot.Type == cardFromDeck.Type && cardFromDeck.Type != "Number" 
-                || pot.Colour == cardFromDeck.Colour
-                || cardFromDeck.Type == "Wild" 
-                || cardFromDeck.Type == "Wild Draw 4"));
+        //    // working - test with more cases
+        //    do
+        //    {
+        //        cardFromDeck = await _unitOfWork.GameLobbyRepository.Draw(1, gameLobby, connection);
+        //    } while (!(pot.Value == cardFromDeck.Value && pot.Value != -1
+        //        || pot.Type == cardFromDeck.Type && cardFromDeck.Type != "Number" 
+        //        || pot.Colour == cardFromDeck.Colour
+        //        || cardFromDeck.Type == "Wild" 
+        //        || cardFromDeck.Type == "Wild Draw 4"));
 
-            if (await _unitOfWork.Complete()) return Ok("You obtained the cards required!");
-            return BadRequest("Could not get the cards!");
-        }
+        //    if (await _unitOfWork.Complete()) return Ok("You obtained the cards required!");
+        //    return BadRequest("Could not get the cards!");
+        //}
 
 
     }

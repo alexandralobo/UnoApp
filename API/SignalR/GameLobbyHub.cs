@@ -182,13 +182,61 @@ namespace API.SignalR
             {
                 await Clients.Group(group.Name).SendAsync("GetGameLobby", gameLobby);
                 await Clients.Group(group.Name).SendAsync("UpdatedGroup", group);
-                return "Played!";
+                return message;
             } else
             {
                 throw new HubException("Couldnt save your play!");
             }
         }
 
+        public async Task<string> PlayWithChosenColour(ICollection<Card> cards, string colour)
+        {
+            var httpContext = Context.GetHttpContext();
+            var gameLobbyId = Int32.Parse(httpContext.Request.Query["lobbyId"].ToString());
+            var username = Context.User.GetUsername();
+
+            GameLobby gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyById(gameLobbyId);
+            if (gameLobby.CurrentPlayer != username) return "It is " + gameLobby.CurrentPlayer + "'s turn, it is not your turn!";
+
+            var group = await _unitOfWork.GameLobbyRepository.GetGroup(gameLobby.GameLobbyName);
+            Connection connection = await _unitOfWork.ConnectionRepository.GetConnection(username);
+
+            var message = await _unitOfWork.GameLobbyRepository.PlayWithChosenColour(connection, gameLobby, cards, colour);
+            if (message != "Next") throw new HubException(message);
+
+           
+            gameLobby.PickedColour = "none";
+
+            if (cards.First().Value == -1)
+            {
+                int i = 0;
+                while (i < cards.Count())
+                {
+                    message = await _unitOfWork.GameLobbyRepository.GetConsequence(gameLobby, group, connection, cards);
+                    if (message == "Card type is incorrect!") throw new HubException(message);
+                    i++;
+                }
+            }
+
+            if (message != "Pick a colour")
+            {
+                // get the next turn
+                var turn = await _unitOfWork.GameLobbyRepository.NextTurn(gameLobby, group);
+                if (!turn) throw new HubException("I cannot get to the next turn!");
+            }
+
+            if (await _unitOfWork.Complete())
+            {
+                await Clients.Group(group.Name).SendAsync("GetGameLobby", gameLobby);
+                await Clients.Group(group.Name).SendAsync("UpdatedGroup", group);
+                return message;
+            }
+            else
+            {
+                throw new HubException("Couldnt save your play!");
+            }
+
+        }
         public async Task<string> GetCard()
         {
             var httpContext = Context.GetHttpContext();
@@ -238,5 +286,31 @@ namespace API.SignalR
                 throw new HubException("Could not get the cards!");
             }
         }
+
+        public async Task<string> PickColour(string colour)
+        {
+            var httpContext = Context.GetHttpContext();
+            var gameLobbyId = Int32.Parse(httpContext.Request.Query["lobbyId"].ToString());
+
+            bool validate = await _unitOfWork.GameLobbyRepository.PickColour(colour);
+            if (!validate) throw new HubException("Colour is not valid!");
+
+            GameLobby gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyById(gameLobbyId);
+            gameLobby.PickedColour = colour;
+
+            var group = await _unitOfWork.GameLobbyRepository.GetGroup(gameLobby.GameLobbyName);
+
+            bool turn = await _unitOfWork.GameLobbyRepository.NextTurn(gameLobby, group);
+            if (!turn) throw new HubException("It is not possible get to the next turn!");
+
+            if (await _unitOfWork.Complete())
+            {
+                await Clients.Group(group.Name).SendAsync("GetGameLobby", gameLobby);
+                await Clients.Group(group.Name).SendAsync("UpdatedGroup", group);
+                return "Next";
+            }
+            throw new HubException("Couldn't save your play!");
+        }
+
     }
 }

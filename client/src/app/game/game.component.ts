@@ -10,6 +10,7 @@ import { AccountService } from '../_services/account.service';
 import { GameService } from '../_services/game.service';
 import { CardService } from '../_services/card.service';
 import { Card } from '../_models/card';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-game',
@@ -21,6 +22,7 @@ export class GameComponent implements OnInit {
   
   gameLobbyId: number;   
   gameLobby: GameLobby[];
+  prevPlayer : string;
 
   players: Connection[];
   otherPlayers: Connection[];
@@ -34,13 +36,17 @@ export class GameComponent implements OnInit {
   cards: Card[] = [];
   submitted : boolean = false;
 
+  message: string;
+  pickedColour: string = "none";
+
   constructor(
     private http: HttpClient,
     private accountService: AccountService,
     public gameService:  GameService,
     private cardService: CardService,
     private router: Router,
-    private route: ActivatedRoute) { 
+    private route: ActivatedRoute, 
+    private toastr: ToastrService) { 
     this.accountService.currentUser$.pipe(take(1)).subscribe(guest => this.guest = guest);
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;    
   }
@@ -52,7 +58,8 @@ export class GameComponent implements OnInit {
     //this.loadGameLobby();
     this.gameService.players$.subscribe(players => this.players = players);
     this.gameService.players$.subscribe(players => this.otherPlayers = players.filter(p => p.username !== this.guest.username));
-    this.gameService.gameLobby$.subscribe(game => this.gameLobby = game);
+    this.gameService.gameLobby$.subscribe(game => {this.gameLobby = game, this.pickedColour = game[0].pickedColour});
+
     // this.gameService.players$.forEach(player => {
     //   this.imagesSelected.push(this.getRandomImage());      
     // });
@@ -80,7 +87,6 @@ export class GameComponent implements OnInit {
     });
   }
   getRandomImage(position) {
-    //console.error("Calling getRandomImage");
     this.images = ["f1.jpg", "f2.jpg", "f3.jpg", "f4.jpg", "m1.jpg", "m2.jpg","m3.jpg", "m4.jpg"]        
     // return "/assets/images/" + this.images[Math.floor(Math.random() * this.images.length)];
     return "/assets/images/" + this.images[position];
@@ -88,24 +94,9 @@ export class GameComponent implements OnInit {
 
   // Game methods
   async startGame() {
-    //console.error("Calling startGame");
     await this.gameService.startGame(this.gameLobbyId)
-      .catch(Error);      
-    this.gameService.getLobby().subscribe({
-      next: game => this.gameLobby = [game]
-    });
+      .catch(Error);  
   }
-
-  // toggleDiv() {
-  //   var myDiv = document.getElementById('start-prompt');
-  //   var displaySetting = myDiv.style.display;
-
-  //   if (displaySetting != 'block') {
-  //     myDiv.style.display = 'none';
-  //   } else {
-  //     myDiv.style.display = 'block';
-  //   }
-  // }
 
   // Cards methods
 
@@ -144,33 +135,70 @@ export class GameComponent implements OnInit {
   cardsToPlay(card, id) {
     //console.error("Calling cardsToPlay");
     //console.error("id: " + id)
-    //var myCard = document.getElementById(id);   
+    var myCard = document.getElementById(id);   
 
     if (this.cards.includes(card)) {
       
       this.cards = this.cards.filter(c => c.cardId !=card.cardId);       
-     // myCard.style.borderColor = 'none';
+      myCard.style.borderColor = 'none';
 
     } else {
       this.cards.push(card);
-     // myCard.style.borderColor = 'red';
+      myCard.style.borderColor = 'red';
     } 
   }
 
-  submitPlay() {
+  async submitPlay() {
     //console.error("Calling submitPlay");
     if (this.cards === []) {
       this.submitted = false;
     } else {
-      this.gameService.play(this.cards);
-      this.submitted = true;
+      
+      if (this.pickedColour === "none") {
+        await this.gameService.play(this.cards)
+        .then(msg => this.message = msg);
+
+      } else {
+        await this.gameService.playByColour(this.cards, this.pickedColour)
+          .then(msg => {
+            this.message = msg,
+            this.pickedColour = "none"
+          });
+          
+      }
+
+      console.error(this.message); 
+      
+      if (this.message === "Pick a colour") {
+        document.getElementById("pick-colour").style.display = "block";
+      }
       this.cards = [];
+      this.submitted = true;
+
+      this.gameLobby.forEach(_gameLobby => {
+        this.prevPlayer = _gameLobby.currentPlayer;
+      });
+      
     }    
   }
 
   getCard() {
     this.gameService.getCard();
   }
+
+  pickColour(colour) { 
+     this.gameService.pickColour(colour)
+      .then(msg => {
+        this.message = msg,
+        this.pickedColour = colour,
+        document.getElementById("pick-colour").style.display = "none"
+      } 
+    )
+    //console.error(this.pickedColour);
+    // var myDiv = document.getElementById("pick-colour");
+    // myDiv.style.display = "none";
+  }
+  
 
   
 

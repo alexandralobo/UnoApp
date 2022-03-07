@@ -195,7 +195,7 @@ namespace API.Data
 
             // same colour, same value, same type - allowed
             if (pot.Value == firstCard.Value && pot.Value != -1 || pot.Type == firstCard.Type && firstCard.Type != "Number" || pot.Colour == firstCard.Colour
-                || firstCard.Type == "Wild" || firstCard.Type == "Wild Draw 4")
+                || firstCard.Type == "Wild" || firstCard.Type == "WildDraw4")
             {
                 // verify if the cards played together are allowed
                 var validation = ValidateCardsPlayed(cards, connection, gameLobby);
@@ -212,7 +212,7 @@ namespace API.Data
         {
             var firstCard = cards.First();
 
-            if (firstCard.Colour == colour || firstCard.Type == "Wild" || firstCard.Type == "Wild Draw 4")
+            if (firstCard.Colour == colour || firstCard.Type == "Wild" || firstCard.Type == "WildDraw4")
             {
                 var validation = ValidateCardsPlayed(cards, connection, gameLobby);
                 if (!validation) return "This play is not allowed!";
@@ -422,7 +422,7 @@ namespace API.Data
             foreach (Card card in cards)
             {
                 if (pot.Value == card.Value && pot.Value != -1 || pot.Type == card.Type && card.Type != "Number" || pot.Colour == card.Colour
-                || card.Type == "Wild" || card.Type == "Wild Draw 4")
+                || card.Type == "Wild" || card.Type == "WildDraw4")
                 {
                     return true;
                 }

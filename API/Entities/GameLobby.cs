@@ -17,6 +17,7 @@ namespace API.Entities
         public ICollection<Card> CardPot { get; set; } = new List<Card>();
         public int LastCard { get; set; }
         public string FileName { get; set; }
+        public string PickedColour { get; set; } = "none";
         public string CurrentPlayer { get; set; }
         public string GameStatus { get; set; } = "waiting";
         public int NumberOfElements { get; set; } = 0;

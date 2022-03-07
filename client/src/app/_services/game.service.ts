@@ -85,6 +85,11 @@ export class GameService {
   async play(cards) {
     return this.hubConnection.invoke('Play', cards)
       .catch(error => console.log(error));
+  }  
+
+  async playByColour(cards, colour) {
+    return this.hubConnection.invoke('PlayWithChosenColour', cards, colour)
+      .catch(error => console.log(error));
   }
 
   async getCard() {
@@ -92,7 +97,15 @@ export class GameService {
       .catch(error => console.log(error));
   }
 
+  async pickColour(colour) {
+    return this.hubConnection.invoke("PickColour", colour)
+    .catch(error => console.log(error));
+  }
+
+  // not sure if I need method
   getLobby() {
     return this.http.get<GameLobby>('https://localhost:5001/api/gameLobby/' + this.gameLobbyId); 
   }
+
+  
 }
