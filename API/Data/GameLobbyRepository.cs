@@ -330,7 +330,7 @@ namespace API.Data
 
             }
             return card;
-        }
+        }     
 
         private async Task NextPlayerDraw(GameLobby lobby, int quantity)
         {
@@ -416,7 +416,7 @@ namespace API.Data
         }
 
         // Tested
-        public async Task<bool> Playable(GameLobby gameLobby, Card pot, ICollection<Card> cards)
+        public async Task<bool> Playable(Card pot, ICollection<Card> cards)
         {
             // verify if the current player have a valid card to play
             foreach (Card card in cards)
@@ -429,6 +429,41 @@ namespace API.Data
             }
             return false;
         }
+        public async Task<bool> PlayableWithColour(ICollection<Card> cards, string pickedColour)
+        {
+            // verify if the current player have a valid card to play
+            foreach (Card card in cards)
+            {
+                if (pickedColour == card.Colour || card.Type == "Wild" || card.Type == "WildDraw4")
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public async Task<string> UnoStatus(Connection connection)
+        {
+            if (connection.uno == false) // when a player can say uno
+            {         
+                if (connection.Cards.Count() == 1)
+                {
+                    connection.uno = true; 
+                    return "Uno!";
+
+                } else
+                {
+                    return "You cannot say uno!";
+                }
+                
+                
+            } else // after saying uno, some player requests that player to get more cards
+            {
+                connection.uno = false;
+                return "Counter Uno!";
+            }            
+        }
+
 
     }
 }

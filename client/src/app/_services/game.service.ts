@@ -66,8 +66,8 @@ export class GameService {
       this.gameLobbySource.next([gameLobby]);
       this.nrOfElements = gameLobby.numberOfElements;
       this.gameLobbyId = gameLobby.gameLobbyId;
-    })
-
+    })   
+    
     this.hubConnection.on('UpdatedGroup', (group: Group) => {
         this.playersSource.next(group.connections);
     })
@@ -93,16 +93,26 @@ export class GameService {
   }
 
   async getCard() {
-    return this.hubConnection.invoke("GetCard")
+    return this.hubConnection.invoke('GetCard')
+      .catch(error => console.log(error));
+  }
+
+  async getCardByColour(colour) {
+    return this.hubConnection.invoke('GetCardWithChosenColour', colour)
       .catch(error => console.log(error));
   }
 
   async pickColour(colour) {
     return this.hubConnection.invoke("PickColour", colour)
-    .catch(error => console.log(error));
+      .catch(error => console.log(error));
   }
 
-  // not sure if I need method
+  async UNO() {
+    return this.hubConnection.invoke("ChangeUnoStatus")
+      .catch(error => console.log(error));
+  }
+
+  // not sure if I need this method
   getLobby() {
     return this.http.get<GameLobby>('https://localhost:5001/api/gameLobby/' + this.gameLobbyId); 
   }

@@ -24,6 +24,8 @@ namespace API.Interfaces
         Task<bool> PickColour(string colour);
         Task<Card> Draw(int quantity, GameLobby gameLobby, Connection connection);
         Task<bool> GetNewDeck(GameLobby gameLobby);
-        Task<bool> Playable(GameLobby gameLobby, Card pot, ICollection<Card> cards);
+        Task<bool> Playable(Card pot, ICollection<Card> cards);
+        Task<bool> PlayableWithColour(ICollection<Card> cards, string pickedColour);
+        Task<string> UnoStatus(Connection connection);
     }
 }

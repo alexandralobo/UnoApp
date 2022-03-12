@@ -20,6 +20,8 @@ namespace API.Entities
         public string ConnectionId { get; set; }
         public string Username { get; set; }
         public ICollection<Card> Cards { get; set; } = new List<Card>();
+        public bool uno = false;
+
         [JsonIgnore]
         public int GameLobbyId { get; set; }
 

@@ -95,6 +95,26 @@
   align-items: center;
 }
 
+.play {
+  display: none;
+  position: absolute;
+  top: -85px;
+  right: -375px;
+  scale: 1.5;
+}
+
+.uno {
+  position: absolute;
+  top: -85px;
+  right: 35px;
+  scale: 1.5;
+}
+.btn {
+  background-color: rgb(194, 10, 10);
+  color: white;
+  border-color: rgb(168, 4, 4);
+}
+
 .pot-card {
   position: absolute;
   top: calc((var(--circle-height) / 2) - 65px);

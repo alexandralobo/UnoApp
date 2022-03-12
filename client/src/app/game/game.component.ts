@@ -39,6 +39,8 @@ export class GameComponent implements OnInit {
   message: string;
   pickedColour: string = "none";
 
+  uno: boolean = false;
+
   constructor(
     private http: HttpClient,
     private accountService: AccountService,
@@ -133,7 +135,7 @@ export class GameComponent implements OnInit {
   }
 
   cardsToPlay(card, id) {
-    //console.error("Calling cardsToPlay");
+    console.error("Calling cardsToPlay");
     //console.error("id: " + id)
     var myCard = document.getElementById(id);   
 
@@ -146,6 +148,12 @@ export class GameComponent implements OnInit {
       this.cards.push(card);
       myCard.style.borderColor = 'red';
     } 
+
+    if (this.cards.length === 0) {
+      document.getElementById("play").style.display = "none";
+    } else {
+      document.getElementById("play").style.display = "block";
+    }
   }
 
   async submitPlay() {
@@ -166,7 +174,7 @@ export class GameComponent implements OnInit {
           });
           
       }
-
+      
       console.error(this.message); 
       
       if (this.message === "Pick a colour") {
@@ -178,12 +186,17 @@ export class GameComponent implements OnInit {
       this.gameLobby.forEach(_gameLobby => {
         this.prevPlayer = _gameLobby.currentPlayer;
       });
-      
+
     }    
   }
 
   getCard() {
-    this.gameService.getCard();
+    if (this.pickedColour === "none") {
+      this.gameService.getCard();
+    } else {
+      this.gameService.getCardByColour(this.pickedColour);
+    }
+    
   }
 
   pickColour(colour) { 
@@ -197,6 +210,16 @@ export class GameComponent implements OnInit {
     //console.error(this.pickedColour);
     // var myDiv = document.getElementById("pick-colour");
     // myDiv.style.display = "none";
+  }
+
+  UNO() {    
+    this.gameService.UNO()
+      .catch(error => console.log(error))
+      .then(msg => {
+        this.message = msg,
+        this.uno = true;
+        document.getElementById("uno").style.display = "none";
+      });    
   }
   
 

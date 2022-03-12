@@ -18,16 +18,17 @@
                                 <img class="card" id="card{{card.cardId}}" src="/assets/images/Cards/{{card.fileName}}"
                                     (click)='cardsToPlay(card, "card-bottom"+i)'>
                             </div>
-
-                            <!-- <div class="uno" *ngIf="player?.cards.length === 1">
-                                <button class="btn btn-danger mr-3 mb-2" *ngIf="cards.length > 0"
-                                    (click)="UNO()">UNO!</button>
-                            </div> -->
                         </div>
 
-                        <button class="btn btn-danger mr-3 mb-2" *ngIf="cards.length > 0"
-                            (click)="submitPlay()">Play!</button>
-                        <p style="color: white;" *ngFor="let card of cards">{{card.cardId}}</p>
+                        <div id="uno" class="uno" *ngIf="player?.cards.length === 1 && !uno">
+                            <button class="btn btn-danger mr-3 mb-2" (click)="UNO()">UNO!</button>
+                        </div> <!-- *ngIf="cards.length > 0" -->
+
+                        <div id="play" class="play">
+                            <button class="btn btn-danger mr-3 mb-2" (click)="submitPlay()"> Play!</button>
+                            <p style="color: white;" *ngFor="let card of cards">{{card.cardId}}</p>
+                        </div>
+
                     </div>
                 </div>
 
@@ -98,6 +99,12 @@
                     <div class="text"></div>
                 </li>
             </ul>
+
+            <div class="game-finished" *ngIf="_gameLobby.gameStatus === 'finished'">
+                <h2> Game finished!</h2>
+                <h3> I hope you had an amazing game! </h3>
+                <button class="btn btn-danger mr-3 mb-2"> Play Again! </button>
+            </div>
 
         </div>
     </div>
