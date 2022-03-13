@@ -112,6 +112,11 @@ export class GameService {
       .catch(error => console.log(error));
   }
 
+  async catchUno(username) {
+    return this.hubConnection.invoke("CatchUno", username)
+      .catch(error => console.log(error));
+  }
+
   // not sure if I need this method
   getLobby() {
     return this.http.get<GameLobby>('https://localhost:5001/api/gameLobby/' + this.gameLobbyId); 

@@ -1,16 +1,15 @@
 import { HttpClient } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, ParamMap } from '@angular/router';
-import { take } from 'rxjs';
-import { GameLobby } from '../_models/game';
-import { Group } from '../_models/group';
-import { Guest } from '../_models/guest';
-import { Connection } from '../_models/connection';
-import { AccountService } from '../_services/account.service';
-import { GameService } from '../_services/game.service';
-import { CardService } from '../_services/card.service';
-import { Card } from '../_models/card';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { take } from 'rxjs';
+import { Card } from '../_models/card';
+import { Connection } from '../_models/connection';
+import { GameLobby } from '../_models/game';
+import { Guest } from '../_models/guest';
+import { AccountService } from '../_services/account.service';
+import { CardService } from '../_services/card.service';
+import { GameService } from '../_services/game.service';
 
 @Component({
   selector: 'app-game',
@@ -119,6 +118,14 @@ export class GameComponent implements OnInit {
     }
   }
 
+  setCurrentPlayer(username, id) {
+    if (username === this.gameLobby[0].currentPlayer) {
+      //console.log("HERE " + id)
+      document.getElementById(id).style.border = "10px solid #FF0000";
+      //document.getElementById(id).style.border
+    } 
+  }
+
   // working
   getCardSource(card : Card) {
     //console.error("Calling getCardSource");
@@ -135,18 +142,16 @@ export class GameComponent implements OnInit {
   }
 
   cardsToPlay(card, id) {
-    console.error("Calling cardsToPlay");
-    //console.error("id: " + id)
+    //console.error("Calling cardsToPlay");
     var myCard = document.getElementById(id);   
 
     if (this.cards.includes(card)) {
-      
       this.cards = this.cards.filter(c => c.cardId !=card.cardId);       
-      myCard.style.borderColor = 'none';
+      myCard.classList.remove('card-selected');
 
     } else {
       this.cards.push(card);
-      myCard.style.borderColor = 'red';
+      myCard.classList.add('card-selected');
     } 
 
     if (this.cards.length === 0) {
@@ -175,9 +180,10 @@ export class GameComponent implements OnInit {
           
       }
       
-      console.error(this.message); 
+      console.log(this.message); 
       
       if (this.message === "Pick a colour") {
+        console.log("here");
         document.getElementById("pick-colour").style.display = "block";
       }
       this.cards = [];
@@ -222,6 +228,13 @@ export class GameComponent implements OnInit {
       });    
   }
   
+  catchUno(username) {
+    this.gameService.catchUno(username)
+    .catch(error => console.log(error))
+    .then(msg => {
+      this.message = msg
+    });  
+  }
 
   
 

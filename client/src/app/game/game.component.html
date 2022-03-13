@@ -2,14 +2,15 @@
     <div *ngFor="let _gameLobby of gameLobby">
         <h2 style="text-align: left;"> Lobby name: {{_gameLobby.gameLobbyName}} </h2>
         <h3>{{_gameLobby.gameStatus}} </h3>
-        <h3>{{_gameLobby.lastCard}} </h3>
+        <h3>{{_gameLobby.currentPlayer}} </h3>
 
         <div class="circle" style="align-self: center;">
 
             <div *ngIf="players">
                 <div *ngFor="let player of players">
                     <div class="player-bottom" *ngIf="player.username == guest.username">
-                        <img class="profile" src="{{profilePics[0]}}">
+                        <img id="profile-bottom" class="profile" src="{{profilePics[0]}}">
+                        {{setCurrentPlayer(player.username, "profile-bottom")}}
                         <p class="text-center">{{player.username}}</p>
 
                         <div class="cards" *ngFor="let card of player?.cards; let i = index;" [attr.card-index]="i">
@@ -28,44 +29,68 @@
                             <button class="btn btn-danger mr-3 mb-2" (click)="submitPlay()"> Play!</button>
                             <p style="color: white;" *ngFor="let card of cards">{{card.cardId}}</p>
                         </div>
-
                     </div>
                 </div>
 
                 <div *ngFor="let player of otherPlayers; let i = index" [attr.data-index]="i">
                     <div class="player-right" *ngIf="player.username != guest.username && i == 0">
                         <p class="text-center">{{player.username}}</p>
-                        <img class="profile" src="{{profilePics[1]}}" alt="NOT FOUND">
+                        <img id="profile-right" class="profile" src="{{profilePics[1]}}" alt="NOT FOUND">
+                        {{setCurrentPlayer(player.username, "profile-right")}}
 
-                        <div class="cards" *ngFor="let card of player.cards; let c = index;" [attr.card-index]="c">
-                            <div *ngIf="c < 9" id="card-right{{c}}" class="cards-right">
-                                {{setCardPosition(c,"card-right"+c, "right")}}
-                                <img class="card" src="/assets/images/Cards/back.jpg">
+                        <div *ngIf="_gameLobby.gameStatus !== 'finished'">
+                            <div class="cards" *ngFor="let card of player.cards; let c = index;" [attr.card-index]="c">
+                                <div *ngIf="c < 9" id="card-right{{c}}" class="cards-right">
+                                    {{setCardPosition(c,"card-right"+c, "right")}}
+                                    <img class="card" src="/assets/images/Cards/back.jpg">
+                                </div>
                             </div>
+                        </div>
+
+                        <div class="catch-uno-right" *ngIf="player.cards.length == 1 &&!player.uno">
+                            <button class="btn btn-danger mr-3 mb-2" (click)="catchUno(player.username)"> CATCH UNO!
+                            </button>
                         </div>
                     </div>
 
                     <div class="player-top" *ngIf="player.username != guest.username && i == 1">
                         <p class="text-center">{{player.username}}</p>
-                        <img class="profile" src="{{profilePics[2]}}" alt="NOT FOUND">
+                        <img id="profile-top" class="profile" src="{{profilePics[2]}}" alt="NOT FOUND">
+                        {{setCurrentPlayer(player.username, "top")}}
 
-                        <div class="cards" *ngFor="let card of player.cards; let c = index;" [attr.card-index]="c">
-                            <div *ngIf="c < 9" id="card-top{{c}}" class="cards-top">
-                                {{setCardPosition(c,"card-top"+c, "top")}}
-                                <img class="card" src="/assets/images/Cards/back.jpg">
+                        <div *ngIf="_gameLobby.gameStatus !== 'finished'">
+                            <div class="cards" *ngFor="let card of player.cards; let c = index;" [attr.card-index]="c">
+                                <div *ngIf="c < 9" id="card-top{{c}}" class="cards-top">
+                                    {{setCardPosition(c,"card-top"+c, "top")}}
+                                    <img class="card" src="/assets/images/Cards/back.jpg">
+                                </div>
                             </div>
+                        </div>
+
+
+                        <div class="catch-uno-top" *ngIf="player.cards.length == 1 &&!player.uno">
+                            <button class="btn btn-danger mr-3 mb-2" (click)="catchUno(player.username)"> CATCH UNO!
+                            </button>
                         </div>
                     </div>
 
                     <div class="player-left" *ngIf="player.username != guest.username && i == 2">
                         <p class="text-center">{{player.username}}</p>
-                        <img class="profile" src="{{profilePics[3]}}" alt="NOT FOUND">
+                        <img id="profile-left" class="profile" src="{{profilePics[3]}}" alt="NOT FOUND">
+                        {{setCurrentPlayer(player.username, "profile-left")}}
 
-                        <div class="cards" *ngFor="let card of player.cards; let c = index;" [attr.card-index]="c">
-                            <div *ngIf="c < 9" id="card-left{{c}}" class="cards-left">
-                                {{setCardPosition(c,"card-left"+c, "left")}}
-                                <img class="card" src="/assets/images/Cards/back.jpg">
+                        <div *ngIf="_gameLobby.gameStatus !== 'finished'">
+                            <div class="cards" *ngFor="let card of player.cards; let c = index;" [attr.card-index]="c">
+                                <div *ngIf="c < 9" id="card-left{{c}}" class="cards-left">
+                                    {{setCardPosition(c,"card-left"+c, "left")}}
+                                    <img class="card" src="/assets/images/Cards/back.jpg">
+                                </div>
                             </div>
+                        </div>
+
+                        <div class="catch-uno-left" *ngIf="player.cards.length == 1 &&!player.uno">
+                            <button class="btn btn-danger mr-3 mb-2" (click)="catchUno(player.username)"> CATCH UNO!
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -100,12 +125,12 @@
                 </li>
             </ul>
 
-            <div class="game-finished" *ngIf="_gameLobby.gameStatus === 'finished'">
-                <h2> Game finished!</h2>
+            <div class="game-finished text-center" *ngIf="_gameLobby.gameStatus === 'finished'">
+                <h2> Game has finished!</h2>
                 <h3> I hope you had an amazing game! </h3>
-                <button class="btn btn-danger mr-3 mb-2"> Play Again! </button>
+                <button class="btn mr-3 mb-2" [routerLink]="'../dashboard'">
+                    Play Again! </button>
             </div>
-
         </div>
     </div>
 </div>

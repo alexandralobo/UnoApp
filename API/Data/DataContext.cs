@@ -12,12 +12,14 @@ namespace API.Data
     public class DataContext : IdentityDbContext<Guest, AppRole, int, IdentityUserClaim<int>, GuestRole, IdentityUserLogin<int>, IdentityRoleClaim<int>, IdentityUserToken<int>>
     {
         public DataContext(DbContextOptions options) : base(options)
-        {
+        {            
+            
         }
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {
             builder.EnableDetailedErrors()
                    .EnableSensitiveDataLogging();
+         
         }
 
         public DbSet<Guest> Guests { get; set; }

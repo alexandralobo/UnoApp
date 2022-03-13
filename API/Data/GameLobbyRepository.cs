@@ -444,11 +444,11 @@ namespace API.Data
 
         public async Task<string> UnoStatus(Connection connection)
         {
-            if (connection.uno == false) // when a player can say uno
+            if (connection.Uno == false) // when a player can say uno
             {         
                 if (connection.Cards.Count() == 1)
                 {
-                    connection.uno = true; 
+                    connection.Uno = true; 
                     return "Uno!";
 
                 } else
@@ -459,7 +459,7 @@ namespace API.Data
                 
             } else // after saying uno, some player requests that player to get more cards
             {
-                connection.uno = false;
+                connection.Uno = false;
                 return "Counter Uno!";
             }            
         }

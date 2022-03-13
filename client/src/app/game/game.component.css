@@ -62,6 +62,26 @@
   background: rgba(51, 13, 13, 0.808);
 }
 
+.game-finished {
+  font-size: large;
+  color: black;
+  width: 500px;
+  position: absolute;
+  top: 180px;
+  left: 235px;
+  padding: 10px;
+  border: 5px solid black;
+  background: rgba(51, 13, 13, 0.808);
+}
+
+.game-finished h2 {
+  color: white;
+}
+
+.game-finished h3 {
+  color: white;
+}
+
 .start-prompt {
   display: "none";
 }
@@ -75,6 +95,14 @@
   position: absolute;
   bottom: -50px;
   align-items: center;
+}
+
+.cards-bottom:hover {
+  bottom: 0px;
+}
+
+.card-selected {
+  bottom: 0px;
 }
 
 .cards-right {
@@ -113,6 +141,24 @@
   background-color: rgb(194, 10, 10);
   color: white;
   border-color: rgb(168, 4, 4);
+}
+
+.catch-uno-right {
+  position: absolute;
+  top: -50px;
+  right: 5px;
+}
+
+.catch-uno-top {
+  position: absolute;
+  bottom: -50px;
+  right: 5px;
+}
+
+.catch-uno-left {
+  position: absolute;
+  top: -50px;
+  right: 5px;
 }
 
 .pot-card {

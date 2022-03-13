@@ -171,6 +171,12 @@ namespace API.SignalR
                 }
             }
 
+            var numberOfCards = connection.Cards.Count();
+            if  (numberOfCards == 0)
+            {
+                gameLobby.GameStatus = "finished";
+            }
+
             if (message != "Pick a colour")
             {
                 // get the next turn
@@ -270,25 +276,21 @@ namespace API.SignalR
 
             GameLobby gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyById(gameLobbyId);
             var group = await _unitOfWork.GameLobbyRepository.GetGroup(gameLobby.GameLobbyName);
-            Connection connection = await _unitOfWork.ConnectionRepository.GetConnection(gameLobby.CurrentPlayer);
-
-            //if (connection.Cards.Count() == 0 /*&& gameLobby.GameStatus != "finished"*/)
-            //{
-            //    await _unitOfWork.GameLobbyRepository.Draw(4, gameLobby, connection);
-            //    return "Next";
-            //}
+            Connection connection = await _unitOfWork.ConnectionRepository.GetConnection(gameLobby.CurrentPlayer);                      
 
             Card pot = await _unitOfWork.CardRepository.GetCard(gameLobby.LastCard);
             ICollection<Card> cards = connection.Cards;
 
-            if (connection.Cards.Count == 0)
-            {
-                cards = new List<Card>();
-            }
+            //if (connection.Cards.Count == 0)
+            //{
+            //    cards = new List<Card>();
+            //}
 
             // verify if the current player have a valid card to play
             bool playable = await _unitOfWork.GameLobbyRepository.Playable(pot, cards);
             if (playable) return "You have cards that you can play!";
+
+            if (connection.Uno == true) connection.Uno = false;
 
             // get a card from deck until we can play
             Card cardFromDeck = new Card();
@@ -333,15 +335,11 @@ namespace API.SignalR
             //Card pot = await _unitOfWork.CardRepository.GetCard(gameLobby.LastCard);
             ICollection<Card> cards = connection.Cards;
 
-            if (connection.Cards.Count == 0)
-            {
-                cards = new List<Card>();
-            }
-
             // verify if the current player have a valid card to play
             bool playable = await _unitOfWork.GameLobbyRepository.PlayableWithColour(cards, colour);
             if (playable) return "You have cards that you can play!";
 
+            if (connection.Uno == true) connection.Uno = false;
             // get a card from deck until we can play
             Card cardFromDeck = new Card();
             do
@@ -377,11 +375,9 @@ namespace API.SignalR
 
             var message = await _unitOfWork.GameLobbyRepository.UnoStatus(connection);
             if (message == "You cannot say uno!") throw new HubException(message);
-
-
+                       
             if (await _unitOfWork.Complete())
             {
-
                 await Clients.Group(group.Name).SendAsync("GetGameLobby", gameLobby);
                 await Clients.Group(group.Name).SendAsync("UpdatedGroup", group);
                 return message;
@@ -390,7 +386,30 @@ namespace API.SignalR
             {
                 throw new HubException("Could not change the uno status!");
             }
-            
+        }
+
+        public async Task<string> CatchUno(string username)
+        {
+            Connection connection = await _unitOfWork.ConnectionRepository.GetConnection(username);
+            if (connection.Uno == true) return "Too late! " + connection.Username + " has already said UNO!";
+
+            var httpContext = Context.GetHttpContext();
+            var gameLobbyId = Int32.Parse(httpContext.Request.Query["lobbyId"].ToString());
+            GameLobby gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyById(gameLobbyId);
+            var group = await _unitOfWork.GameLobbyRepository.GetGroup(gameLobby.GameLobbyName);
+
+            await _unitOfWork.GameLobbyRepository.Draw(4, gameLobby, connection);
+
+            if (await _unitOfWork.Complete())
+            {
+                await Clients.Group(group.Name).SendAsync("GetGameLobby", gameLobby);
+                await Clients.Group(group.Name).SendAsync("UpdatedGroup", group);
+                return ("Good catch! " + connection.Username + " got 4 cards!");
+            }
+            else
+            {
+                throw new HubException("Could not change the uno status!");
+            }
         }
     }
 }
