@@ -209,7 +209,6 @@ namespace API.SignalR
 
             var message = await _unitOfWork.GameLobbyRepository.PlayWithChosenColour(connection, gameLobby, cards, colour);
             if (message != "Next") throw new HubException(message);
-
            
             gameLobby.PickedColour = "none";
 
@@ -281,11 +280,6 @@ namespace API.SignalR
             Card pot = await _unitOfWork.CardRepository.GetCard(gameLobby.LastCard);
             ICollection<Card> cards = connection.Cards;
 
-            //if (connection.Cards.Count == 0)
-            //{
-            //    cards = new List<Card>();
-            //}
-
             // verify if the current player have a valid card to play
             bool playable = await _unitOfWork.GameLobbyRepository.Playable(pot, cards);
             if (playable) return "You have cards that you can play!";
@@ -326,13 +320,8 @@ namespace API.SignalR
             var group = await _unitOfWork.GameLobbyRepository.GetGroup(gameLobby.GameLobbyName);
             Connection connection = await _unitOfWork.ConnectionRepository.GetConnection(gameLobby.CurrentPlayer);
 
-            //if (connection.Cards.Count() == 0 /*&& gameLobby.GameStatus != "finished"*/)
-            //{
-            //    await _unitOfWork.GameLobbyRepository.Draw(4, gameLobby, connection);
-            //    return "Next";
-            //}
+            if (connection.Uno == true) connection.Uno = false;
 
-            //Card pot = await _unitOfWork.CardRepository.GetCard(gameLobby.LastCard);
             ICollection<Card> cards = connection.Cards;
 
             // verify if the current player have a valid card to play

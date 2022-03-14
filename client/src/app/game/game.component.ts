@@ -35,7 +35,8 @@ export class GameComponent implements OnInit {
   cards: Card[] = [];
   submitted : boolean = false;
 
-  message: string;
+  error: string = "";
+  message: string = "";
   pickedColour: string = "none";
 
   uno: boolean = false;
@@ -59,7 +60,7 @@ export class GameComponent implements OnInit {
     //this.loadGameLobby();
     this.gameService.players$.subscribe(players => this.players = players);
     this.gameService.players$.subscribe(players => this.otherPlayers = players.filter(p => p.username !== this.guest.username));
-    this.gameService.gameLobby$.subscribe(game => {this.gameLobby = game, this.pickedColour = game[0].pickedColour});
+    this.gameService.gameLobby$.subscribe(game => {this.gameLobby = game, this.pickedColour = game[0]?.pickedColour});
 
     // this.gameService.players$.forEach(player => {
     //   this.imagesSelected.push(this.getRandomImage());      
@@ -141,7 +142,7 @@ export class GameComponent implements OnInit {
     return "/assets/images/Cards/" + this.card.fileName;
   }
 
-  cardsToPlay(card, id) {
+  cardsToPlay(card, id) {    
     //console.error("Calling cardsToPlay");
     var myCard = document.getElementById(id);   
 
@@ -162,29 +163,39 @@ export class GameComponent implements OnInit {
   }
 
   async submitPlay() {
+    this.error = "";
     //console.error("Calling submitPlay");
     if (this.cards === []) {
       this.submitted = false;
     } else {
       
-      if (this.pickedColour === "none") {
-        await this.gameService.play(this.cards)
-        .then(msg => this.message = msg);
+      if (this.gameLobby[0].pickedColour === "none") {
+
+        try {
+          await this.gameService.play(this.cards)
+            .then(msg => this.message = msg);
+
+        } catch (e) {
+          console.error(e);
+          var error: string = e.toString();
+          this.error = error.split(':', 3)[2];
+        }
+        
 
       } else {
-        await this.gameService.playByColour(this.cards, this.pickedColour)
-          .then(msg => {
-            this.message = msg,
-            this.pickedColour = "none"
-          });
-          
+        try {
+          await this.gameService.playByColour(this.cards, this.gameLobby[0].pickedColour)          
+            .then(msg => this.message = msg);
+            
+        } catch (e) {
+          console.error(e);
+          var error: string = e.toString();
+          this.error = error.split(':', 3)[2];
+        }          
       }
-      
-      console.log(this.message); 
-      
-      if (this.message === "Pick a colour") {
-        console.log("here");
-        document.getElementById("pick-colour").style.display = "block";
+      //console.log(this.message);       
+      if (this.message === "Pick a colour") {        
+        document.getElementById("pick-colour").style.display = "block";        
       }
       this.cards = [];
       this.submitted = true;
@@ -197,43 +208,67 @@ export class GameComponent implements OnInit {
   }
 
   getCard() {
-    if (this.pickedColour === "none") {
-      this.gameService.getCard();
+    this.error = "";
+    if (this.gameLobby[0].pickedColour === "none") {
+      this.gameService.getCard()
+      .catch(error => this.error = error)
     } else {
-      this.gameService.getCardByColour(this.pickedColour);
+      try {
+        this.gameService.getCardByColour(this.pickedColour);
+      } catch (e) { 
+        console.error(e);
+        var error: string = e.toString();
+        this.error = error.split(':', 3)[2];
+      }
     }
     
   }
 
   pickColour(colour) { 
-     this.gameService.pickColour(colour)
-      .then(msg => {
-        this.message = msg,
-        this.pickedColour = colour,
-        document.getElementById("pick-colour").style.display = "none"
-      } 
-    )
-    //console.error(this.pickedColour);
-    // var myDiv = document.getElementById("pick-colour");
-    // myDiv.style.display = "none";
+    this.error = "";
+    try {
+      this.gameService.pickColour(colour)
+        .then(msg => this.message = msg);
+    } catch (e) { 
+      console.error(e);
+      var error: string = e.toString();
+      this.error = error.split(':', 3)[2];
+    }
+     
+    if (this.message === "Next") {
+      this.pickedColour === colour;
+      document.getElementById("pick-colour").style.display = "none";      
+    }
   }
 
-  UNO() {    
-    this.gameService.UNO()
-      .catch(error => console.log(error))
-      .then(msg => {
-        this.message = msg,
+  UNO() {
+    this.error = "";
+    try {
+      this.gameService.UNO()
+        .then(msg => this.message = msg); 
+    } catch (e) {
+      console.error(e);
+      var error: string = e.toString();
+      this.error = error.split(':', 3)[2];
+    }
+
+      if (this.message === "Uno!") {
         this.uno = true;
         document.getElementById("uno").style.display = "none";
-      });    
+      }
   }
   
   catchUno(username) {
-    this.gameService.catchUno(username)
-    .catch(error => console.log(error))
-    .then(msg => {
-      this.message = msg
-    });  
+    this.error = "";
+    try {
+      this.gameService.catchUno(username)
+      .then(msg => this.message = msg);  
+    } catch (e) {
+      console.error(e);
+      var error: string = e.toString();
+      this.error = error.split(':', 3)[2];
+    }
+    
   }
 
   

@@ -78,43 +78,35 @@ export class GameService {
   }
 
   async startGame(gameLobbyId) {
-    return this.hubConnection.invoke('StartGame', gameLobbyId)
-      .catch(error => console.log(error));
+    return this.hubConnection.invoke('StartGame', gameLobbyId);
   }
 
   async play(cards) {
-    return this.hubConnection.invoke('Play', cards)
-      .catch(error => console.log(error));
+    return this.hubConnection.invoke('Play', cards);
   }  
 
   async playByColour(cards, colour) {
-    return this.hubConnection.invoke('PlayWithChosenColour', cards, colour)
-      .catch(error => console.log(error));
+    return this.hubConnection.invoke('PlayWithChosenColour', cards, colour);
   }
 
   async getCard() {
-    return this.hubConnection.invoke('GetCard')
-      .catch(error => console.log(error));
+    return this.hubConnection.invoke('GetCard');
   }
 
   async getCardByColour(colour) {
-    return this.hubConnection.invoke('GetCardWithChosenColour', colour)
-      .catch(error => console.log(error));
+    return this.hubConnection.invoke('GetCardWithChosenColour', colour);
   }
 
   async pickColour(colour) {
-    return this.hubConnection.invoke("PickColour", colour)
-      .catch(error => console.log(error));
+    return this.hubConnection.invoke("PickColour", colour);
   }
 
   async UNO() {
-    return this.hubConnection.invoke("ChangeUnoStatus")
-      .catch(error => console.log(error));
+    return this.hubConnection.invoke("ChangeUnoStatus");
   }
 
   async catchUno(username) {
-    return this.hubConnection.invoke("CatchUno", username)
-      .catch(error => console.log(error));
+    return this.hubConnection.invoke("CatchUno", username);
   }
 
   // not sure if I need this method
