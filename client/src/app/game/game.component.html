@@ -1,9 +1,7 @@
 <div *ngIf="gameLobby">
     <div *ngFor="let _gameLobby of gameLobby">
-        <h2 style="text-align: left;"> Lobby name: {{_gameLobby.gameLobbyName}} </h2>
-
+        <h2 class="text-center" style="font-size:1cm;"> Lobby name: {{_gameLobby.gameLobbyName}} </h2>
         <div class="circle" style="align-self: center;">
-
             <div *ngIf="players">
                 <div *ngFor="let player of players">
                     <div class="player-bottom" *ngIf="player?.username == guest.username">

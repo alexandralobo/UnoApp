@@ -231,7 +231,7 @@ namespace API.Data
             {
                 foreach (Card cardNext in cards)
                 {
-                    if (card.Value != cardNext.Value && card.Type != cardNext.Type) // && or ||
+                    if (card.Value != cardNext.Value || card.Type != cardNext.Type) // && or ||
                     {
                         return false;
                     }
