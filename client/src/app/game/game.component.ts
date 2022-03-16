@@ -6,7 +6,7 @@ import { take } from 'rxjs';
 import { Card } from '../_models/card';
 import { Connection } from '../_models/connection';
 import { GameLobby } from '../_models/game';
-import { Guest } from '../_models/guest';
+import { User } from '../_models/user';
 import { AccountService } from '../_services/account.service';
 import { CardService } from '../_services/card.service';
 import { GameService } from '../_services/game.service';
@@ -17,7 +17,7 @@ import { GameService } from '../_services/game.service';
   styleUrls: ['./game.component.css']
 })
 export class GameComponent implements OnInit {
-  guest: Guest;
+  guest: User;
   
   gameLobbyId: number;   
   gameLobby: GameLobby[];

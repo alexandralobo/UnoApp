@@ -25,14 +25,26 @@ namespace API.Data
             return await _context.SaveChangesAsync() > 0;
         }
 
+        public async Task<bool> SignUp(LoginUser loginUser)
+        {
+            _context.Users.Add(loginUser);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
         public async Task<Guest> GetUserByIdAsync(int id)
         {
             return await _context.Guests.FindAsync(id);
         }
 
-        public async Task<Guest> GetUserByUsernameAsync(string username)
+        public async Task<Guest> GetGuestByUsernameAsync(string username)
         {
             return await _context.Guests
+                .SingleOrDefaultAsync(x => x.UserName == username);
+        }
+
+        public async Task<LoginUser> GetLoginUserByUsernameAsync(string username)
+        {
+            return await _context.Users
                 .SingleOrDefaultAsync(x => x.UserName == username);
         }
 
@@ -43,7 +55,8 @@ namespace API.Data
 
         public async Task<bool> UserExists(string username)
         {
-            return await _context.Guests.AnyAsync(user => user.UserName == username.ToLower());
+            return await _context.Guests.AnyAsync(user => user.UserName == username.ToLower()) 
+                || await _context.Users.AnyAsync(user => user.UserName == username.ToLower());
         }
     }
 }

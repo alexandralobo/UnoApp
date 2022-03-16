@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using API.DTOs;
 using API.Entities;
 using API.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -21,12 +22,12 @@ namespace API.Services
             _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["TokenKey"]));
         }
 
-        public async Task<string> CreateToken(Guest guest)
+        public string CreateToken(DetailsToTokenDto details)
         {
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.NameId, guest.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.UniqueName, guest.UserName)
+                new Claim(JwtRegisteredClaimNames.NameId, details.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.UniqueName, details.UserName)
             };
 
             var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);

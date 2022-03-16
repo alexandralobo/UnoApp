@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace API.Entities
 {
-    public class GuestRole : IdentityUserRole<int>
+    public class LoginUserRole : IdentityUserRole<int>
     {
-        public Guest Guest { get; set; }
+        public LoginUser LoginUser { get; set; }
 
         public AppRole Role { get; set; }
     }

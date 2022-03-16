@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Player } from 'src/app/_models/player';
 import { Card } from 'src/app/_models/card';
 import { GameLobby } from 'src/app/_models/game';
-import { Guest } from './_models/guest';
+import { User } from './_models/user';
 import { AccountService } from './_services/account.service';
 import { PresenceService } from './_services/presence.service';
 
@@ -22,7 +22,7 @@ export class AppComponent implements OnInit{
   }
 
   setCurrentUser() {
-    const guest: Guest = JSON.parse(localStorage.getItem('guest'));
+    const guest: User = JSON.parse(localStorage.getItem('user'));
 
     if (guest) {
       this.accountService.setCurrentUser(guest);

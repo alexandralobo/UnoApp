@@ -8,6 +8,6 @@ namespace API.Entities
 {
     public class AppRole : IdentityRole<int>
     {
-        public ICollection<GuestRole> UserRoles { get; set; }
+        public ICollection<LoginUserRole> LoginUserRoles { get; set; }
     }
 }

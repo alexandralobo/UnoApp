@@ -12,8 +12,12 @@ namespace API.Helpers
     {
         public AutoMapperProfiles()
         {
-            CreateMap<Guest, GuestDto>();
+            CreateMap<Guest, UserWithTokenDto>();
+            CreateMap<UserWithTokenDto, Guest>();
             CreateMap<GuestDto, Guest>();
+            CreateMap<Guest, GuestDto>();
+            CreateMap<LoginUser, LoginUserDto>();
+            CreateMap<LoginUserDto, LoginUser>();
             CreateMap<GameLobby, GameLobbyDto>();
             CreateMap<GameLobbyDto, GameLobby>();
         }

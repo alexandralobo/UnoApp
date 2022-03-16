@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Controllers\Class.cs" />
     <Compile Remove="DTOs\ExistingGame.cs" />
   </ItemGroup>
 

@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http'
 import { BehaviorSubject, take } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { GameLobby } from '../_models/game';
-import { Guest } from '../_models/guest';
+import { User } from '../_models/user';
 import { AccountService } from './account.service';
 import { Router } from '@angular/router';
 import { Group } from '../_models/group';
@@ -38,7 +38,7 @@ export class GameService {
   private playersSource = new BehaviorSubject<Connection[]>([]);
   players$ = this.playersSource.asObservable();;
 
-  guest: Guest;
+  guest: User;
   gameLobbyId: number;
   nrOfElements: number;
 
@@ -51,7 +51,7 @@ export class GameService {
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
   }
 
-  createHubConnection(guest: Guest, gameLobbyId: number) {
+  createHubConnection(guest: User, gameLobbyId: number) {
     this.hubConnection = new HubConnectionBuilder()
       .withUrl(this.hubUrl + 'gamelobby?lobbyid=' + gameLobbyId, {
         accessTokenFactory: () => guest.token

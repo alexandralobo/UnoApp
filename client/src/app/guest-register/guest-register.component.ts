@@ -28,7 +28,7 @@ export class GuestRegisterComponent implements OnInit {
   }
 
   register() {
-    this.accountService.register(this.registerForm.value).subscribe({
+    this.accountService.createGuest(this.registerForm.value).subscribe({
       next: response => {
         this.router.navigateByUrl('/dashboard')
         //console.log("Registered!")

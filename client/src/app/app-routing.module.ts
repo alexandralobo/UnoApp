@@ -4,6 +4,7 @@ import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { GameComponent } from './game/game.component';
 import { HomeComponent } from './home/home.component';
+import { RegisterComponent } from './register/register.component';
 
 const routes: Routes = [
   {path: '', data: {gameLobbyId: ''}, component:HomeComponent},
@@ -13,7 +14,8 @@ const routes: Routes = [
     //canActivate: [AuthGuard],
     children: [
       {path: 'dashboard', component: DashboardComponent},
-      {path: 'game', component: GameComponent}
+      {path: 'game', component: GameComponent},
+      {path: 'login', component: RegisterComponent}
     ]
   }
 ];

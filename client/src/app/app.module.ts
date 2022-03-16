@@ -12,6 +12,8 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { HomeComponent } from './home/home.component';
 import { SharedModule } from './_modules/shared.module';
 import { GameComponent } from './game/game.component';
+import { RegisterComponent } from './register/register.component';
+import { DateInputComponent } from './_forms/date-input/date-input.component';
 
 @NgModule({
   declarations: [    
@@ -21,7 +23,9 @@ import { GameComponent } from './game/game.component';
     TextInputComponent,
     DashboardComponent,
     HomeComponent,
-    GameComponent
+    GameComponent,
+    RegisterComponent,
+    DateInputComponent
   ],
   imports: [
     BrowserModule,

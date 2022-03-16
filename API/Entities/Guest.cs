@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace API.Entities
 {
-    public class Guest : IdentityUser<int>
+    public class Guest
     {
+        public int Id { get; set; }
+        public string UserName { get; set; }
     }
 }

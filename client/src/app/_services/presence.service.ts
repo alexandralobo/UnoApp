@@ -3,7 +3,7 @@ import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { ToastrService } from 'ngx-toastr';
 import { BehaviorSubject } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { Guest } from '../_models/guest';
+import { User } from '../_models/user';
 
 @Injectable({
   providedIn: 'root'
@@ -16,11 +16,11 @@ export class PresenceService {
 
   constructor(private toastr: ToastrService) { }
 
-  createHubConnection(guest: Guest)
+  createHubConnection(user: User)
   {
     this.hubConnection = new HubConnectionBuilder()
       .withUrl(this.hubUrl + 'presence', {
-        accessTokenFactory: () => guest.token
+        accessTokenFactory: () => user.token
     })
     .withAutomaticReconnect()
     .build()

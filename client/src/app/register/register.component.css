@@ -1,0 +1,31 @@
+* {
+  box-sizing: border-box;
+}
+
+.form h2 {
+  color: white;
+}
+
+.form {
+  margin: auto;
+  border: 5px solid black;
+  background-color: rgba(51, 13, 13, 0.808);
+  width: 500px;
+}
+
+@media screen and (max-width: 700px) {
+  .form {
+    width: 80%;
+  }
+}
+
+.input-margin {
+  margin-left: 2em;
+  margin-right: 2em;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+.margins {
+  margin-left: 1em;
+}

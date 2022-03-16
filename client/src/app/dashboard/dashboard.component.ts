@@ -7,7 +7,7 @@ import { ToastrService } from 'ngx-toastr';
 import { BehaviorSubject, take } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { GameLobby } from '../_models/game';
-import { Guest } from '../_models/guest';
+import { User } from '../_models/user';
 import { AccountService } from '../_services/account.service';
 import { GameService } from '../_services/game.service';
 import { PresenceService } from '../_services/presence.service';
@@ -22,7 +22,7 @@ export class DashboardComponent implements OnInit {
   joinExistingForm: FormGroup;
   gameLobbies: GameLobby[] = [];
   loading = false;
-  guest: Guest;
+  guest: User;
   create = false;
   private routeData;
 
