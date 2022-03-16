@@ -20,10 +20,13 @@ import { PresenceService } from '../_services/presence.service';
 export class DashboardComponent implements OnInit { 
   createForm: FormGroup;
   joinExistingForm: FormGroup;
+  joinPrivateForm: FormGroup;
+
   gameLobbies: GameLobby[] = [];
   loading = false;
   guest: User;
   create = false;
+  joinPrivate = false;
   private routeData;
 
   constructor(
@@ -42,12 +45,15 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.getLobbies();
-    this.initialiseForm();
+    this.initialiseForms();
   } 
   
-  initialiseForm() {
+  initialiseForms() {
     this.createForm = this.fb.group({
       lobbyName:['', Validators.required]
+    })
+    this.joinPrivateForm = this.fb.group({
+      password:['', Validators.required]
     })
   }
 
@@ -84,6 +90,10 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  startCreatingNewGame() {
+    this.create = true;
+  }
+
   joinNewGame() {
 
     this.loading = true; 
@@ -97,7 +107,19 @@ export class DashboardComponent implements OnInit {
       });  
   }    
 
-  startCreatingNewGame() {
-    this.create = true;
+  startJoiningPrivateRoom() {
+    this.joinPrivate = true;    
+  }
+
+  joinPrivateRoom() {
+    this.loading = true; 
+    var gameId;
+    this.gameService.joinPrivateGame(this.joinPrivateForm.value).subscribe(
+      { next: response => {
+        this.loading = false
+        gameId = response;
+        this.router.navigate(["/game"], {queryParams: {gameLobbyId: gameId}});
+      } 
+      }); 
   }
 }

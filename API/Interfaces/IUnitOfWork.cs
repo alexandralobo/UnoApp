@@ -7,7 +7,7 @@ namespace API.Interfaces
 {
     public interface IUnitOfWork
     {
-        IGuestRepository GuestRepository { get; }
+        IMemberRepository MemberRepository { get; }
         IGameLobbyRepository GameLobbyRepository { get; }
         IConnectionRepository ConnectionRepository { get; }
         ICardRepository CardRepository { get; }

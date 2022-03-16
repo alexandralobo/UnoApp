@@ -77,8 +77,16 @@ export class GameService {
     return this.http.post<number>('https://localhost:5001/api/gameLobby/joinNewLobby/' + this.guest.username, model);
   }
 
+  joinExistingGame(model: any) {
+
+  }
+
+  joinPrivateGame(model: any) {
+    return this.http.post<number>('https://localhost:5001/api/gameLobby/joinPrivateRoom/' + this.guest.username, model);
+  }
+
   async startGame(gameLobbyId) {
-    return this.hubConnection.invoke('StartGame', gameLobbyId);
+    return this.hubConnection.invoke('StartGame');
   }
 
   async play(cards) {
@@ -107,6 +115,9 @@ export class GameService {
 
   async catchUno(username) {
     return this.hubConnection.invoke("CatchUno", username);
+  }
+  async isPrivate(priv) {
+    return this.hubConnection.invoke("IsPrivate", priv);
   }
 
   // not sure if I need this method

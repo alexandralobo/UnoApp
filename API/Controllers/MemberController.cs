@@ -38,7 +38,7 @@ namespace API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserWithTokenDto>>> GetGuests()
         {
-            var guests = await _unitOfWork.GuestRepository.GetUsersAsync();
+            var guests = await _unitOfWork.MemberRepository.GetUsersAsync();
 
             var guestsDto = new List<UserWithTokenDto>();
             foreach (var user in guests)
@@ -56,17 +56,17 @@ namespace API.Controllers
         [HttpPost("join")]
         public async Task<ActionResult<UserWithTokenDto>> GuestCreation(GuestDto guestDto)
         {
-            bool UsersExists = await _unitOfWork.GuestRepository.UserExists(guestDto.Username);
+            bool UsersExists = await _unitOfWork.MemberRepository.UserExists(guestDto.Username);
 
             if (UsersExists) return BadRequest("Username is taken!");
 
             var guest = _mapper.Map<Guest>(guestDto);
             guest.UserName = guestDto.Username.ToLower();
 
-            var saved = await _unitOfWork.GuestRepository.CreateGuest(guest);
+            var saved = await _unitOfWork.MemberRepository.CreateGuest(guest);
             if (!saved) return BadRequest("A problem occurred");
 
-            guest = await _unitOfWork.GuestRepository.GetGuestByUsernameAsync(guest.UserName);
+            guest = await _unitOfWork.MemberRepository.GetGuestByUsernameAsync(guest.UserName);
             var details = new DetailsToTokenDto
             {
                 Id = guest.Id,
@@ -85,7 +85,7 @@ namespace API.Controllers
         [HttpPost("signUp")]
         public async Task<ActionResult<UserWithTokenDto>> SignUp(LoginUserDto loginUserDto)
         {
-            bool UsersExists = await _unitOfWork.GuestRepository.UserExists(loginUserDto.Username);
+            bool UsersExists = await _unitOfWork.MemberRepository.UserExists(loginUserDto.Username);
             if (UsersExists) return BadRequest("Username is taken!");
 
             var loginUser = _mapper.Map<LoginUser>(loginUserDto);
@@ -97,7 +97,7 @@ namespace API.Controllers
             //var saved = await _unitOfWork.GuestRepository.SignUp(loginUser);
             //if (!saved) return BadRequest("A problem occurred");
 
-            loginUser = await _unitOfWork.GuestRepository.GetLoginUserByUsernameAsync(loginUser.UserName);
+            loginUser = await _unitOfWork.MemberRepository.GetLoginUserByUsernameAsync(loginUser.UserName);
             var details = new DetailsToTokenDto
             {
                 Id = loginUser.Id,

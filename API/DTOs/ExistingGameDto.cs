@@ -1,8 +1,11 @@
-﻿namespace API.DTOs
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace API.DTOs
 {
     public class ExistingGameDto
     {
-        public int gameLobbyId { get; set; }
+        [Required] public int gameLobbyId { get; set; }
+        public string password { get; set; }
 
     }
 }

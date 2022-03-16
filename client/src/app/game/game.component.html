@@ -1,6 +1,27 @@
 <div *ngIf="gameLobby">
     <div *ngFor="let _gameLobby of gameLobby">
-        <h2 class="text-center" style="font-size:1cm;"> Lobby name: {{_gameLobby.gameLobbyName}} </h2>
+        <div class="header">
+            <h2 class="text-center" style="font-size:1cm;"> Lobby name: {{_gameLobby.gameLobbyName}} </h2>
+            <div class="public-private" *ngIf="_gameLobby.gameStatus === 'waiting'">
+                <h3 class="text-center" *ngIf="_gameLobby.password !== ' '">Password: {{_gameLobby.password}}</h3>
+                <div class="text-center" style="font-size:20px">
+                    <button class="public" (click)="isPrivate(false)">Public</button>
+                    <button class="private" (click)="isPrivate(true)">Private</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- <mat-card class="result">
+                    <mat-card-content>
+                        <h2 class="example-h2">Result</h2>
+                        <section class="example-section">
+                            <mat-slide-toggle [(ngModel)]="private" class="example-margin" [color]="color"
+                                (change)="isPrivate()">
+                                Slide me! {{private}}
+                            </mat-slide-toggle>
+                        </section>
+                    </mat-card-content>
+                </mat-card> -->
         <div class="circle" style="align-self: center;">
             <div *ngIf="players">
                 <div *ngFor="let player of players">

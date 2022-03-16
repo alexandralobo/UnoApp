@@ -87,6 +87,16 @@ namespace API.Data
             return lobby;
         }
 
+        public async Task<GameLobby> GetGameLobbyWithPassword(string password)
+        {
+            GameLobby lobby = _context.GameLobbies
+                .Where(g => g.Password == password)
+                .Include(g => g.CardPot)
+                .Include(g => g.DrawableCards)
+                .FirstOrDefault();
+
+            return lobby;
+        }
         // working
         public async Task<GameLobby> StartGame(GameLobby lobby)
         {
@@ -145,20 +155,7 @@ namespace API.Data
                 .ThenInclude(x => x.Cards)
                 .FirstOrDefaultAsync(x => x.Name == groupName);
 
-            //List<Card> cards = await _context.Groups
-            //    .Where(x => x.Name == groupName)
-            //    .Include(x => x.Connections.Select(x => x.Cards))
-            //    .FirstOrDefaultAsync();
-
             return group;  
-     
-            /*var lobbyMembers = await _context.Connections
-                .Where(connection => connection.GameLobbyId == gameLobbyId)
-                .Include(connection => connection.Cards)
-                .OrderBy(c => c.ConnectionId)
-                .ToListAsync();
-
-            return lobbyMembers;*/
         }
 
         public async Task<Group> GetGroupForConnection(string connectionId)
@@ -271,7 +268,7 @@ namespace API.Data
 
                 // Reverse Working
                 case "Reverse":
-                    gameLobby.order = gameLobby.order == "normal" ? "reverse" : "normal";
+                    gameLobby.Order = gameLobby.Order == "normal" ? "reverse" : "normal";
                     return "Next";
                 
                  // Draw 2 working
@@ -370,7 +367,7 @@ namespace API.Data
 
             // verify the order
             int nextIndex = 0;
-            if (lobby.order == "normal")
+            if (lobby.Order == "normal")
             {
                 if (currIndex == group.Connections.Count() - 1)
                 {

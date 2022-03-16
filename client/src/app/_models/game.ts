@@ -10,4 +10,5 @@ export interface GameLobby {
     currentPlayer: string;
     gameStatus: string;
     numberOfElements: number;
+    password: string;
 }

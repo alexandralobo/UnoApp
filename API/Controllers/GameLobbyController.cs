@@ -63,12 +63,12 @@ namespace API.Controllers
 
             if (await _unitOfWork.Complete()) return Ok();
 
-            return BadRequest("Failed to create a lobby!");
+            return BadRequest("Failed to join a lobby!");
         }
 
         // TESTED - Working
         [HttpPost("joinNewLobby/{username}")]
-        public async Task<ActionResult<int>> JoinNew(string username, [FromBody] JsonElement body)
+        public async Task<ActionResult<GameLobbyDto>> JoinNewLobby(string username, [FromBody] JsonElement body)
         {
             //bool SessionExists = await _unitOfWork.ConnectionRepository.SessionExists(username); 
             //if (SessionExists) return BadRequest("You are already in a game!");
@@ -94,7 +94,27 @@ namespace API.Controllers
             return BadRequest("Failed to create a lobby!");
         }
 
-        
+        [HttpPost("joinPrivateRoom/{username}")]
+        public async Task<ActionResult<int>> JoinPrivateRoom(string username, [FromBody] JsonElement body)
+        {
+            bool SessionExists = await _unitOfWork.ConnectionRepository.SessionExists(username); 
+            if (SessionExists) return BadRequest("You are already in a game!");
+
+            var game = JsonSerializer.Deserialize<ExistingGameDto>(body,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            var gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyWithPassword(game.password);
+            if (gameLobby == null) return BadRequest("Password is incorrect!");
+
+            if (gameLobby.NumberOfElements == 4) return BadRequest("The lobby is full!");            
+            await _unitOfWork.GameLobbyRepository.JoinExistingLobby(gameLobby.GameLobbyId);
+
+            if (await _unitOfWork.Complete()) return Ok(gameLobby.GameLobbyId);
+            return BadRequest("Failed to join a lobby!");
+
+        }
+
+
         [HttpPost("pickColour")]
         public async Task<ActionResult<string>> PickColour(int gameLobbyId, string colour)
         {

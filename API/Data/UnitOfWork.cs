@@ -17,7 +17,7 @@ namespace API.Data
             _context = context;
         }
 
-        public IGuestRepository GuestRepository => new GuestRepository(_context, _mapper);
+        public IMemberRepository MemberRepository => new MemberRepository(_context, _mapper);
 
         public IGameLobbyRepository GameLobbyRepository => new GameLobbyRepository(_context, _mapper);
         public IConnectionRepository ConnectionRepository => new ConnectionRepository(_context, _mapper);

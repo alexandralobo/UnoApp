@@ -6,7 +6,7 @@ using API.Entities;
 
 namespace API.Interfaces
 {
-    public interface IGuestRepository
+    public interface IMemberRepository
     {
         Task<bool> CreateGuest(Guest guest);
         Task<bool> SignUp(LoginUser loginUser);

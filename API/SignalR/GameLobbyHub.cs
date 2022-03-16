@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using API.Entities;
 using API.Extensions;
@@ -119,15 +120,53 @@ namespace API.SignalR
 
         }
 
-        // Currently working on this
-        public async Task<GameLobby> StartGame(int id)
+        public async Task<string> IsPrivate(bool privateRoom)
         {
-            var gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyById(id);
-            if (gameLobby == null) throw new HubException("That game lobby does not exist!");
+            var httpContext = Context.GetHttpContext();
+            var gameLobbyId = Int32.Parse(httpContext.Request.Query["lobbyId"].ToString());
+            var gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyById(gameLobbyId);
+            var group = await _unitOfWork.GameLobbyRepository.GetGroup(gameLobby.GameLobbyName);
+
+            if (privateRoom) 
+            {
+                StringBuilder builder = new StringBuilder();
+                Random random = new Random();
+                char ch;
+                for (int i = 0; i < 10; i++)
+                {
+                    ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65)));
+                    builder.Append(ch);
+                }
+
+                gameLobby.Password = builder.ToString();
+            } else
+            {
+                gameLobby.Password = " ";
+            }
+
+            if (await _unitOfWork.Complete())
+            {
+                await Clients.Group(group.Name).SendAsync("GetGameLobby", gameLobby);
+                return gameLobby.Password;
+            }
+            else
+            {
+                throw new HubException("Failed to make it private/public the game!");
+            }
+        }
+        
+        // Currently working on this
+        public async Task<GameLobby> StartGame()
+        {
+            var httpContext = Context.GetHttpContext();
+            var gameLobbyId = Int32.Parse(httpContext.Request.Query["lobbyId"].ToString());            
+
+            var gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyById(gameLobbyId);
+            if (gameLobby == null) throw new HubException("That game lobby does not exist!");            
             
             if (gameLobby.NumberOfElements < 2) throw new HubException("Waiting for more players");
 
-            if (gameLobby.GameStatus == "ongoing") throw new HubException("The game has started.");
+            if (gameLobby.GameStatus == "ongoing") throw new HubException("The game has already started.");
 
             gameLobby = await _unitOfWork.GameLobbyRepository.StartGame(gameLobby);
 

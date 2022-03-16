@@ -40,6 +40,7 @@ export class GameComponent implements OnInit {
   pickedColour: string = "none";
 
   uno: boolean = false;
+  private: boolean = false;
 
   constructor(
     private http: HttpClient,
@@ -97,7 +98,7 @@ export class GameComponent implements OnInit {
   // Game methods
   async startGame() {
     await this.gameService.startGame(this.gameLobbyId)
-      .catch(Error);  
+      .catch(e => console.log(e));  
   }
 
   // Cards methods
@@ -271,6 +272,16 @@ export class GameComponent implements OnInit {
     
   }
 
-  
+  isPrivate(priv) {   
+      this.private = priv;
+      try {
+        this.gameService.isPrivate(priv);
+      } catch (e) {
+        console.error(e);
+      var error: string = e.toString();
+      this.error = error.split(':', 3)[2];
+      }
+     
+  }
 
 }

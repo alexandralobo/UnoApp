@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Data
 {
-    public class GuestRepository : IGuestRepository
+    public class MemberRepository : IMemberRepository
     {
         private readonly DataContext _context;
         private readonly IMapper _mappers;
-        public GuestRepository(DataContext context, IMapper mappers)
+        public MemberRepository(DataContext context, IMapper mappers)
         {
             _mappers = mappers;
             _context = context;

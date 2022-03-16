@@ -11,6 +11,7 @@ namespace API.Interfaces
         Task<ICollection<GameLobby>> GetGameLobbiesAsync();
         Task<GameLobby> GetGameLobbyByName(string name);
         Task<GameLobby> GetGameLobbyById(int id);
+        Task<GameLobby> GetGameLobbyWithPassword(string pw);
         Task<GameLobby> StartGame(GameLobby lobby);
         Task<GameLobby> JoinExistingLobby(int gameLobbyId);
         Task<GameLobby> JoinNewLobby(string name);
