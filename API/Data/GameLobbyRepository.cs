@@ -466,6 +466,14 @@ namespace API.Data
             }            
         }
 
+        public string DeleteGame(int gameLobbyId)
+        {
+            var gameLobby = _context.GameLobbies.Find(gameLobbyId);
+            var removed = _context.GameLobbies.Remove(gameLobby);
+
+            if (removed != null) return "Game Lobby w/ id " + gameLobbyId + " deleted!";
+            return "Game lobbyy does not exist";
+        }
 
     }
 }

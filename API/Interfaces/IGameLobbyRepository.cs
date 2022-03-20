@@ -28,5 +28,6 @@ namespace API.Interfaces
         Task<bool> Playable(Card pot, ICollection<Card> cards);
         Task<bool> PlayableWithColour(ICollection<Card> cards, string pickedColour);
         Task<string> UnoStatus(Connection connection);
+        string DeleteGame(int gameLobbyId);
     }
 }

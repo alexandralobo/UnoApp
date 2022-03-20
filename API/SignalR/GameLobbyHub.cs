@@ -56,10 +56,10 @@ namespace API.SignalR
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            //var group = await RemoveFromLobby();
-            //await Clients.Group(group.Name).SendAsync("UpdatedGroup", group);
-            //await base.OnDisconnectedAsync(exception);
-        }        
+            var group = await RemoveFromLobby();
+            await Clients.Group(group.Name).SendAsync("UpdatedGroup", group);
+            await base.OnDisconnectedAsync(exception);
+        }    
 
         private async Task<ICollection<GameLobby>> GetLobbies()
         {
@@ -357,9 +357,7 @@ namespace API.SignalR
 
             GameLobby gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyById(gameLobbyId);
             var group = await _unitOfWork.GameLobbyRepository.GetGroup(gameLobby.GameLobbyName);
-            Connection connection = await _unitOfWork.ConnectionRepository.GetConnection(gameLobby.CurrentPlayer);
-
-            if (connection.Uno == true) connection.Uno = false;
+            Connection connection = await _unitOfWork.ConnectionRepository.GetConnection(gameLobby.CurrentPlayer);      
 
             ICollection<Card> cards = connection.Cards;
 
@@ -438,6 +436,26 @@ namespace API.SignalR
             {
                 throw new HubException("Could not change the uno status!");
             }
+        }
+
+        public async Task<string> FinishedGame()
+        {
+            var httpContext = Context.GetHttpContext();
+            var gameLobbyId = Int32.Parse(httpContext.Request.Query["lobbyId"].ToString());
+
+            var msg = _unitOfWork.GameLobbyRepository.DeleteGame(gameLobbyId);
+            if (msg == "Connection does not exist") return msg;
+
+            GameLobby gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyById(gameLobbyId);
+            Group group = await _unitOfWork.GameLobbyRepository.GetGroup(gameLobby.GameLobbyName);
+
+            foreach (Connection connection in group.Connections)
+            {
+                _unitOfWork.ConnectionRepository.DeleteConnection(connection.Username);
+            }
+
+            if (await _unitOfWork.Complete()) return "Game deleted!";
+            throw new HubException("Could not delete the game!");
         }
     }
 }

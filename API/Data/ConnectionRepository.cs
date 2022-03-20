@@ -37,5 +37,17 @@ namespace API.Data
                 .Include(c => c.Cards)
                 .FirstOrDefault();
         }
+
+        public string DeleteConnection(string username)
+        {
+            var connection = _context.Connections
+                .Where(c => c.Username == username)
+                .FirstOrDefault();
+
+            var removed =_context.Connections.Remove(connection);
+
+            if (removed != null) return "Connection w/ username " + username + " deleted!";
+            return "Connection does not exist";
+        }
     }
 }

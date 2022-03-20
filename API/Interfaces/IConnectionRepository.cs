@@ -12,5 +12,6 @@ namespace API.Interfaces
 
         Task<bool> SessionExists(string username);
         Task<Connection> GetConnection(string username);
+        string DeleteConnection(string username);
     }
 }
