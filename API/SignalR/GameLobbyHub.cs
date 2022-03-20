@@ -208,7 +208,7 @@ namespace API.SignalR
                     if (message == "Card type is incorrect!") throw new HubException(message);
                     i++;
                 }
-            }
+            }   
 
             var numberOfCards = connection.Cards.Count();
             if  (numberOfCards == 0)

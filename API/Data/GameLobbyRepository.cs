@@ -57,12 +57,14 @@ namespace API.Data
 
         public async Task<bool> UserExists(string username)
         {
-            return await _context.Guests.AnyAsync(user => user.UserName == username.ToLower());
+            return await _context.Guests.AnyAsync(user => user.UserName == username.ToLower()) || await _context.Users.AnyAsync(user => user.UserName == username.ToLower());
         }
 
         public async Task<ICollection<GameLobby>> GetGameLobbiesAsync()
         {
-            return await _context.GameLobbies.ToListAsync();
+            return await _context.GameLobbies
+                .Where(g => g.Password == " " && g.GameStatus == "waiting")
+                .ToListAsync();
         }
 
         public async Task<GameLobby> GetGameLobbyByName(string groupName)
@@ -326,6 +328,7 @@ namespace API.Data
                 lobby.DrawableCards.Remove(card);
 
             }
+            connection.Uno = false;
             return card;
         }     
 
@@ -349,6 +352,8 @@ namespace API.Data
                 playerToDraw.Cards.Add(card);
                 lobby.DrawableCards.Remove(card);
             }
+
+            playerToDraw.Uno = false;
         }
         private Connection GetPlayer(GameLobby lobby, Group group)
         {

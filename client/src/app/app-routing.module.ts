@@ -5,14 +5,16 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { GameComponent } from './game/game.component';
 import { HomeComponent } from './home/home.component';
 import { RegisterComponent } from './register/register.component';
+import { WelcomeScreenComponent } from './welcome-screen/welcome-screen.component';
 
 const routes: Routes = [
-  {path: '', data: {gameLobbyId: ''}, component:HomeComponent},
+  {path: '', data: {gameLobbyId: ''}, component: WelcomeScreenComponent},
   {
     path:'',
     runGuardsAndResolvers:'always',
     //canActivate: [AuthGuard],
     children: [
+      {path: 'home', component:HomeComponent},
       {path: 'dashboard', component: DashboardComponent},
       {path: 'game', component: GameComponent},
       {path: 'login', component: RegisterComponent}

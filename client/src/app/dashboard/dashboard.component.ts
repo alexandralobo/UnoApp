@@ -24,7 +24,7 @@ export class DashboardComponent implements OnInit {
 
   gameLobbies: GameLobby[] = [];
   loading = false;
-  guest: User;
+  user: User;
   create = false;
   joinPrivate = false;
   private routeData;
@@ -39,7 +39,7 @@ export class DashboardComponent implements OnInit {
     private toastr: ToastrService,
     public presence: PresenceService) 
     {
-    this.accountService.currentUser$.pipe(take(1)).subscribe(guest => this.guest = guest);
+    this.accountService.currentUser$.pipe(take(1)).subscribe(user => this.user = user);
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
    }
 
@@ -62,17 +62,17 @@ export class DashboardComponent implements OnInit {
     
     this.http.get<GameLobby[]>('https://localhost:5001/api/gameLobby/').subscribe({ 
       next: response => {
-        response.forEach(lobby => {    
-          if (lobby.gameStatus === "waiting") {
-            this.gameLobbies = [];
+        this.gameLobbies = [];
+        if (response) {
+          response.forEach(lobby => {
             this.gameLobbies.push(lobby);
-          }
-        });
-        //this.gameLobbies = response,
+          })
+        }
         this.loading = false
       },
       error: (e) => console.error(e)
     });
+    //console.log(this.accountService.getDecodedToken(this.user.token))
   }
 
   joinExistingGame(gameId) {
@@ -81,7 +81,7 @@ export class DashboardComponent implements OnInit {
     this.joinExistingForm = this.fb.group({
       gameLobbyId: [gameId]
     })
-    this.http.post('https://localhost:5001/api/gameLobby/joinExistingLobby/' + this.guest.username, this.joinExistingForm.value).subscribe({ 
+    this.http.post('https://localhost:5001/api/gameLobby/joinExistingLobby/' + this.user.username, this.joinExistingForm.value).subscribe({ 
       next: () => {
         this.loading = false
         this.router.navigate(["/game"], {queryParams: {gameLobbyId: gameId}});

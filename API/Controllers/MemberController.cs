@@ -34,7 +34,7 @@ namespace API.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserWithTokenDto>>> GetGuests()
         {
@@ -51,8 +51,7 @@ namespace API.Controllers
 
             return Ok(guestsDto);
         }
-
-        // TESTED - Working
+                
         [HttpPost("join")]
         public async Task<ActionResult<UserWithTokenDto>> GuestCreation(GuestDto guestDto)
         {
@@ -69,8 +68,8 @@ namespace API.Controllers
             guest = await _unitOfWork.MemberRepository.GetGuestByUsernameAsync(guest.UserName);
             var details = new DetailsToTokenDto
             {
-                Id = guest.Id,
-                UserName = guest.UserName
+                UserName = guest.UserName,
+                Type = "Guest"
             };
 
             return new UserWithTokenDto
@@ -81,27 +80,27 @@ namespace API.Controllers
             };
         }
         
-        // Working
+
         [HttpPost("signUp")]
-        public async Task<ActionResult<UserWithTokenDto>> SignUp(LoginUserDto loginUserDto)
+        public async Task<ActionResult<UserWithTokenDto>> SignUp(SignUpDto signUpDto)
         {
-            bool UsersExists = await _unitOfWork.MemberRepository.UserExists(loginUserDto.Username);
+            bool UsersExists = await _unitOfWork.MemberRepository.UserExists(signUpDto.Username);
             if (UsersExists) return BadRequest("Username is taken!");
 
-            var loginUser = _mapper.Map<LoginUser>(loginUserDto);
-            loginUser.UserName = loginUserDto.Username.ToLower();
+            var loginUser = _mapper.Map<LoginUser>(signUpDto);
+            loginUser.UserName = signUpDto.Username.ToLower();
 
-            var result = await _userManager.CreateAsync(loginUser, loginUserDto.Password);
+            var result = await _userManager.CreateAsync(loginUser, signUpDto.Password);
             if (!result.Succeeded) return BadRequest(result.Errors);
 
             //var saved = await _unitOfWork.GuestRepository.SignUp(loginUser);
             //if (!saved) return BadRequest("A problem occurred");
 
-            loginUser = await _unitOfWork.MemberRepository.GetLoginUserByUsernameAsync(loginUser.UserName);
+            loginUser = await _unitOfWork.MemberRepository.GetLoginUserByUsernameAsync(loginUser.UserName.ToLower());
             var details = new DetailsToTokenDto
             {
-                Id = loginUser.Id,
-                UserName = loginUser.UserName
+                UserName = loginUser.UserName,
+                Type = "LoginUser"
             };
 
             return new UserWithTokenDto
@@ -109,6 +108,32 @@ namespace API.Controllers
                 Username = loginUser.UserName,
                 Token = _tokenService.CreateToken(details)
 
+            };
+        }
+
+        [HttpPost("login")]
+        public async Task<ActionResult<UserWithTokenDto>> Login(LoginDto loginDto)
+        {
+
+            var user = await _unitOfWork.MemberRepository.GetLoginUserByUsernameAsync(loginDto.Username.ToLower());
+
+            if (user == null) return Unauthorized("Invalid username");
+
+            var result = await _signInManager
+                .CheckPasswordSignInAsync(user, loginDto.Password, false);
+
+            if (!result.Succeeded) return Unauthorized();
+
+            var details = new DetailsToTokenDto
+            {
+                UserName = user.UserName,
+                Type = "LoginUser"
+            };
+
+            return new UserWithTokenDto
+            {
+                Username = loginDto.Username,
+                Token = _tokenService.CreateToken(details)
             };
         }
     }

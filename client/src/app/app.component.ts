@@ -13,24 +13,22 @@ import { PresenceService } from './_services/presence.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit{  
-  currentId : number;
+  currentId: number;  
 
   constructor(private accountService: AccountService, private presence: PresenceService) {} 
 
   ngOnInit() {   
-      this.setCurrentUser();
+    
   }
 
-  setCurrentUser() {
-    const guest: User = JSON.parse(localStorage.getItem('user'));
+  // setCurrentUser() {
+  //   const user: User = JSON.parse(localStorage.getItem('user'));
 
-    if (guest) {
-      this.accountService.setCurrentUser(guest);
-      this.presence.createHubConnection(guest);
-    }
-  }
-
-   
+  //   if (user) {
+  //     this.accountService.setCurrentUser(user);
+  //     this.presence.createHubConnection(user);
+  //   }
+  // } 
 
   
 }

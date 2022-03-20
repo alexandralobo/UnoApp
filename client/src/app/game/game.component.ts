@@ -17,11 +17,11 @@ import { GameService } from '../_services/game.service';
   styleUrls: ['./game.component.css']
 })
 export class GameComponent implements OnInit {
-  guest: User;
-  
-  gameLobbyId: number;   
+  user: User;
+
+  gameLobbyId: number;
   gameLobby: GameLobby[];
-  prevPlayer : string;
+  prevPlayer: string;
 
   players: Connection[];
   otherPlayers: Connection[];
@@ -30,10 +30,10 @@ export class GameComponent implements OnInit {
   profilePics: string[] = []
 
   cardsPosition: string[];
-  
+
   card: Card;
   cards: Card[] = [];
-  submitted : boolean = false;
+  submitted: boolean = false;
 
   error: string = "";
   message: string = "";
@@ -45,23 +45,23 @@ export class GameComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private accountService: AccountService,
-    public gameService:  GameService,
+    public gameService: GameService,
     private cardService: CardService,
     private router: Router,
-    private route: ActivatedRoute, 
-    private toastr: ToastrService) { 
-    this.accountService.currentUser$.pipe(take(1)).subscribe(guest => this.guest = guest);
-    this.router.routeReuseStrategy.shouldReuseRoute = () => false;    
+    private route: ActivatedRoute,
+    private toastr: ToastrService) {
+    this.accountService.currentUser$.pipe(take(1)).subscribe(user => this.user = user);
+    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
   }
 
-  ngOnInit(): void { 
+  ngOnInit(): void {
     this.gameLobbyId = +this.route.snapshot.queryParamMap.get("gameLobbyId");
-    this.gameService.createHubConnection(this.guest, this.gameLobbyId);
+    this.gameService.createHubConnection(this.user, this.gameLobbyId);
     //this.loadPlayers();
     //this.loadGameLobby();
     this.gameService.players$.subscribe(players => this.players = players);
-    this.gameService.players$.subscribe(players => this.otherPlayers = players.filter(p => p.username !== this.guest.username));
-    this.gameService.gameLobby$.subscribe(game => {this.gameLobby = game, this.pickedColour = game[0]?.pickedColour});
+    this.gameService.players$.subscribe(players => this.otherPlayers = players.filter(p => p.username !== this.user.username));
+    this.gameService.gameLobby$.subscribe(game => { this.gameLobby = game, this.pickedColour = game[0]?.pickedColour });
 
     // this.gameService.players$.forEach(player => {
     //   this.imagesSelected.push(this.getRandomImage());      
@@ -73,9 +73,14 @@ export class GameComponent implements OnInit {
     for (let i = 0; i < this.gameLobby[0]?.numberOfElements; i++) {
       var player = this.players[i];
       for (let j = 0; j < 10; j++) {
-        this.cardsPosition.push('calc(300px + '+ j +' * 50px)')
-      }      
+        this.cardsPosition?.push('calc(300px + ' + j + ' * 50px)')
+      }
     }
+    if (this.user) {
+      console.log(this.accountService.getDecodedToken(this.user?.token)[1])
+      console.log(this.user.username);
+    }
+
   }
 
   loadGameLobby() {
@@ -86,11 +91,15 @@ export class GameComponent implements OnInit {
 
   loadPlayers() {
     this.gameService.players$.subscribe({
-      next: players => this.players = players.filter(p => p.username !== this.guest.username)
+      next: players => this.players = players.filter(p => p.username !== this.user.username)
+    });
+
+    this.players.forEach(element => {
+      console.log(element.username);
     });
   }
   getRandomImage(position) {
-    this.images = ["f1.jpg", "f2.jpg", "f3.jpg", "f4.jpg", "m1.jpg", "m2.jpg","m3.jpg", "m4.jpg"]        
+    this.images = ["f1.jpg", "f2.jpg", "f3.jpg", "f4.jpg", "m1.jpg", "m2.jpg", "m3.jpg", "m4.jpg"]
     // return "/assets/images/" + this.images[Math.floor(Math.random() * this.images.length)];
     return "/assets/images/" + this.images[position];
   }
@@ -98,7 +107,7 @@ export class GameComponent implements OnInit {
   // Game methods
   async startGame() {
     await this.gameService.startGame(this.gameLobbyId)
-      .catch(e => console.log(e));  
+      .catch(e => console.log(e));
   }
 
   // Cards methods
@@ -109,14 +118,14 @@ export class GameComponent implements OnInit {
     var myDiv = document.getElementById(element);
 
 
-    if (position === 'bottom') { 
-      myDiv.style.left = 'calc(300px + '+ index +' * 50px)';
+    if (position === 'bottom') {
+      myDiv.style.left = 'calc(300px + ' + index + ' * 50px)';
     } else if (position === 'right') {
-      myDiv.style.right = 'calc(-50px + '+ index +' * 20px)';
-    } else if (position === 'top') { 
-      myDiv.style.left = 'calc(150px + '+ "(" + index +' * 20px))';
-    } else if (position ==='left') {
-      myDiv.style.left = 'calc(-50px + '+ index +' * 20px)';;
+      myDiv.style.right = 'calc(-50px + ' + index + ' * 20px)';
+    } else if (position === 'top') {
+      myDiv.style.left = 'calc(150px + ' + "(" + index + ' * 20px))';
+    } else if (position === 'left') {
+      myDiv.style.left = 'calc(-50px + ' + index + ' * 20px)';;
     }
   }
 
@@ -125,11 +134,11 @@ export class GameComponent implements OnInit {
       //console.log("HERE " + id)
       document.getElementById(id).style.border = "10px solid #FF0000";
       //document.getElementById(id).style.border
-    } 
+    }
   }
 
   // working
-  getCardSource(card : Card) {
+  getCardSource(card: Card) {
     //console.error("Calling getCardSource");
     var cardName = this.cardService.setCardName(card);
     return "/assets/images/Cards/" + cardName;
@@ -143,18 +152,18 @@ export class GameComponent implements OnInit {
     return "/assets/images/Cards/" + this.card.fileName;
   }
 
-  cardsToPlay(card, id) {    
+  cardsToPlay(card, id) {
     //console.error("Calling cardsToPlay");
-    var myCard = document.getElementById(id);   
+    var myCard = document.getElementById(id);
 
     if (this.cards.includes(card)) {
-      this.cards = this.cards.filter(c => c.cardId !=card.cardId);       
+      this.cards = this.cards.filter(c => c.cardId != card.cardId);
       myCard.classList.remove('card-selected');
 
     } else {
       this.cards.push(card);
       myCard.classList.add('card-selected');
-    } 
+    }
 
     if (this.cards.length === 0) {
       document.getElementById("play").style.display = "none";
@@ -169,7 +178,7 @@ export class GameComponent implements OnInit {
     if (this.cards === []) {
       this.submitted = false;
     } else {
-      
+
       if (this.gameLobby[0].pickedColour === "none") {
 
         try {
@@ -181,22 +190,22 @@ export class GameComponent implements OnInit {
           var error: string = e.toString();
           this.error = error.split(':', 3)[2];
         }
-        
+
 
       } else {
         try {
-          await this.gameService.playByColour(this.cards, this.gameLobby[0].pickedColour)          
+          await this.gameService.playByColour(this.cards, this.gameLobby[0].pickedColour)
             .then(msg => this.message = msg);
-            
+
         } catch (e) {
           console.error(e);
           var error: string = e.toString();
           this.error = error.split(':', 3)[2];
-        }          
+        }
       }
       //console.log(this.message);       
-      if (this.message === "Pick a colour") {        
-        document.getElementById("pick-colour").style.display = "block";        
+      if (this.message === "Pick a colour") {
+        document.getElementById("pick-colour").style.display = "block";
       }
       this.cards = [];
       this.submitted = true;
@@ -205,40 +214,40 @@ export class GameComponent implements OnInit {
         this.prevPlayer = _gameLobby.currentPlayer;
       });
 
-    }    
+    }
   }
 
   getCard() {
     this.error = "";
     if (this.gameLobby[0].pickedColour === "none") {
       this.gameService.getCard()
-      .catch(error => this.error = error)
+        .catch(error => this.error = error)
     } else {
       try {
         this.gameService.getCardByColour(this.pickedColour);
-      } catch (e) { 
+      } catch (e) {
         console.error(e);
         var error: string = e.toString();
         this.error = error.split(':', 3)[2];
       }
     }
-    
+
   }
 
-  pickColour(colour) { 
+  pickColour(colour) {
     this.error = "";
     try {
       this.gameService.pickColour(colour)
         .then(msg => this.message = msg);
-    } catch (e) { 
+    } catch (e) {
       console.error(e);
       var error: string = e.toString();
       this.error = error.split(':', 3)[2];
     }
-     
+
     if (this.message === "Next") {
       this.pickedColour === colour;
-      document.getElementById("pick-colour").style.display = "none";      
+      document.getElementById("pick-colour").style.display = "none";
     }
   }
 
@@ -246,42 +255,57 @@ export class GameComponent implements OnInit {
     this.error = "";
     try {
       this.gameService.UNO()
-        .then(msg => this.message = msg); 
+        .then(msg => this.message = msg);
     } catch (e) {
       console.error(e);
       var error: string = e.toString();
       this.error = error.split(':', 3)[2];
     }
 
-      if (this.message === "Uno!") {
-        this.uno = true;
-        document.getElementById("uno").style.display = "none";
-      }
+    if (this.message === "Uno!") {
+      this.uno = true;
+      document.getElementById("uno").style.display = "none";
+    }
   }
-  
+
   catchUno(username) {
     this.error = "";
     try {
       this.gameService.catchUno(username)
-      .then(msg => this.message = msg);  
+        .then(msg => this.message = msg);
     } catch (e) {
       console.error(e);
       var error: string = e.toString();
       this.error = error.split(':', 3)[2];
     }
-    
+
   }
 
-  isPrivate(priv) {   
-      this.private = priv;
-      try {
-        this.gameService.isPrivate(priv);
-      } catch (e) {
-        console.error(e);
+  // isPrivate(priv) {   
+  //     this.private = priv;
+  //     try {
+  //       this.gameService.isPrivate(priv);
+  //     } catch (e) {
+  //       console.error(e);
+  //     var error: string = e.toString();
+  //     this.error = error.split(':', 3)[2];
+  //     }
+
+  // }
+
+  togglePrivacy() {
+    this.private = !this.private
+    try {
+      this.gameService.isPrivate(this.private);
+    } catch (e) {
+      console.error(e);
       var error: string = e.toString();
       this.error = error.split(':', 3)[2];
-      }
-     
+    }
   }
+
+  // ngOnDestroy(): void {
+  //   this.gameService.stopHubConnection();
+  // }
 
 }

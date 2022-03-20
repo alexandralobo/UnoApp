@@ -7,10 +7,13 @@ using API.DTOs;
 using API.Entities;
 using API.Interfaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
 
 namespace API.Controllers
 {
+    [Authorize]
     public class GameLobbyController : BaseApiController
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -21,6 +24,7 @@ namespace API.Controllers
             _unitOfWork = unitOfWork;
         }
 
+        
         [HttpGet]
         public async Task<ActionResult<ICollection<GameLobby>>> GetLobbies()
         {
@@ -34,10 +38,8 @@ namespace API.Controllers
         {
             var lobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyById(gameLobbyId);
             return Ok(lobby);
-        }     
+        }
 
-
-        // TESTED - Working
         [HttpPost("joinExistingLobby/{username}")]
         public async Task<ActionResult<GameLobbyDto>> JoinExisting(string username, [FromBody] JsonElement body)
         {
@@ -50,23 +52,12 @@ namespace API.Controllers
             var gameLobby = await _unitOfWork.GameLobbyRepository.JoinExistingLobby(game.gameLobbyId);
             if (gameLobby == null) return BadRequest("The lobby is full!");
 
-            /*var connection = new Connection
-            {
-                Username = username,
-                GameLobbyId = gameLobby.GameLobbyId,
-                ConnectedGameLobby = gameLobby
-            };
-
-            await _unitOfWork.ConnectionRepository.CreateConnection(connection);*/
-
-            // if (!created) return BadRequest("Could not create connection. Try again!");
-
             if (await _unitOfWork.Complete()) return Ok();
 
             return BadRequest("Failed to join a lobby!");
         }
 
-        // TESTED - Working
+        
         [HttpPost("joinNewLobby/{username}")]
         public async Task<ActionResult<GameLobbyDto>> JoinNewLobby(string username, [FromBody] JsonElement body)
         {
@@ -78,22 +69,12 @@ namespace API.Controllers
 
             var gameLobby = await _unitOfWork.GameLobbyRepository.JoinNewLobby(game.lobbyName);
 
-            /*var connection = new Connection
-            {
-                Username = username,
-                GameLobbyId = gameLobby.GameLobbyId,
-                ConnectedGameLobby = gameLobby
-            };
-
-            await _unitOfWork.ConnectionRepository.CreateConnection(connection);*/
-
-            // if (!created) return BadRequest("Could not create connection. Try again!");
-
             if (await _unitOfWork.Complete()) return Ok(gameLobby.GameLobbyId);
 
             return BadRequest("Failed to create a lobby!");
         }
 
+       
         [HttpPost("joinPrivateRoom/{username}")]
         public async Task<ActionResult<int>> JoinPrivateRoom(string username, [FromBody] JsonElement body)
         {
@@ -114,7 +95,7 @@ namespace API.Controllers
 
         }
 
-
+        
         [HttpPost("pickColour")]
         public async Task<ActionResult<string>> PickColour(int gameLobbyId, string colour)
         {
@@ -131,10 +112,8 @@ namespace API.Controllers
 
             if (await _unitOfWork.Complete()) return Ok("Next");
             return BadRequest("Couldnt save your play!");
-        }        
-      
+        }
 
-        // empty deck
         [HttpGet("newDeck")]
         public async Task<ActionResult<string>> NewDeck(int gameLobbyId)
         {

@@ -12,7 +12,7 @@ export class AccountService {
   baseUrl = environment.apiUrl;
   private currentUserSource = new ReplaySubject<User>(1);
   currentUser$ = this.currentUserSource.asObservable();
-
+  type = "";
   constructor(private http: HttpClient, private presence: PresenceService) { }
 
   createGuest(model: any) {
@@ -37,13 +37,25 @@ export class AccountService {
     )
   }
 
+  login(model: any) {
+    return this.http.post(this.baseUrl + 'member/login', model).pipe(
+      map((user: User) => {
+        if (user) {
+          this.setCurrentUser(user);
+          console.log(JSON.stringify(user));
+          this.presence.createHubConnection(user);
+        }
+      })
+    )
+  }
 
   // later take care of the roles
   setCurrentUser(user: User) {
-    //guest.roles = [];
+    this.type = this.getDecodedToken(user.token).unique_name;
     //const roles = this.getDecodedToken(user.token).role;
     //Array.isArray(roles) ? user.roles = roles : user.roles.push(roles);
     localStorage.setItem('user', JSON.stringify(user));
+    //console.log(JSON.stringify(user))
     this.currentUserSource.next(user);
   }
 
@@ -52,8 +64,9 @@ export class AccountService {
     this.currentUserSource.next(null);
     this.presence.stopHubConnection();
   }
-  
-  /* getDecodedToken(token) {
+
+  // Type
+  getDecodedToken(token) {
     return JSON.parse(atob(token.split('.')[1]));
-  }*/
+  }
 }

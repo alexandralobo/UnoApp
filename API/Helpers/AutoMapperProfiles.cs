@@ -16,8 +16,8 @@ namespace API.Helpers
             CreateMap<UserWithTokenDto, Guest>();
             CreateMap<GuestDto, Guest>();
             CreateMap<Guest, GuestDto>();
-            CreateMap<LoginUser, LoginUserDto>();
-            CreateMap<LoginUserDto, LoginUser>();
+            CreateMap<LoginUser, SignUpDto>();
+            CreateMap<SignUpDto, LoginUser>();
             CreateMap<GameLobby, GameLobbyDto>();
             CreateMap<GameLobbyDto, GameLobby>();
         }

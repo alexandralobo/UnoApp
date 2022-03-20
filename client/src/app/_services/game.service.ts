@@ -22,23 +22,13 @@ export class GameService {
   private hubConnection: HubConnection;
   started: boolean = false;
 
-  // private gameLobbySource = new BehaviorSubject<GameLobby>({
-  //   gameLobbyId: 0,
-  //   gameLobbyName: null,
-  //   drawableCards: [],
-  //   cardPot: [],
-  //   lastCard: null,
-  //   currentPlayer: null,
-  //   gameStatus: null,
-  //   numberOfElements: 0,
-  // });
   private gameLobbySource = new BehaviorSubject<GameLobby[]>([]);
   gameLobby$ = this.gameLobbySource.asObservable();
 
   private playersSource = new BehaviorSubject<Connection[]>([]);
   players$ = this.playersSource.asObservable();;
 
-  guest: User;
+  user: User;
   gameLobbyId: number;
   nrOfElements: number;
 
@@ -47,14 +37,14 @@ export class GameService {
     private accountService: AccountService,
     private cardService: CardService,
     private router: Router) {
-    this.accountService.currentUser$.pipe(take(1)).subscribe(guest => this.guest = guest);
+    this.accountService.currentUser$.pipe(take(1)).subscribe(user => this.user = user);
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
   }
 
-  createHubConnection(guest: User, gameLobbyId: number) {
+  createHubConnection(user: User, gameLobbyId: number) {
     this.hubConnection = new HubConnectionBuilder()
       .withUrl(this.hubUrl + 'gamelobby?lobbyid=' + gameLobbyId, {
-        accessTokenFactory: () => guest.token
+        accessTokenFactory: () => user.token
       })
       .withAutomaticReconnect()
       .build()
@@ -62,19 +52,30 @@ export class GameService {
     this.hubConnection.start().catch(error => console.log(error));
     this.hubConnection.serverTimeoutInMilliseconds = 100000; // 100 second
 
-    this.hubConnection.on('GetGameLobby', (gameLobby: GameLobby) => {  
+    this.hubConnection.on('GetGameLobby', (gameLobby: GameLobby) => {
       this.gameLobbySource.next([gameLobby]);
       this.nrOfElements = gameLobby.numberOfElements;
       this.gameLobbyId = gameLobby.gameLobbyId;
-    })   
-    
+    })
+
     this.hubConnection.on('UpdatedGroup', (group: Group) => {
-        this.playersSource.next(group.connections);
+      this.playersSource.next(group.connections);
+
+      this.players$[0].forEach(element => {
+        console.log(element.username)
+      });
     })
   }
 
+  stopHubConnection() {
+    if (this.hubConnection) {
+      this.hubConnection.stop();
+    }
+    // here remove connection of the games
+  }
+
   joinNewGame(model: any) {
-    return this.http.post<number>('https://localhost:5001/api/gameLobby/joinNewLobby/' + this.guest.username, model);
+    return this.http.post<number>('https://localhost:5001/api/gameLobby/joinNewLobby/' + this.user.username, model);
   }
 
   joinExistingGame(model: any) {
@@ -82,7 +83,7 @@ export class GameService {
   }
 
   joinPrivateGame(model: any) {
-    return this.http.post<number>('https://localhost:5001/api/gameLobby/joinPrivateRoom/' + this.guest.username, model);
+    return this.http.post<number>('https://localhost:5001/api/gameLobby/joinPrivateRoom/' + this.user.username, model);
   }
 
   async startGame(gameLobbyId) {
@@ -91,7 +92,7 @@ export class GameService {
 
   async play(cards) {
     return this.hubConnection.invoke('Play', cards);
-  }  
+  }
 
   async playByColour(cards, colour) {
     return this.hubConnection.invoke('PlayWithChosenColour', cards, colour);
@@ -121,9 +122,7 @@ export class GameService {
   }
 
   // not sure if I need this method
-  getLobby() {
-    return this.http.get<GameLobby>('https://localhost:5001/api/gameLobby/' + this.gameLobbyId); 
-  }
-
-  
+  //   getLobby() {
+  //     return this.http.get<GameLobby>('https://localhost:5001/api/gameLobby/' + this.gameLobbyId); 
+  //   }
 }
