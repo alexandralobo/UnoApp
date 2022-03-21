@@ -6,29 +6,39 @@ import { GameLobby } from 'src/app/_models/game';
 import { User } from './_models/user';
 import { AccountService } from './_services/account.service';
 import { PresenceService } from './_services/presence.service';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { filter, map, mergeMap } from 'rxjs';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit{  
-  currentId: number;  
+export class AppComponent implements OnInit {
+  currentId: number;
+  visibility;
 
-  constructor(private accountService: AccountService, private presence: PresenceService) {} 
+  constructor(
+    private accountService: AccountService,
+    private presence: PresenceService,
+    private router: Router,
+    private activatedRoute: ActivatedRoute) { }
 
-  ngOnInit() {   
-    
+  ngOnInit() {
+    this.router.events.pipe(
+      filter(events => events instanceof NavigationEnd),
+      map(evt => this.activatedRoute),
+      map(route => {
+        while (route.firstChild) {
+          route = route.firstChild;
+        }
+        return route;
+      }))
+      .pipe(
+        filter(route => route.outlet === 'primary'),
+        mergeMap(route => route.data)
+      ).subscribe(x => x.nav === true ? this.visibility = true : this.visibility = false)
+
   }
 
-  // setCurrentUser() {
-  //   const user: User = JSON.parse(localStorage.getItem('user'));
-
-  //   if (user) {
-  //     this.accountService.setCurrentUser(user);
-  //     this.presence.createHubConnection(user);
-  //   }
-  // } 
-
-  
 }

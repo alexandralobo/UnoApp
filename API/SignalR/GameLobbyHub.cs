@@ -110,11 +110,15 @@ namespace API.SignalR
 
         private async Task<Group> RemoveFromLobby()
         {
-            var group = await _unitOfWork.GameLobbyRepository.GetGroupForConnection(Context.ConnectionId);
-            var connection = group.Connections.FirstOrDefault(x => x.ConnectionId == Context.ConnectionId);
-            var gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyByName(group.Name);
+            var group = await _unitOfWork.GameLobbyRepository.GetGroupForConnection(Context.ConnectionId);            
 
-            await _unitOfWork.GameLobbyRepository.RemoveConnection(gameLobby, group, connection);
+            if (group.Connections.Count > 0)
+            {
+                var gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyByName(group.Name);
+                var connection = group.Connections.FirstOrDefault(x => x.ConnectionId == Context.ConnectionId);
+                await _unitOfWork.GameLobbyRepository.RemoveConnection(gameLobby, group, connection);
+            }          
+            
             if (await _unitOfWork.Complete()) return group;
             throw new HubException("Failed to remove from group");
 

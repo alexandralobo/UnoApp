@@ -84,7 +84,7 @@
                     <div class="player-top" *ngIf="player?.username != user.username && i == 1">
                         <p class="text-center">{{player.username}}</p>
                         <img id="profile-top" class="profile" src="{{profilePics[2]}}" alt="NOT FOUND">
-                        {{setCurrentPlayer(player.username, "top")}}
+                        {{setCurrentPlayer(player.username, "profile-top")}}
 
                         <div *ngIf="_gameLobby?.gameStatus !== 'finished'">
                             <div class="cards" *ngFor="let card of player.cards; let c = index;" [attr.card-index]="c">
@@ -154,9 +154,9 @@
             </ul>
 
             <div class="game-finished text-center" *ngIf="_gameLobby?.gameStatus === 'finished'">
-                <h2> Game has finished!</h2>
+                <h2> The game has finished!</h2>
                 <h3> I hope you had an amazing game! </h3>
-                <button class="btn mr-3 mb-2" [routerLink]="'../dashboard'">
+                <button class="btn mr-3 mb-2" [routerLink]="'../dashboard'" (click)="ngOnDestroy()">
                     Play Again! </button>
             </div>
         </div>

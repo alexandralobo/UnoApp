@@ -2,13 +2,31 @@
   color: white;
 }
 
+.h2 {
+  font-size: 2.5em;
+}
+
+.btn {
+  font-size: 1.5em;
+}
+
 .frm {
-  background: rgb(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.87);
+  border-radius: 8px;
   border-color: #000;
 }
 
 @media screen and (max-width: 1000px) {
-  .form frm {
+  .register-guest {
     width: 100%;
   }
+}
+
+.register-guest {
+  width: 125%;
+  bottom: 0px;
+}
+
+.form-group button:hover {
+  background-color: rgba(124, 2, 2, 0.63);
 }

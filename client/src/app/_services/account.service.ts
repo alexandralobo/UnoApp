@@ -12,7 +12,7 @@ export class AccountService {
   baseUrl = environment.apiUrl;
   private currentUserSource = new ReplaySubject<User>(1);
   currentUser$ = this.currentUserSource.asObservable();
-  type = "";
+  typ = "";
   constructor(private http: HttpClient, private presence: PresenceService) { }
 
   createGuest(model: any) {
@@ -51,7 +51,7 @@ export class AccountService {
 
   // later take care of the roles
   setCurrentUser(user: User) {
-    this.type = this.getDecodedToken(user.token).unique_name;
+    this.typ = this.getDecodedToken(user.token).typ;
     //const roles = this.getDecodedToken(user.token).role;
     //Array.isArray(roles) ? user.roles = roles : user.roles.push(roles);
     localStorage.setItem('user', JSON.stringify(user));

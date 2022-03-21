@@ -40,6 +40,7 @@
   padding: 10px;
   background-color: #fff;
   border: 1px solid #ddd;
+  border-radius: 8px;
 }
 
 .form-inline button {
@@ -51,7 +52,7 @@
 }
 
 .form-inline button:hover {
-  background-color: royalblue;
+  background-color: rgba(124, 2, 2, 0.63);
 }
 
 @media (max-width: 800px) {

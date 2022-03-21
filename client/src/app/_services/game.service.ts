@@ -60,16 +60,13 @@ export class GameService {
 
     this.hubConnection.on('UpdatedGroup', (group: Group) => {
       this.playersSource.next(group.connections);
-
-      this.players$[0].forEach(element => {
-        console.log(element.username)
-      });
     })
   }
 
   stopHubConnection() {
     if (this.hubConnection) {
       this.hubConnection.stop();
+      return this.hubConnection.invoke('RemoveFromLobby');
     }
     // here remove connection of the games
   }
@@ -121,6 +118,9 @@ export class GameService {
     return this.hubConnection.invoke("IsPrivate", priv);
   }
 
+  finishedGame() {
+    return this.hubConnection.invoke('FinishedGame');
+  }
   // not sure if I need this method
   //   getLobby() {
   //     return this.http.get<GameLobby>('https://localhost:5001/api/gameLobby/' + this.gameLobbyId); 

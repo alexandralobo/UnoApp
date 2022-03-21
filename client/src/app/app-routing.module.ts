@@ -8,16 +8,16 @@ import { RegisterComponent } from './register/register.component';
 import { WelcomeScreenComponent } from './welcome-screen/welcome-screen.component';
 
 const routes: Routes = [
-  {path: '', data: {gameLobbyId: ''}, component: WelcomeScreenComponent},
+  { path: '', data: { gameLobbyId: '', nav: false }, component: WelcomeScreenComponent },
   {
-    path:'',
-    runGuardsAndResolvers:'always',
+    path: '',
+    runGuardsAndResolvers: 'always',
     //canActivate: [AuthGuard],
     children: [
-      {path: 'home', component:HomeComponent},
-      {path: 'dashboard', component: DashboardComponent},
-      {path: 'game', component: GameComponent},
-      {path: 'login', component: RegisterComponent}
+      { path: 'home', component: HomeComponent, data: { nav: true } },
+      { path: 'dashboard', component: DashboardComponent, data: { nav: true } },
+      { path: 'game', component: GameComponent, data: { nav: true } },
+      { path: 'login', component: RegisterComponent, data: { nav: true } }
     ]
   }
 ];

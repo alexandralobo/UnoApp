@@ -1,4 +1,43 @@
+/* button of play*/
 .btn {
+  color: white;
   position: absolute;
-  margin: auto;
+  right: 45%;
+  top: 85%;
+  width: 300px;
+  background-color: black;
+  border-radius: 20px;
+}
+
+.text-center {
+  font-size: 1.5cm;
+}
+
+.center {
+  text-align: center;
+}
+
+/* Welcome text*/
+.welcome-text h2 {
+  color: white;
+  size: 1.5cm;
+  text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000,
+    2px 2px 0 #000;
+}
+
+.welcome-text {
+  position: absolute;
+  right: 10%;
+  top: 35%;
+  width: 15%;
+}
+
+@media screen and (max-width: 600px) {
+  .center {
+    width: 100%;
+  }
+
+  .welcome-text {
+    width: 100%;
+  }
 }

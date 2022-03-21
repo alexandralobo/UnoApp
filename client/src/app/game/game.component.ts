@@ -60,7 +60,8 @@ export class GameComponent implements OnInit {
     //this.loadPlayers();
     //this.loadGameLobby();
     this.gameService.players$.subscribe(players => this.players = players);
-    this.gameService.players$.subscribe(players => this.otherPlayers = players.filter(p => p.username !== this.user.username));
+    this.gameService.players$.subscribe(players => this.otherPlayers = this.orderOfPlayers(players));
+    //this.orderOfPlayers(this.players);
     this.gameService.gameLobby$.subscribe(game => { this.gameLobby = game, this.pickedColour = game[0]?.pickedColour });
 
     // this.gameService.players$.forEach(player => {
@@ -83,21 +84,50 @@ export class GameComponent implements OnInit {
 
   }
 
-  loadGameLobby() {
-    this.gameService.gameLobby$.subscribe({
-      next: game => this.gameLobby = game
-    })
+  orderOfPlayers(players: Connection[]): Connection[] {
+
+    let tmpPlayers = [];
+
+    let currentPlayerIndex = players.findIndex(player => player.username === this.user.username);
+
+    for (let index = currentPlayerIndex + 1; index < players.length; index++) {
+      tmpPlayers.push(players[index])
+    }
+
+    for (let index = 0; index < currentPlayerIndex; index++) {
+      tmpPlayers.push(players[index])
+    }
+
+    console.log(tmpPlayers)
+
+    return tmpPlayers;
+
+    // var position;
+
+    // for (let index = 0; index < players.length; index++) {
+    //   if (players[index].username == this.user.username) {
+    //     position = players[index];
+    //     break;
+    //   }
+    // }
+    // var connections = [];
+    // if (position == 0) {
+    //   players.filter(p => p.username !== this.user.username);
+    // } else {
+    //   for (let index = position; index < players.length; index++) {
+    //     connections.push(players[index]);
+    //   }
+    //   for (let index = 0; index < position; index++) {
+    //     connections.push(players[index]);
+    //   }
+
+    // }
+    // connections.forEach(player => {
+    //   console.log(player.username);
+    // });
+    // return connections;
   }
 
-  loadPlayers() {
-    this.gameService.players$.subscribe({
-      next: players => this.players = players.filter(p => p.username !== this.user.username)
-    });
-
-    this.players.forEach(element => {
-      console.log(element.username);
-    });
-  }
   getRandomImage(position) {
     this.images = ["f1.jpg", "f2.jpg", "f3.jpg", "f4.jpg", "m1.jpg", "m2.jpg", "m3.jpg", "m4.jpg"]
     // return "/assets/images/" + this.images[Math.floor(Math.random() * this.images.length)];
@@ -281,18 +311,6 @@ export class GameComponent implements OnInit {
 
   }
 
-  // isPrivate(priv) {   
-  //     this.private = priv;
-  //     try {
-  //       this.gameService.isPrivate(priv);
-  //     } catch (e) {
-  //       console.error(e);
-  //     var error: string = e.toString();
-  //     this.error = error.split(':', 3)[2];
-  //     }
-
-  // }
-
   togglePrivacy() {
     this.private = !this.private
     try {
@@ -304,8 +322,19 @@ export class GameComponent implements OnInit {
     }
   }
 
-  // ngOnDestroy(): void {
-  //   this.gameService.stopHubConnection();
-  // }
+  ngOnDestroy(): void {
+    this.gameService.stopHubConnection();
+
+    if (this.gameLobby[0].gameStatus === 'finished') {
+      try {
+        this.gameService.finishedGame();
+      } catch (e) {
+        console.error(e);
+        var error: string = e.toString();
+        this.error = error.split(':', 3)[2];
+      }
+
+    }
+  }
 
 }

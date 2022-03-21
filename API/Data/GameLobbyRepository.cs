@@ -175,15 +175,21 @@ namespace API.Data
             //    //connection.ConnectionId = null;
             //} else
             if (gameLobby.GameStatus == "waiting")
-            {
-                _context.Connections.Remove(connection);     
+            {               
+                _context.Connections.Remove(connection);
                 group.Connections.Remove(connection);
+                gameLobby.NumberOfElements -= 1;
 
             } else if (group.Connections.Count() == 0 || gameLobby.GameStatus == "finished")
             {
                 _context.Connections.Remove(connection);
                 _context.Groups.Remove(group);
                 _context.GameLobbies.Remove(gameLobby);
+            } else
+            {
+                _context.Connections.Remove(connection);
+                group.Connections.Remove(connection);
+                gameLobby.NumberOfElements -= 1;
             }
         }
 
