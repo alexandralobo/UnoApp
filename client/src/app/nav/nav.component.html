@@ -13,16 +13,16 @@
 
   <ul class="nav nav-pills" *ngIf="(accountService.currentUser$ | async) === null">
     <li class="nav-item">
-      <a href="#" class="nav-link" style="color:white;" (click)="openDialog()">Join us</a>
+      <a class="nav-link" style="color:white;" routerLink="/login">Join us</a>
     </li>
     <li class="nav-item">
-      <a href="#" class="nav-link" style="color:white;" routerLink="/rules">About us</a>
+      <a href="#" class="nav-link" style="color:white;" routerLink="/aboutUs">About us</a>
     </li>
   </ul>
 
   <ul class="nav nav-pills" *ngIf="(accountService.currentUser$ | async) && isInGame()">
     <li class="nav-item">
-      <a href="#" class="nav-link" style="color:white;" routerLink="./rules">Rules</a>
+      <a class="nav-link" style="color:white;" (click)="openDialog()">Rules</a>
     </li>
     <li class="nav-item">
       <a href="#" class="nav-link" style="color:white;" routerLink="/home">Support</a>

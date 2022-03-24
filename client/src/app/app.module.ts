@@ -18,9 +18,10 @@ import { WelcomeScreenComponent } from './welcome-screen/welcome-screen.componen
 import { JwtInterceptor } from './_interceptor/jwt.interceptor';
 import { AboutUsComponent } from './about-us/about-us.component';
 import { RulesComponent } from './rules/rules.component';
+import { MatDialogModule, MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
 
 @NgModule({
-  declarations: [    
+  declarations: [
     AppComponent,
     NavComponent,
     GuestRegisterComponent,
@@ -41,10 +42,12 @@ import { RulesComponent } from './rules/rules.component';
     BrowserAnimationsModule,
     FormsModule,
     ReactiveFormsModule,
-    SharedModule
+    SharedModule,
+    MatDialogModule
   ],
   providers: [
-    {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true}
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+    { provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: { hasBackdrop: false } }
   ],
   bootstrap: [AppComponent]
 })

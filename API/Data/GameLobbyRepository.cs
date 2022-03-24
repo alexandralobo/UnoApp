@@ -143,7 +143,7 @@ namespace API.Data
             int cardIndex = r.Next(lobby.DrawableCards.Count);
        
             Card card = lobby.DrawableCards.ElementAt(cardIndex);
-            while (card.Type != "Wild" && card.Type != "WildDraw4")
+            while (card.Type == "Wild" && card.Type == "WildDraw4")
             {
                card = lobby.DrawableCards.ElementAt(cardIndex);
             }
@@ -280,6 +280,7 @@ namespace API.Data
                 
                 case "Draw2":
                     await NextPlayerDraw(gameLobby, 2);
+                    NextTurn(gameLobby, group);
                     return "Next";
                 
                 case "WildDraw4":

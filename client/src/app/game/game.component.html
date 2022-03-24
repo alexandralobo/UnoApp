@@ -51,13 +51,14 @@
                             <button class="btn btn-danger mr-3 mb-2" (click)="submitPlay()"> Play!</button>
                         </div>
 
-                        <div class="error-messages text-center" *ngIf="error != '' && error != undefined">
+                        <div class="error-messages text-center" *ngIf="error != ''">
                             <p style=" color: white;"> {{error}} </p>
+                        </div>
+                        <div class="error-messages text-center" *ngIf="message != '' && message != 'Next'">
+                            <p style=" color: white;"> {{message}} </p>
                         </div>
                     </div>
                 </div>
-
-
 
                 <div *ngFor="let player of otherPlayers; let i = index" [attr.data-index]="i">
                     <div class="player-right" *ngIf="player?.username != user.username && i == 0">
