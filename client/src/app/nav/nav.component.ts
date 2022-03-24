@@ -9,23 +9,31 @@ import { AccountService } from '../_services/account.service';
 })
 export class NavComponent implements OnInit {
   model: any = {}
+  inGame: boolean = false
 
-  constructor(public accountService: AccountService, private router: Router,
-    /*private toastr: ToastrService*/) { }
+  constructor(public accountService: AccountService, private router: Router) { }
 
   ngOnInit(): void {
-    
+
+  }
+
+  openDialog() {
+    // const dialogRef = this.dialog
+  }
+  isInGame() {
+    var url = this.router.url.split('?');
+    return url[0].match("/game")
   }
 
   login() {
-    this.accountService.login(this.model).subscribe(response => { 
+    this.accountService.login(this.model).subscribe(response => {
       this.router.navigateByUrl('/dashboard');
     });
   }
 
   logout() {
     this.accountService.logout();
-    this.router.navigateByUrl('/');
+    this.router.navigateByUrl('/home');
   }
 
 }

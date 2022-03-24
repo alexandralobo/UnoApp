@@ -15,7 +15,7 @@
                     </label>
                     <label style="margin-left: 2em;">Private</label>
                 </div>
-                <h3 class="text-center" *ngIf="_gameLobby.password !== ' '">Password:
+                <h3 class="text-center" *ngIf="_gameLobby.password !== ''">Password:
                     {{_gameLobby.password}}</h3>
             </div>
         </div>
@@ -49,11 +49,10 @@
 
                         <div id="play" class="play">
                             <button class="btn btn-danger mr-3 mb-2" (click)="submitPlay()"> Play!</button>
-                            <!-- <p style="color: white;" *ngFor="let card of cards">{{card.cardId}}</p> -->
                         </div>
 
-                        <div class="error-messages text-center" *ngIf="message !== 'Next' && error !== ''">
-                            <p style="color: white;"> {{error}} </p>
+                        <div class="error-messages text-center" *ngIf="error != '' && error != undefined">
+                            <p style=" color: white;"> {{error}} </p>
                         </div>
                     </div>
                 </div>
@@ -155,6 +154,8 @@
 
             <div class="game-finished text-center" *ngIf="_gameLobby?.gameStatus === 'finished'">
                 <h2> The game has finished!</h2>
+                <h2> The winner is {{_gameLobby.winner}}! </h2>
+
                 <h3> I hope you had an amazing game! </h3>
                 <button class="btn mr-3 mb-2" [routerLink]="'../dashboard'" (click)="ngOnDestroy()">
                     Play Again! </button>
@@ -162,3 +163,5 @@
         </div>
     </div>
 </div>
+
+<button class="dashboard" routerLink="/dashboard"> Find another game</button>

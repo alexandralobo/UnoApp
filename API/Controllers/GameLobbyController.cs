@@ -17,10 +17,8 @@ namespace API.Controllers
     public class GameLobbyController : BaseApiController
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
-        public GameLobbyController(IUnitOfWork unitOfWork, IMapper mapper)
+        public GameLobbyController(IUnitOfWork unitOfWork)
         {
-            _mapper = mapper;
             _unitOfWork = unitOfWork;
         }
 
@@ -34,9 +32,9 @@ namespace API.Controllers
 
         
         [HttpGet("{gameLobbyId}")]
-        public async Task<ActionResult<GameLobby>> GetLobby(int gameLobbyId)
+        public ActionResult<GameLobby> GetLobby(int gameLobbyId)
         {
-            var lobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyById(gameLobbyId);
+            var lobby = _unitOfWork.GameLobbyRepository.GetGameLobbyById(gameLobbyId);
             return Ok(lobby);
         }
 
@@ -61,8 +59,8 @@ namespace API.Controllers
         [HttpPost("joinNewLobby/{username}")]
         public async Task<ActionResult<GameLobbyDto>> JoinNewLobby(string username, [FromBody] JsonElement body)
         {
-            //bool SessionExists = await _unitOfWork.ConnectionRepository.SessionExists(username); 
-            //if (SessionExists) return BadRequest("You are already in a game!");
+            bool SessionExists = await _unitOfWork.ConnectionRepository.SessionExists(username); 
+            if (SessionExists) return BadRequest("You are already in a game!");
 
             var game = JsonSerializer.Deserialize<GameLobbyDto>(body,
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
@@ -84,7 +82,7 @@ namespace API.Controllers
             var game = JsonSerializer.Deserialize<ExistingGameDto>(body,
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
-            var gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyWithPassword(game.password);
+            var gameLobby = _unitOfWork.GameLobbyRepository.GetGameLobbyWithPassword(game.password);
             if (gameLobby == null) return BadRequest("Password is incorrect!");
 
             if (gameLobby.NumberOfElements == 4) return BadRequest("The lobby is full!");            
@@ -99,15 +97,15 @@ namespace API.Controllers
         [HttpPost("pickColour")]
         public async Task<ActionResult<string>> PickColour(int gameLobbyId, string colour)
         {
-            bool validate = await _unitOfWork.GameLobbyRepository.PickColour(colour);
+            bool validate =  _unitOfWork.GameLobbyRepository.PickColour(colour);
             if (!validate) return BadRequest("Colour is not valid!");
 
-            GameLobby gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyById(gameLobbyId);
+            GameLobby gameLobby = _unitOfWork.GameLobbyRepository.GetGameLobbyById(gameLobbyId);
             gameLobby.PickedColour = colour;
 
             var group = await _unitOfWork.GameLobbyRepository.GetGroup(gameLobby.GameLobbyName);            
 
-            bool turn = await _unitOfWork.GameLobbyRepository.NextTurn(gameLobby, group);
+            bool turn = _unitOfWork.GameLobbyRepository.NextTurn(gameLobby, group);
             if (!turn) return BadRequest("I cannot get to the next turn!");
 
             if (await _unitOfWork.Complete()) return Ok("Next");
@@ -117,7 +115,7 @@ namespace API.Controllers
         [HttpGet("newDeck")]
         public async Task<ActionResult<string>> NewDeck(int gameLobbyId)
         {
-            GameLobby gameLobby = await _unitOfWork.GameLobbyRepository.GetGameLobbyById(gameLobbyId);
+            GameLobby gameLobby = _unitOfWork.GameLobbyRepository.GetGameLobbyById(gameLobbyId);
 
             bool deckObtained = await _unitOfWork.GameLobbyRepository.GetNewDeck(gameLobby);
             if (!deckObtained) return BadRequest("You still have cards available to draw!");

@@ -1,11 +1,18 @@
 <div id="r" class="row">
     <div class="column" style="background-color:rgb(116, 200, 228);">
         <h1>Match History</h1>
-        <div class="container">
+        <div class="container" *ngIf="accountService.typ !== 'LoginUser'">
             <div class="row">
                 <div class="c2" style="background-color: rgb(65, 141, 167);">
                     <h4 class="mt-3" style="text-align: center; color: black;">No match history in the game since you
                         are a guest. Create an account or log in to see your match history! </h4>
+                </div>
+            </div>
+        </div>
+        <div class="container" *ngIf="accountService.typ === 'LoginUser'">
+            <div class="row">
+                <div class="c2" style="background-color: rgb(65, 141, 167);">
+                    <h4 class="mt-3" style="text-align: center; color: black;">No Previous Games! </h4>
                 </div>
             </div>
         </div>
@@ -46,7 +53,7 @@
                         <button class="btn" (click)="getLobbies()"><span class=reload>&#x21bb;</span></button>
                     </h4>
                     <div class="row" *ngIf="gameLobbies?.length === 0">
-                        <h3>No Game Lobbies</h3>
+                        <h3>No Game Lobbies Available</h3>
                     </div>
 
                     <div class="row" *ngIf="gameLobbies?.length > 0">
@@ -60,11 +67,19 @@
     </div>
     <div class="column" style="background-color:orange;">
         <h1>Friends List</h1>
-        <div class="container">
+        <div class="container" *ngIf="accountService.typ !== 'LoginUser'">
             <div class="row">
                 <div class="c2" style="background-color: rgb(168, 93, 1);">
                     <h4 class="mt-3" style="text-align: center; color: black;">No friends in the game since you are a
                         guest. Create an account or log in to add friends in the game! </h4>
+                </div>
+            </div>
+        </div>
+        <div class="container" *ngIf="accountService.typ === 'LoginUser'">
+            <div class="row">
+                <div class="c2" style="background-color: rgb(168, 93, 1);">
+                    <h4 class="mt-3" style="text-align: center; color: black;">No Friends! Ask your friend to join you
+                        in UNO! </h4>
                 </div>
             </div>
         </div>

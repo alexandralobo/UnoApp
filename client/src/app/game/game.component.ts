@@ -62,7 +62,13 @@ export class GameComponent implements OnInit {
     this.gameService.players$.subscribe(players => this.players = players);
     this.gameService.players$.subscribe(players => this.otherPlayers = this.orderOfPlayers(players));
     //this.orderOfPlayers(this.players);
-    this.gameService.gameLobby$.subscribe(game => { this.gameLobby = game, this.pickedColour = game[0]?.pickedColour });
+    this.gameService.gameLobby$.subscribe(game => {
+      this.gameLobby = game,
+        this.pickedColour = game[0]?.pickedColour,
+        this.private = game[0]?.password != ""
+    });
+
+    //this.gameService.gameLobby$.subscribe(game => console.log(game[0]?.password != ''));
 
     // this.gameService.players$.forEach(player => {
     //   this.imagesSelected.push(this.getRandomImage());      
@@ -77,11 +83,7 @@ export class GameComponent implements OnInit {
         this.cardsPosition?.push('calc(300px + ' + j + ' * 50px)')
       }
     }
-    if (this.user) {
-      console.log(this.accountService.getDecodedToken(this.user?.token)[1])
-      console.log(this.user.username);
-    }
-
+    console.log(this.error)
   }
 
   orderOfPlayers(players: Connection[]): Connection[] {
@@ -98,34 +100,7 @@ export class GameComponent implements OnInit {
       tmpPlayers.push(players[index])
     }
 
-    console.log(tmpPlayers)
-
     return tmpPlayers;
-
-    // var position;
-
-    // for (let index = 0; index < players.length; index++) {
-    //   if (players[index].username == this.user.username) {
-    //     position = players[index];
-    //     break;
-    //   }
-    // }
-    // var connections = [];
-    // if (position == 0) {
-    //   players.filter(p => p.username !== this.user.username);
-    // } else {
-    //   for (let index = position; index < players.length; index++) {
-    //     connections.push(players[index]);
-    //   }
-    //   for (let index = 0; index < position; index++) {
-    //     connections.push(players[index]);
-    //   }
-
-    // }
-    // connections.forEach(player => {
-    //   console.log(player.username);
-    // });
-    // return connections;
   }
 
   getRandomImage(position) {
@@ -144,7 +119,6 @@ export class GameComponent implements OnInit {
 
   // working fine
   setCardPosition(index, element, position) {
-    //console.error("Calling setCardPosition");
     var myDiv = document.getElementById(element);
 
 
@@ -161,24 +135,19 @@ export class GameComponent implements OnInit {
 
   setCurrentPlayer(username, id) {
     if (username === this.gameLobby[0].currentPlayer) {
-      //console.log("HERE " + id)
       document.getElementById(id).style.border = "10px solid #FF0000";
-      //document.getElementById(id).style.border
     }
   }
 
   // working
   getCardSource(card: Card) {
-    //console.error("Calling getCardSource");
     var cardName = this.cardService.setCardName(card);
     return "/assets/images/Cards/" + cardName;
   }
 
   // working
   getCardSourceById(id) {
-    //console.error("Calling getCardSourceById");
     this.cardService.getCardById(id).subscribe(c => { this.card = c });
-    // var cardName = this.cardService.setCardName(this.card);
     return "/assets/images/Cards/" + this.card.fileName;
   }
 
@@ -204,7 +173,6 @@ export class GameComponent implements OnInit {
 
   async submitPlay() {
     this.error = "";
-    //console.error("Calling submitPlay");
     if (this.cards === []) {
       this.submitted = false;
     } else {

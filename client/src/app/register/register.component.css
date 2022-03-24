@@ -11,6 +11,7 @@
   top: 35%;
   right: 37%;
   border: 5px solid black;
+  border-radius: 12px;
   background-color: rgba(51, 13, 13, 0.952);
   width: 500px;
   scale: 120%;
@@ -31,4 +32,22 @@
 
 .margins {
   margin-left: 1em;
+}
+
+.input {
+  margin-bottom: 0.2em;
+}
+
+/* button to go home */
+.guest {
+  border: 5px solid black;
+  border-radius: 8px;
+  background: rgba(51, 13, 13, 0.808);
+  position: absolute;
+  top: 850px;
+  right: 100px;
+  height: 1.5cm;
+  width: 5cm;
+  color: white;
+  font-size: x-large;
 }

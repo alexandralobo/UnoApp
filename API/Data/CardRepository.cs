@@ -11,10 +11,8 @@ namespace API.Data
     public class CardRepository : ICardRepository
     {
         private readonly DataContext _context;
-        private readonly IMapper _mapper;
-        public CardRepository(DataContext context, IMapper mapper)
+        public CardRepository(DataContext context)
         {
-            _mapper = mapper;
             _context = context;
         }
 
@@ -23,7 +21,7 @@ namespace API.Data
             return _context.Cards.ToList();
         }
 
-        public async Task<bool> AddCard(Card card)
+        public bool AddCard(Card card)
         {
             _context.Cards.Add(card);
             return true;

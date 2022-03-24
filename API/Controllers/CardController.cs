@@ -12,15 +12,13 @@ namespace API.Controllers
     public class CardController : BaseApiController
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
-        public CardController(IUnitOfWork unitOfWork, IMapper mapper)
+        public CardController(IUnitOfWork unitOfWork)
         {
-            _mapper = mapper;
             _unitOfWork = unitOfWork;
         }
 
         [HttpGet]
-        public async Task<ActionResult<ICollection<Card>>> GetDeck()
+        public ActionResult<ICollection<Card>> GetDeck()
         {
             return Ok(_unitOfWork.CardRepository.GetDeck());
         }

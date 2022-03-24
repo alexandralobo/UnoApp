@@ -11,7 +11,7 @@ namespace API.Interfaces
         Task<bool> CreateConnection(Connection connection);
 
         Task<bool> SessionExists(string username);
-        Task<Connection> GetConnection(string username);
+        Connection GetConnection(string username);
         string DeleteConnection(string username);
     }
 }

@@ -1,0 +1,12 @@
+.rules {
+  border: 5px solid black;
+  border-radius: 8px;
+  background: rgba(51, 13, 13, 0.9);
+  color: white;
+  font-size: large;
+  margin: auto;
+  margin-top: 1em;
+  width: 750px;
+  height: 750px;
+  top: 150px;
+}

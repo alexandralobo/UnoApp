@@ -19,9 +19,9 @@ namespace API.Data
 
         public IMemberRepository MemberRepository => new MemberRepository(_context, _mapper);
 
-        public IGameLobbyRepository GameLobbyRepository => new GameLobbyRepository(_context, _mapper);
-        public IConnectionRepository ConnectionRepository => new ConnectionRepository(_context, _mapper);
-        public ICardRepository CardRepository => new CardRepository(_context, _mapper);
+        public IGameLobbyRepository GameLobbyRepository => new GameLobbyRepository(_context);
+        public IConnectionRepository ConnectionRepository => new ConnectionRepository(_context);
+        public ICardRepository CardRepository => new CardRepository(_context);
 
         public async Task<bool> Complete()
         {

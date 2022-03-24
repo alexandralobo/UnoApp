@@ -12,11 +12,8 @@ namespace API.Data
     public class ConnectionRepository : IConnectionRepository
     {
         private readonly DataContext _context;
-        private readonly IMapper _mapper;
-        public ConnectionRepository(DataContext context, IMapper mapper)
+        public ConnectionRepository(DataContext context)
         {
-
-            _mapper = mapper;
             _context = context;
         }
 
@@ -30,7 +27,7 @@ namespace API.Data
             return await _context.Connections.AnyAsync(c => c.Username == username);
         }
 
-        public async Task<Connection> GetConnection(string username)
+        public Connection GetConnection(string username)
         {
             return _context.Connections
                 .Where(c => c.Username == username)

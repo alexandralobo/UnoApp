@@ -16,6 +16,8 @@ import { RegisterComponent } from './register/register.component';
 import { DateInputComponent } from './_forms/date-input/date-input.component';
 import { WelcomeScreenComponent } from './welcome-screen/welcome-screen.component';
 import { JwtInterceptor } from './_interceptor/jwt.interceptor';
+import { AboutUsComponent } from './about-us/about-us.component';
+import { RulesComponent } from './rules/rules.component';
 
 @NgModule({
   declarations: [    
@@ -28,7 +30,9 @@ import { JwtInterceptor } from './_interceptor/jwt.interceptor';
     GameComponent,
     RegisterComponent,
     DateInputComponent,
-    WelcomeScreenComponent
+    WelcomeScreenComponent,
+    AboutUsComponent,
+    RulesComponent
   ],
   imports: [
     BrowserModule,

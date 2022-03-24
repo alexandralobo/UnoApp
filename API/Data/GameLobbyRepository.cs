@@ -16,14 +16,10 @@ namespace API.Data
     public class GameLobbyRepository : IGameLobbyRepository
     {
         private readonly DataContext _context;
-        private readonly IMapper _mapper;
-        public GameLobbyRepository(DataContext context, IMapper mapper)
+        public GameLobbyRepository(DataContext context)
         {
-            _mapper = mapper;
             _context = context;
         }
-
-        // working
         public async Task<GameLobby> JoinExistingLobby(int gameLobbyId)
         {           
             var gameLobby = await _context.GameLobbies
@@ -35,8 +31,6 @@ namespace API.Data
             
             return gameLobby;
         }
-
-        // working
         public async Task<GameLobby> JoinNewLobby(string name)
         {
             var gameLobby = new GameLobby
@@ -63,11 +57,11 @@ namespace API.Data
         public async Task<ICollection<GameLobby>> GetGameLobbiesAsync()
         {
             return await _context.GameLobbies
-                .Where(g => g.Password == " " && g.GameStatus == "waiting")
+                .Where(g => g.Password == "" && g.GameStatus == "waiting" && g.NumberOfElements > 0)
                 .ToListAsync();
         }
 
-        public async Task<GameLobby> GetGameLobbyByName(string groupName)
+        public GameLobby GetGameLobbyByName(string groupName)
         {
             GameLobby lobby = _context.GameLobbies
                 .Where(g => g.GameLobbyName == groupName)
@@ -78,7 +72,7 @@ namespace API.Data
             return lobby;
         }
 
-        public async Task<GameLobby> GetGameLobbyById(int id)
+        public GameLobby GetGameLobbyById(int id)
         {
             GameLobby lobby = _context.GameLobbies
                 .Where(g => g.GameLobbyId == id)
@@ -89,7 +83,7 @@ namespace API.Data
             return lobby;
         }
 
-        public async Task<GameLobby> GetGameLobbyWithPassword(string password)
+        public GameLobby GetGameLobbyWithPassword(string password)
         {
             GameLobby lobby = _context.GameLobbies
                 .Where(g => g.Password == password)
@@ -99,7 +93,7 @@ namespace API.Data
 
             return lobby;
         }
-        // working
+        
         public async Task<GameLobby> StartGame(GameLobby lobby)
         {
             
@@ -110,18 +104,18 @@ namespace API.Data
             lobby.CurrentPlayer = group.Connections.First().Username;
             lobby.GameStatus = "ongoing";
 
-            Random r = new Random();
-            int cardIndex = 0;
-            Card card = new Card();
+            Random r = new();
+            int cardIndex;
+            Card card;
 
             foreach (var connection in group.Connections)
             {
                 for (int i = 1; i <= 7; i++)
                 {
                     // randomly choose a card from the desk
-                    cardIndex = r.Next(lobby.DrawableCards.Count());
+                    cardIndex = r.Next(lobby.DrawableCards.Count);
                     card = lobby.DrawableCards.ElementAt(cardIndex);
-
+              
                     // remove card from the desk
                     lobby.DrawableCards.Remove(card);
 
@@ -132,20 +126,32 @@ namespace API.Data
 
             // initialise game by putting a card in the pot
             lobby = GetFirstCard(lobby);
+
+            // get consequence for the first player
+            var firstPlayer = _context.Connections
+                .Where(player => player.Username == lobby.CurrentPlayer)
+                .FirstOrDefault();
+
+            await GetConsequence(lobby, group, firstPlayer, lobby.CardPot);
+
             return lobby;
         }
-
-        // Working
+        
         private GameLobby GetFirstCard(GameLobby lobby)
         {
-            Random r = new Random();
-            int cardIndex = r.Next(lobby.DrawableCards.Count());
+            Random r = new();
+            int cardIndex = r.Next(lobby.DrawableCards.Count);
+       
             Card card = lobby.DrawableCards.ElementAt(cardIndex);
+            while (card.Type != "Wild" && card.Type != "WildDraw4")
+            {
+               card = lobby.DrawableCards.ElementAt(cardIndex);
+            }
 
             lobby.DrawableCards.Remove(card);
             lobby.CardPot.Add(card);
             lobby.LastCard = card.CardId;
-            lobby.FileName = card.FileName;
+            lobby.FileName = card.FileName;            
 
             return lobby;
         }
@@ -167,24 +173,18 @@ namespace API.Data
                 .Where(c => c.Connections.Any(x => x.ConnectionId == connectionId))
                 .FirstOrDefaultAsync();
         }
-        public async Task RemoveConnection(GameLobby gameLobby, Group group, Connection connection)
+        public void RemoveConnection(GameLobby gameLobby, Group group, Connection connection)
         {
-            //if (gameLobby.GameStatus == "ongoing")
-            //{
-            //    // not sure if it won't give an problem
-            //    //connection.ConnectionId = null;
-            //} else
-            if (gameLobby.GameStatus == "waiting")
-            {               
-                _context.Connections.Remove(connection);
-                group.Connections.Remove(connection);
-                gameLobby.NumberOfElements -= 1;
-
-            } else if (group.Connections.Count() == 0 || gameLobby.GameStatus == "finished")
+            if (group.Connections.Count == 0 || gameLobby.GameStatus == "finished")
             {
                 _context.Connections.Remove(connection);
                 _context.Groups.Remove(group);
                 _context.GameLobbies.Remove(gameLobby);
+            } else if (gameLobby.GameStatus == "waiting")
+            {
+                _context.Connections.Remove(connection);
+                group.Connections.Remove(connection);
+                gameLobby.NumberOfElements -= 1;
             } else
             {
                 _context.Connections.Remove(connection);
@@ -213,7 +213,7 @@ namespace API.Data
             return "Next";
         }
 
-        public async Task<string> PlayWithChosenColour(Connection connection, GameLobby gameLobby, ICollection<Card> cards, string colour)
+        public string PlayWithChosenColour(Connection connection, GameLobby gameLobby, ICollection<Card> cards, string colour)
         {
             var firstCard = cards.First();
 
@@ -231,12 +231,12 @@ namespace API.Data
         // Working
         private bool ValidateCardsPlayed(ICollection<Card> cards, Connection connection, GameLobby gameLobby)
         {
-            // check if all cards players have the same value/type
+            // check if all cards have the same value/type
             foreach (Card card in cards)
             {
                 foreach (Card cardNext in cards)
                 {
-                    if (card.Value != cardNext.Value || card.Type != cardNext.Type) // && or ||
+                    if (card.Value != cardNext.Value || card.Type != cardNext.Type) 
                     {
                         return false;
                     }
@@ -263,29 +263,25 @@ namespace API.Data
         {
             var firstCard = cards.First();
             switch (firstCard.Type)
-            {
-                // Skipped working
-                // Several skips together do not work
+            {                
                 case "Skip":
-                    foreach (var card in cards) await NextTurn(gameLobby, group);
+                    foreach (Card card in cards)
+                    {
+                        NextTurn(gameLobby, group);
+                    }
 
-                    // Message to be shown in the frontend according to the nr of cards
-                    if (cards.Count() == 1) return ("A player was skipped!");
-                    if (cards.Count() == 4) return ("You skipped all players!");
+                    if (cards.Count == 1) return ("A player was skipped!");
+                    if (cards.Count == 4) return ("You skipped all players!");
                     return ("A few players were skipped!");
 
-                // Reverse Working
                 case "Reverse":
                     gameLobby.Order = gameLobby.Order == "normal" ? "reverse" : "normal";
                     return "Next";
                 
-                 // Draw 2 working
-                 // Several Draws Working
                 case "Draw2":
                     await NextPlayerDraw(gameLobby, 2);
                     return "Next";
-                // Wild Draw 4 working
-                // Several Wild Draw 4 Working
+                
                 case "WildDraw4":
                     await NextPlayerDraw(gameLobby, 4);
                     return "Pick a colour";
@@ -298,36 +294,35 @@ namespace API.Data
             }
         }
 
-        public async Task<bool> PickColour(string colour)
+        public bool PickColour(string colour)
         {
             if (colour == "red" || colour == "blue" || colour == "yellow" || colour == "green") return true;
             return false;
         }
-
-        // TESTED - Working
-        public async Task<bool> NextTurn(GameLobby gameLobby, Group group)
+   
+        public bool NextTurn(GameLobby gameLobby, Group group)
         {
             Connection nextPlaying = GetPlayer(gameLobby, group);
-            gameLobby.CurrentPlayer = nextPlaying.Username;
+            if (nextPlaying.Username != gameLobby.CurrentPlayer)
+            {
+                gameLobby.CurrentPlayer = nextPlaying.Username;
+            }
             return true;
         }
-
-        // Working
+        
         public async Task<Card> Draw(int quantity, GameLobby lobby, Connection connection)
         {           
 
-            Card card = new Card();
+            Card card = new();
             for (int i = 0; i < quantity; i++)
             {
-                // No cards available to draw
-                // Not tested
-                if (lobby.DrawableCards.Count() == 0)
+                if (lobby.DrawableCards.Count == 0)
                 {
                     await GetNewDeck(lobby);
                 }
 
-                Random r = new Random();
-                int cardIndex = r.Next(lobby.DrawableCards.Count());
+                Random r = new();
+                int cardIndex = r.Next(lobby.DrawableCards.Count);
                 card = lobby.DrawableCards.ElementAt(cardIndex);
 
                 connection.Cards.Add(card);
@@ -343,16 +338,16 @@ namespace API.Data
             Group group = await GetGroup(lobby.GameLobbyName);
             Connection playerToDraw = GetPlayer(lobby, group);
 
-            Card card = new Card();
+            Card card;
             for (int i = 0; i < quantity; i++)
             {
-                if (lobby.DrawableCards.Count() == 0)
+                if (lobby.DrawableCards.Count == 0)
                 {
                     await GetNewDeck(lobby);
                 }
 
-                Random r = new Random();
-                int cardIndex = r.Next(lobby.DrawableCards.Count());
+                Random r = new();
+                int cardIndex = r.Next(lobby.DrawableCards.Count);
                 card = lobby.DrawableCards.ElementAt(cardIndex);             
 
                 playerToDraw.Cards.Add(card);
@@ -377,10 +372,10 @@ namespace API.Data
             }
 
             // verify the order
-            int nextIndex = 0;
+            int nextIndex;
             if (lobby.Order == "normal")
             {
-                if (currIndex == group.Connections.Count() - 1)
+                if (currIndex == group.Connections.Count - 1)
                 {
                     nextIndex = 0;
                 }
@@ -394,7 +389,7 @@ namespace API.Data
             {
                 if (currIndex == 0)
                 {
-                    nextIndex = group.Connections.Count() - 1;
+                    nextIndex = group.Connections.Count - 1;
                 }
                 else
                 {
@@ -408,7 +403,7 @@ namespace API.Data
         public async Task<bool> GetNewDeck(GameLobby gameLobby)
         {
             // there is card in the deck
-            if (gameLobby.DrawableCards.Count() > 0) return false;
+            if (gameLobby.DrawableCards.Count > 0) return false;
 
             // not sure if it works
 
@@ -423,8 +418,7 @@ namespace API.Data
             return true;
         }
 
-        // Tested
-        public async Task<bool> Playable(Card pot, ICollection<Card> cards)
+        public bool Playable(Card pot, ICollection<Card> cards)
         {
             // verify if the current player have a valid card to play
             foreach (Card card in cards)
@@ -437,7 +431,7 @@ namespace API.Data
             }
             return false;
         }
-        public async Task<bool> PlayableWithColour(ICollection<Card> cards, string pickedColour)
+        public bool PlayableWithColour(ICollection<Card> cards, string pickedColour)
         {
             // verify if the current player have a valid card to play
             foreach (Card card in cards)
@@ -450,11 +444,11 @@ namespace API.Data
             return false;
         }
 
-        public async Task<string> UnoStatus(Connection connection)
+        public string UnoStatus(Connection connection)
         {
             if (connection.Uno == false) // when a player can say uno
             {         
-                if (connection.Cards.Count() == 1)
+                if (connection.Cards.Count == 1)
                 {
                     connection.Uno = true; 
                     return "Uno!";

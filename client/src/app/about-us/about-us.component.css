@@ -1,0 +1,53 @@
+.intro {
+  border: 5px solid black;
+  border-radius: 8px;
+  background: rgba(51, 13, 13, 0.808);
+  color: white;
+  font-size: x-large;
+  position: absolute;
+  margin-left: 1em;
+  margin-right: 3em;
+  margin-top: 1em;
+  width: 750px;
+  height: 580px;
+  top: 225px;
+}
+
+.support {
+  border: 5px solid black;
+  border-radius: 10px;
+  background: rgba(51, 13, 13, 0.808);
+  color: white;
+  font-size: medium;
+  position: absolute;
+  margin-left: 1em;
+  margin-right: 1em;
+  right: 200px;
+  top: 425px;
+}
+
+p {
+  margin-left: 1em;
+}
+
+h2 {
+  margin-left: 0.5em;
+  margin-top: 0.5em;
+}
+
+li {
+  margin-right: 1em;
+}
+
+button {
+  border: 5px solid black;
+  border-radius: 8px;
+  background: rgba(51, 13, 13, 0.808);
+  position: absolute;
+  top: 850px;
+  right: 100px;
+  height: 1.5cm;
+  width: 5cm;
+  color: white;
+  font-size: x-large;
+}

@@ -22,6 +22,7 @@ namespace API.Entities
         public string GameStatus { get; set; } = "waiting";
         public int NumberOfElements { get; set; } = 0;
         public string Order { get; set; } = "normal";
-        public string Password { get; set; } = " ";
+        public string Password { get; set; } = "";
+        public string Winner { get; set; } = "";
     }
 }

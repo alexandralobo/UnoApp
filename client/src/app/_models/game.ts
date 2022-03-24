@@ -3,7 +3,7 @@ import { Card } from "./card";
 export interface GameLobby {
     gameLobbyId: number;
     gameLobbyName: string;
-    drawableCards: Card[];    
+    drawableCards: Card[];
     cardPot: Card[];
     lastCard: number;
     pickedColour: string;
@@ -11,4 +11,5 @@ export interface GameLobby {
     gameStatus: string;
     numberOfElements: number;
     password: string;
+    winner: string;
 }

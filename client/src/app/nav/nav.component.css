@@ -2,6 +2,9 @@
   background: rgb(0, 0, 0, 0.7);
   border-color: #000;
 }
+.header {
+  margin: 0px;
+}
 .navbar li {
   color: #000;
 }
@@ -18,7 +21,7 @@
 }
 
 @media screen and (max-width: 600px) {
-  .nav-pills {
+  .header {
     width: 100%;
   }
 }

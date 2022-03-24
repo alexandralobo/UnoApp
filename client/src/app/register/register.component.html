@@ -14,16 +14,26 @@
     </div>
 
     <div class="input-margin">
-        <app-text-input [formControl]='registerForm.controls["username"]' [label]='"Username"' ngDefaultControl>
-        </app-text-input>
-        <app-date-input [formControl]='registerForm.controls["dateOfBirth"]' [label]='"Date Of Birth"'
-            [maxDate]='maxDate' ngDefaultControl>
-        </app-date-input>
-        <app-text-input [formControl]='registerForm.controls["password"]' [label]='"Password"' [type]='"password"'
-            ngDefaultControl>
-        </app-text-input>
-        <app-text-input [formControl]='registerForm.controls["confirmPassword"]' [label]='"Confirm Password"'
-            [type]='"password"' ngDefaultControl></app-text-input>
+        <div class="input">
+            <app-text-input class="input" [formControl]='registerForm.controls["username"]' [label]='"Username"'
+                ngDefaultControl>
+            </app-text-input>
+        </div>
+        <div class="input">
+            <app-text-input class="input" [formControl]='registerForm.controls["email"]' [label]='"Email"'
+                ngDefaultControl>
+            </app-text-input>
+        </div>
+        <div class="input">
+            <app-text-input class="input" [formControl]='registerForm.controls["password"]' [label]='"Password"'
+                [type]='"password"' ngDefaultControl>
+            </app-text-input>
+        </div>
+        <div class="input">
+            <app-text-input class="input" [formControl]='registerForm.controls["confirmPassword"]'
+                [label]='"Confirm Password"' [type]='"password"' ngDefaultControl></app-text-input>
+        </div>
+
 
         <div class="row mt-5" *ngIf="validationErrors.length > 0">
             <ul class="text-danger">
@@ -36,6 +46,8 @@
 
     <div class="form-group text-center mb-2">
         <button [disabled]='!registerForm.valid' class="btn btn-success mr-2" type="submit">Register</button>
-        <button class="btn btn-default mr-2" (click)="cancel()" type="button">Cancel</button>
+        <button class="btn btn-danger mr-2" style="margin-left: 1em;" (click)="cancel()" type="button">Cancel</button>
     </div>
 </form>
+
+<button class="guest" routerLink="/home"> Be our Guest!</button>

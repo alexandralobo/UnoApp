@@ -17,7 +17,7 @@ export class RegisterComponent implements OnInit {
 
   constructor(
     private accountService: AccountService,
-    private toastr: ToastrService, 
+    private toastr: ToastrService,
     private fb: FormBuilder,
     private router: Router) { }
 
@@ -29,33 +29,34 @@ export class RegisterComponent implements OnInit {
 
   initialiseForm() {
     this.registerForm = this.fb.group({
-      gender:['male'],
-      username:['', Validators.required],
-      dateOfBirth:['', Validators.required],
-      password: ['', [Validators.required,Validators.minLength(8)]],
-      confirmPassword:['', [Validators.required, this.matchValues('password')]]
+      gender: ['male'],
+      username: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
+      confirmPassword: ['', [Validators.required, this.matchValues('password')]]
     })
 
     this.registerForm.controls.password.valueChanges.subscribe(() => {
       this.registerForm.controls.confirmPassword.updateValueAndValidity();
     })
 
-    }
-    
-    matchValues(matchTo: string): ValidatorFn {
-      return (control: AbstractControl) => {
-        return control?.value === control?.parent?.controls[matchTo].value ? null : {isMatching: true}
-      }
-    }
-  
-    register() {
-      this.accountService.register(this.registerForm.value).subscribe({
-        next: () => {this.router.navigateByUrl('/dashboard')},
-        error: e => {this.validationErrors = e}
-      })
-    }
-  
-    cancel() {
-      this.cancelRegister.emit(false);
+  }
+
+  matchValues(matchTo: string): ValidatorFn {
+    return (control: AbstractControl) => {
+      return control?.value === control?.parent?.controls[matchTo].value ? null : { isMatching: true }
     }
   }
+
+  register() {
+    this.accountService.register(this.registerForm.value).subscribe({
+      next: () => { this.router.navigateByUrl('/dashboard') },
+      error: e => { this.validationErrors = e }
+    })
+  }
+
+  cancel() {
+    this.cancelRegister.emit(false);
+    this.router.navigateByUrl('/home')
+  }
+}
